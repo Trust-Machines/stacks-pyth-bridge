@@ -16,38 +16,38 @@ contract_id = 'SP2J933XB2CP2JQ1A4FGN8JA968BBG3NK3EKZ7Q9F.hk-merkle-tree-keccak16
 
 [contracts.pyth-governance-v1]
 path = 'contracts/pyth-governance-v1.clar'
-clarity_version = 2
-epoch = 2.4
+clarity_version = 3
+epoch = 3.0
 
 [contracts.pyth-oracle-v2]
 path = 'contracts/pyth-oracle-v2.clar'
-clarity_version = 2
-epoch = 2.4
+clarity_version = 3
+epoch = 3.0
 
 [contracts.pyth-store-v1]
 path = 'contracts/pyth-store-v1.clar'
-clarity_version = 2
-epoch = 2.4
+clarity_version = 3
+epoch = 3.0
 
 [contracts.pyth-pnau-decoder-v1]
 path = 'contracts/pyth-pnau-decoder-v1.clar'
-clarity_version = 2
-epoch = 2.4
+clarity_version = 3
+epoch = 3.0
 
 [contracts.pyth-traits-v1]
 path = 'contracts/pyth-traits-v1.clar'
-clarity_version = 2
-epoch = 2.4
+clarity_version = 3
+epoch = 3.0
 
 [contracts.wormhole-core-v2]
 path = 'contracts/wormhole/wormhole-core-v2.clar'
-clarity_version = 2
-epoch = 2.4
+clarity_version = 3
+epoch = 3.0
 
 [contracts.wormhole-traits-v1]
 path = 'contracts/wormhole/wormhole-traits-v1.clar'
-clarity_version = 2
-epoch = 2.4
+clarity_version = 3
+epoch = 3.0
 
 [repl.analysis]
 passes = ['check_checker']

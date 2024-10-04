@@ -1,3 +1,5 @@
+# Stacks <> Pyth - edited by Granite team
+
        /     /   ▶ Stacks Pyth Bridge
       / --- /      Bridging Pyth price feeds to the Stacks blockchain.
      /     /       Retrieve trading pairs (BTC-USD, STX-USD, etc.) from Clarity smart contracts.
@@ -150,3 +152,7 @@ If the VAA is valid, the contract call will return a payload with the following 
 
 Including all the prices successfully updating the oracle.
 All of the implementation details can be found in [Pyth documentation](https://docs.pyth.network/documentation/how-pyth-works).
+
+# Upgrades
+- Clarity V3
+- bump dependencies

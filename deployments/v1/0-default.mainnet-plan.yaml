@@ -14,57 +14,57 @@ plan:
             cost: 1486613
             path: contracts/wormhole/wormhole-traits-v1.clar
             anchor-block-only: true
-            clarity-version: 2
+            clarity-version: 3
         - contract-publish:
             contract-name: pyth-traits-v1
             expected-sender: SP2T5JKWWP3FYYX4YRK8GK5BG2YCNGEAEY2P2PKN0
             cost: 1487019
             path: contracts/pyth-traits-v1.clar
             anchor-block-only: true
-            clarity-version: 2
+            clarity-version: 3
         - contract-publish:
             contract-name: pyth-governance-v1
             expected-sender: SP2T5JKWWP3FYYX4YRK8GK5BG2YCNGEAEY2P2PKN0
             cost: 1495228
             path: contracts/pyth-governance-v1.clar
             anchor-block-only: true
-            clarity-version: 2
+            clarity-version: 3
         - contract-publish:
             contract-name: pyth-oracle-v1
             expected-sender: SP2T5JKWWP3FYYX4YRK8GK5BG2YCNGEAEY2P2PKN0
             cost: 1487263
             path: contracts/pyth-oracle-v1.clar
             anchor-block-only: true
-            clarity-version: 2
+            clarity-version: 3
         - contract-publish:
             contract-name: pyth-pnau-decoder-v1
             expected-sender: SP2T5JKWWP3FYYX4YRK8GK5BG2YCNGEAEY2P2PKN0
             cost: 1492627
             path: contracts/pyth-pnau-decoder-v1.clar
             anchor-block-only: true
-            clarity-version: 2
+            clarity-version: 3
         - contract-publish:
             contract-name: pyth-store-v1
             expected-sender: SP2T5JKWWP3FYYX4YRK8GK5BG2YCNGEAEY2P2PKN0
             cost: 1487263
             path: contracts/pyth-store-v1.clar
             anchor-block-only: true
-            clarity-version: 2
+            clarity-version: 3
         - contract-publish:
             contract-name: wormhole-core-v1
             expected-sender: SP2T5JKWWP3FYYX4YRK8GK5BG2YCNGEAEY2P2PKN0
             cost: 1494091
             path: contracts/wormhole/wormhole-core-v1.clar
             anchor-block-only: true
-            clarity-version: 2
+            clarity-version: 3
         - contract-publish:
             contract-name: pyth-helper-v1
             expected-sender: SP2T5JKWWP3FYYX4YRK8GK5BG2YCNGEAEY2P2PKN0
             cost: 1486613
             path: contracts/pyth-helper-v1.clar
             anchor-block-only: true
-            clarity-version: 2
-      epoch: "2.4"
+            clarity-version: 3
+      epoch: "3.0"
     - id: 1
       transactions:
         - contract-call:
@@ -162,4 +162,4 @@ plan:
               # PNAU payload
               - 0x504e41550100000003b801000000030d0053bbe5d6ec86360500482ecfe68f015ee39b20b51f2498a1cd216669cf7a124a462f7c37adecd50eeb95c48304a6df8b252166660499ef5e29bf68b9934a81d200017d675c2ac214abad26560dad001d62b1fd439b5f683c77d6142ff43a7d48f3f1487cd40468d60859ffba22761c9baec08b70809e7d3ae9a7095696d8469516d6010227780a41bdf2b51327e4e34f6bf2c5a0afc8d395d0be32c600c86bed8b33993436e5a7129a5f42b4980947a7ee6d0011437fe83096a7be11f120e9e6cbb1f62d00034decb38b18b67835e95ec3e723d8aa5f927c0edf6fda818da1c1c6461ac03eed54ae2d0c71258bee206f4efb098ca8f1428d717a38d1e467d1d093b1a0e7439b0004a11bdedf6f73d2828f457b45ab0dcabb03369d5aa25173d874a77d09860297213eb54cdbc88ad0302c7f6cd19aafb4739b090771be5e64eeb299fc5ed561210d00068efddedd53845d43acf3fffda71ff8d8a5cb460c1db7701bb8d628562e1ed1bf495ad6280e839160e5accc3999d748405a97950e9db40739bc20c9ab9b03657f0008f2257f31d1faf556dc14756e05c83abbbfbfac47427655c0ea201bdf40c30f8701022545ab20a6712e94cda029804db77bdcb72290a8f8372cc03d31c42b951a000a71e288608dcd65999d7a778b0fc164da395fb0ab43f4e3969f900d2ae163d4097ce40c846966b43ecd82cdb420e273fb843f2e7f924ccd39694f432f4784c4c1000b0ad80690d2ae077b10f61b27fa3628e7d8d44b479bcf38716dfb51230e281b8b3efb3168ca630ab7988f66d2bbf392c5b76251d5707b78dcedfc03dc9a77574b010db88988868497aec5c9c3cdc83a2f39ec5b4ce8eba8efc391cc65e384cd98ba13650ee3e1c1d6f7ba7de3a91d68df67befb87ba853764becad0e2445f338d2a0c000ea7e6435467b12136983eef340c917512aa3178a6362915813ee2403a6afe7e8674e615e9949fff600a8fd5ed134099f4630db60c96d6bf41d5c65b49a0e856df0110d8abf4382fc05a7b1f7ee0344b4b6ab2d99ce05a09da44629091b8bec6441e225d2a47f857c32c9eaee55c0d97b01850978604ccc604d209fbb2e21f790a2d27001228c1e49492a1ca1eb324890d4d8edce37e73df2c6545409f92f5af038f12a106550e40d52c490ae0d26ab04748fc8ac017f365891795d55902838e04561f98f1006579e52f00000000001ae101faedac5851e32b9b23b5f9411a8c2bac4aae3ed4dd7b811dd1a72ea4aa710000000001dc08de0141555756000000000006e32d640000271082bd6338b7168545099d3b89575382a1719fd5b001005500ec7a775f46379b5e943c3526b1c8d54cd49749176b0b98e02dde68d1bd335c1700000000059b8cf00000000000013602fffffff8000000006579e52e000000006579e52e0000000005a89ef900000000000177390a8b1d580b30d9ff6ef843cb9e44f79d459b390e17ff15ce2dac75a2e3c2698a36411fc08faa4fa6de90f134a2daf2c1341e26eb084e134223b97dc008d9f0beb19e9ebed8ca4a8515ca9f2e62a9d57f9a10745d339f162052998a2979999e905223f48ec37f8272cabd22210512e0948b7f531c0cb71fca82952cd3ba5b3cbdbf54e52cc47ffe6ea1bdbd5074ea6fa95a91feaa758a6294fd1663ee9d40877c5dd57e98390e59ba61a7771f0452439f3f6459ac4ad455b31fe2f509e9fc0a84f3d862467a5a0a5a88
             cost: 1000000
-      epoch: "2.4"
+      epoch: "3.0"

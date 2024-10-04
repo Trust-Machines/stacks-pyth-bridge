@@ -14,7 +14,7 @@ plan:
             cost: 1500000
             path: contracts/pyth-oracle-v2.clar
             anchor-block-only: true
-            clarity-version: 2
+            clarity-version: 3
         - contract-call:
             contract-id: SP2T5JKWWP3FYYX4YRK8GK5BG2YCNGEAEY2P2PKN0.pyth-governance-v1
             expected-sender: SP2T5JKWWP3FYYX4YRK8GK5BG2YCNGEAEY2P2PKN0

@@ -672,9 +672,8 @@ describe("pyth-pnau-decoder-v1::decode-and-verify-price-feeds failures", () => {
   });
 
   it("should fail if the price is below stale threshold", () => {
-    // Everytime a simnet block is being mined, we add 1500s to the initial genesis time - usually bringing us to the future.
-    let onChainTime = pyth.timestampNow() + 1500n * BigInt(simnet.blockHeight);
-    simnet.mineEmptyBlocks(7); // stale threshold set to 10800 (3 hours), so by mining 7 blocks (1800s), we are advancing enough
+    let onChainTime = pyth.timestampNow() + BigInt(simnet.blockHeight);
+    simnet.mineEmptyBlocks(21); // stale threshold set to 10800 (3 hours), so by mining 21 blocks (1800s), we are advancing enough
     let actualPricesUpdates = pyth.buildPriceUpdateBatch([
       [
         pyth.BtcPriceIdentifier,
@@ -715,12 +714,12 @@ describe("pyth-pnau-decoder-v1::decode-and-verify-price-feeds failures", () => {
   });
 
   it("should only return validated prices and filter invalid prices", () => {
-    // Everytime a simnet block is being mined, we add 1500s to the initial genesis time - usually bringing us to the future.
+    // Everytime a simnet block is being mined, we add 600s to the initial genesis time - usually bringing us to the future.
     let previousOnChainTime =
-      pyth.timestampNow() + 1500n * BigInt(simnet.blockHeight);
-    simnet.mineEmptyBlocks(7); // stale threshold set to 10800 (3 hours), so by mining 7 blocks (1800s), we are advancing enough
+    pyth.timestampNow() + 600n * BigInt(simnet.blockHeight);
+    simnet.mineEmptyBlocks(21); // stale threshold set to 10800 (3 hours), so by mining 21 blocks (1800s), we are advancing enough
     let newOnChainTime =
-      pyth.timestampNow() + 1500n * BigInt(simnet.blockHeight);
+    pyth.timestampNow() + 600n * BigInt(simnet.blockHeight);
     let actualPricesUpdates = pyth.buildPriceUpdateBatch([
       [
         pyth.BtcPriceIdentifier,
@@ -762,6 +761,18 @@ describe("pyth-pnau-decoder-v1::decode-and-verify-price-feeds failures", () => {
     );
     expect(res.result).toBeOk(
       Cl.list([
+        Cl.tuple({
+          "price-identifier": Cl.buffer(pyth.BtcPriceIdentifier),
+          price: Cl.int(actualPricesUpdates.decoded[1].price),
+          conf: Cl.uint(actualPricesUpdates.decoded[1].conf),
+          "ema-conf": Cl.uint(actualPricesUpdates.decoded[1].emaConf),
+          "ema-price": Cl.int(actualPricesUpdates.decoded[1].emaPrice),
+          expo: Cl.int(actualPricesUpdates.decoded[1].expo),
+          "prev-publish-time": Cl.uint(
+            actualPricesUpdates.decoded[1].prevPublishTime,
+          ),
+          "publish-time": Cl.uint(actualPricesUpdates.decoded[0].publishTime),
+        }),
         Cl.tuple({
           "price-identifier": Cl.buffer(pyth.StxPriceIdentifier),
           price: Cl.int(actualPricesUpdates.decoded[1].price),

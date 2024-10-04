@@ -96,4 +96,4 @@ plan:
               ]
             ]
             cost: 5960
-      epoch: "2.4"
+      epoch: "3.0"
