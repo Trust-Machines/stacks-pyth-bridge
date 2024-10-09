@@ -25,6 +25,10 @@
   (let ((entry (unwrap! (map-get? prices price-identifier) (err u404))))
     (ok entry)))
 
+(define-read-only (get-price (price-identifier (buff 32)))
+  (let ((entry (unwrap! (map-get? prices price-identifier) (err u404))))
+    (ok entry)))
+
 (define-public (write (batch-updates (list 64 {
     price-identifier: (buff 32),
     price: int,
