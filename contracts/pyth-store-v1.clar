@@ -8,6 +8,7 @@
 (define-constant ERR_NEWER_PRICE_AVAILABLE (err u5000))
 (define-constant ERR_STALE_PRICE (err u5001))
 (define-constant ERR_INVALID_UPDATES (err u5003))
+(define-constant ERR_RESTRICTED_TO_TESTNET (err u5004))
 
 (define-map prices (buff 32) {
   price: int,
@@ -20,6 +21,23 @@
 })
 
 (define-map timestamps (buff 32) uint)
+
+(define-public (set-price-testnet
+  (data {
+    price-identifier: (buff 32),
+    price: int,
+    conf: uint,
+    expo: int,
+    ema-price: int,
+    ema-conf: uint,
+    publish-time: uint,
+    prev-publish-time: uint,
+  }))
+  (begin
+    (asserts! (not is-in-mainnet) ERR_RESTRICTED_TO_TESTNET)
+    (ok (write-batch-entry data))
+  )
+)
 
 (define-public (read (price-identifier (buff 32)))
   (let ((entry (unwrap! (map-get? prices price-identifier) (err u404))))

@@ -590,7 +590,7 @@ export namespace pyth {
       conf: opts?.conf || 10n,
       emaPrice: opts?.emaPrice || 95n,
       emaConf: opts?.emaConf || 9n,
-      expo: -4,
+      expo: opts?.expo || -4,
       publishTime: opts?.publishTime || timestampNow(),
       prevPublishTime: opts?.prevPublishTime || timestampNow() - 10n,
     };

@@ -154,5 +154,6 @@ Including all the prices successfully updating the oracle.
 All of the implementation details can be found in [Pyth documentation](https://docs.pyth.network/documentation/how-pyth-works).
 
 # Upgrades
-- Clarity V3
-- bump dependencies
+- Ported the codebase to Clarity V3
+- bump up nodejs dependencies
+- introduced a utility function `set-price-testnet` in the `pyth-store-v1` contract to set the price data for a specific feed without the need to produce a valid attestation. This function will only work on testnet.
