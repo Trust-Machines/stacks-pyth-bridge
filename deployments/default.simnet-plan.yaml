@@ -93,9 +93,9 @@ plan:
             path: contracts/pyth-pnau-decoder-v1.clar
             clarity-version: 3
         - emulated-contract-publish:
-            contract-name: pyth-store-v1
+            contract-name: pyth-store-v2
             emulated-sender: ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM
-            path: contracts/pyth-store-v1.clar
+            path: contracts/pyth-store-v2.clar
             clarity-version: 3
         - emulated-contract-publish:
             contract-name: wormhole-core-v2

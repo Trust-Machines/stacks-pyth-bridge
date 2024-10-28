@@ -41,7 +41,7 @@
           (contract-call? 'ST2T5JKWWP3FYYX4YRK8GK5BG2YCNGEAEY1JKX06E.pyth-oracle-v2 verify-and-update-price-feeds 
             stx-price-feed
             {
-              pyth-storage-contract: 'ST2T5JKWWP3FYYX4YRK8GK5BG2YCNGEAEY1JKX06E.pyth-store-v1,
+              pyth-storage-contract: 'ST2T5JKWWP3FYYX4YRK8GK5BG2YCNGEAEY1JKX06E.pyth-store-v2,
               pyth-decoder-contract: 'ST2T5JKWWP3FYYX4YRK8GK5BG2YCNGEAEY1JKX06E.pyth-pnau-decoder-v1,
               wormhole-core-contract: 'ST2T5JKWWP3FYYX4YRK8GK5BG2YCNGEAEY1JKX06E.wormhole-core-v2
             }) 
@@ -54,7 +54,7 @@
           (contract-call? 'ST2T5JKWWP3FYYX4YRK8GK5BG2YCNGEAEY1JKX06E.pyth-oracle-v2 verify-and-update-price-feeds 
             btc-price-feed
             {
-              pyth-storage-contract: 'ST2T5JKWWP3FYYX4YRK8GK5BG2YCNGEAEY1JKX06E.pyth-store-v1,
+              pyth-storage-contract: 'ST2T5JKWWP3FYYX4YRK8GK5BG2YCNGEAEY1JKX06E.pyth-store-v2,
               pyth-decoder-contract: 'ST2T5JKWWP3FYYX4YRK8GK5BG2YCNGEAEY1JKX06E.pyth-pnau-decoder-v1,
               wormhole-core-contract: 'ST2T5JKWWP3FYYX4YRK8GK5BG2YCNGEAEY1JKX06E.wormhole-core-v2
             }) 
@@ -69,6 +69,6 @@
   (read-price-from-pyth 0xe62df6c8b4a85fe1a67db44dc12de5db330f7ac66b72dc658afedf0f4a415b43))
 
 (define-private (read-price-from-pyth (price-id (buff 32)))
-    (let ((feed (unwrap! (contract-call? 'ST2T5JKWWP3FYYX4YRK8GK5BG2YCNGEAEY1JKX06E.pyth-oracle-v2 read-price-feed price-id 'ST2T5JKWWP3FYYX4YRK8GK5BG2YCNGEAEY1JKX06E.pyth-store-v1) (err u0)))
+    (let ((feed (unwrap! (contract-call? 'ST2T5JKWWP3FYYX4YRK8GK5BG2YCNGEAEY1JKX06E.pyth-oracle-v2 read-price-feed price-id 'ST2T5JKWWP3FYYX4YRK8GK5BG2YCNGEAEY1JKX06E.pyth-store-v2) (err u0)))
           (price (get price feed)))
       (ok (to-uint price))))
