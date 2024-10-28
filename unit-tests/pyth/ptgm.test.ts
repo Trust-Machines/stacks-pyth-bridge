@@ -7,7 +7,7 @@ import { ParsedTransactionResult } from "@hirosystems/clarinet-sdk";
 import { ptgmTestnetVaas } from "./fixtures";
 
 const pythOracleContractName = "pyth-oracle-v2";
-const pythStorageContractName = "pyth-store-v1";
+const pythStorageContractName = "pyth-store-v2";
 const pythDecoderPnauContractName = "pyth-pnau-decoder-v1";
 const pythGovernanceContractName = "pyth-governance-v1";
 const wormholeCoreContractName = "wormhole-core-v2";
@@ -489,7 +489,7 @@ describe("pyth-governance-v1::update-pyth-store-contract", () => {
   const guardianSet = wormhole.generateGuardianSetKeychain(19);
   let updateStoreContract = {
     address: "ST2CY5V39NHDPWSXMW9QDT3HC3GD6Q6XX4CFRK9AG",
-    contractName: "pyth-store-v2",
+    contractName: "pyth-store-v3",
   };
   let ptgmVaaPayload = pyth.buildPtgmVaaPayload({ updateStoreContract });
 

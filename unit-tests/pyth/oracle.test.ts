@@ -6,7 +6,7 @@ import { wormhole } from "../wormhole/helpers";
 
 const pythOracleContractName = "pyth-oracle-v2";
 const pythDecoderPnauContractName = "pyth-pnau-decoder-v1";
-const pythStorageContractName = "pyth-store-v1";
+const pythStorageContractName = "pyth-store-v2";
 const wormholeCoreContractName = "wormhole-core-v2";
 
 describe("pyth-oracle-v2::decode-and-verify-price-feeds mainnet VAAs", () => {

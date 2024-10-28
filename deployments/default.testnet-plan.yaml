@@ -71,10 +71,10 @@ plan:
             anchor-block-only: true
             clarity-version: 3
         - contract-publish:
-            contract-name: pyth-store-v1
+            contract-name: pyth-store-v2
             expected-sender: ST2DW1Z3R3QDTAJAG3VW6YZGZE4JQDP3CP6BRQDGN
             cost: 404833
-            path: contracts/pyth-store-v1.clar
+            path: contracts/pyth-store-v2.clar
             anchor-block-only: true
             clarity-version: 3
         - contract-publish:
