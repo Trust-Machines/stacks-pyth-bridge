@@ -10,6 +10,8 @@
 (define-constant ERR_INVALID_UPDATES (err u5003))
 (define-constant ERR_RESTRICTED_TO_TESTNET (err u5004))
 
+(define-constant STACKS_BLOCK_TIME u5)
+
 (define-map prices (buff 32) {
   price: int,
   conf: uint,
@@ -79,7 +81,7 @@
       ;; Ensure that we have not processed a newer price
       (asserts! (is-price-update-more-recent (get price-identifier entry) (get publish-time entry)) ERR_NEWER_PRICE_AVAILABLE)
       ;; Ensure that price is not stale
-      (asserts! (>= (get publish-time entry) (- latest-bitcoin-timestamp stale-price-threshold)) ERR_STALE_PRICE)
+      (asserts! (>= (get publish-time entry) (+ (- latest-bitcoin-timestamp stale-price-threshold) STACKS_BLOCK_TIME)) ERR_STALE_PRICE)
       ;; Update storage
       (map-set prices 
         (get price-identifier entry) 
