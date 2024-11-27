@@ -7,8 +7,7 @@
 
 (define-constant ERR_NEWER_PRICE_AVAILABLE (err u5000))
 (define-constant ERR_STALE_PRICE (err u5001))
-(define-constant ERR_INVALID_UPDATES (err u5003))
-(define-constant ERR_RESTRICTED_TO_TESTNET (err u5004))
+(define-constant ERR_RESTRICTED_TO_TESTNET (err u5003))
 
 (define-map prices (buff 32) {
   price: int,
@@ -60,8 +59,6 @@
   (let ((successful-updates (map unwrapped-entry (filter only-ok-entry (map write-batch-entry batch-updates)))))
     ;; Ensure that updates are always coming from the right contract
     (try! (contract-call? .pyth-governance-v1 check-execution-flow contract-caller none))
-    ;; Ensure we have at least one entry
-    (asserts! (> (len successful-updates) u0) ERR_INVALID_UPDATES)
     (ok successful-updates)))
 
 (define-private (write-batch-entry (entry {

@@ -40,7 +40,11 @@
           (fee-info (contract-call? .pyth-governance-v1 get-fee-info))
           (fee-amount (* (len updated-prices) (* (get mantissa fee-info) (pow u10 (get exponent fee-info))))))
       ;; Charge fee
-      (unwrap! (stx-transfer? fee-amount tx-sender (get address fee-info)) ERR_BALANCE_INSUFFICIENT)
+      (if (> fee-amount u0) 
+        (unwrap! (stx-transfer? fee-amount tx-sender (get address fee-info)) ERR_BALANCE_INSUFFICIENT)
+        true
+      )
+      
       (ok updated-prices))))
 
 (define-public (decode-price-feeds 

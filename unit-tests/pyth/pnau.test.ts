@@ -671,7 +671,7 @@ describe("pyth-pnau-decoder-v1::decode-and-verify-price-feeds failures", () => {
     expect(res.result).toBeErr(Cl.uint(2008));
   });
 
-  it("should fail if the price is below stale threshold", () => {
+  it("should not update prices if the price is below stale threshold", () => {
     let onChainTime = pyth.timestampNow() + BigInt(simnet.blockHeight);
     simnet.mineEmptyBlocks(21); // stale threshold set to 10800 (3 hours), so by mining 21 blocks (1800s), we are advancing enough
     let actualPricesUpdates = pyth.buildPriceUpdateBatch([
@@ -710,7 +710,7 @@ describe("pyth-pnau-decoder-v1::decode-and-verify-price-feeds failures", () => {
       [Cl.buffer(pnau), executionPlan],
       sender,
     );
-    expect(res.result).toBeErr(Cl.uint(5003));
+    expect(res.result).toBeOk(Cl.list([]));
   });
 
   it("should only return validated prices and filter invalid prices", () => {
