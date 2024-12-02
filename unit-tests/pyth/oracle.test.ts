@@ -11,6 +11,7 @@ const wormholeCoreContractName = "wormhole-core-v2";
 
 describe("pyth-oracle-v2::decode-and-verify-price-feeds mainnet VAAs", () => {
   const accounts = simnet.getAccounts();
+  const deployer = accounts.get("deployer")!;
   const sender = accounts.get("wallet_1")!;
 
   let block: ParsedTransactionResult[] | undefined = undefined;
@@ -18,7 +19,7 @@ describe("pyth-oracle-v2::decode-and-verify-price-feeds mainnet VAAs", () => {
   // Before starting the test suite, we have to setup the guardian set.
   beforeEach(async () => {
     block = wormhole.applyMainnetGuardianSetUpdates(
-      sender,
+      deployer,
       wormholeCoreContractName,
     );
   });

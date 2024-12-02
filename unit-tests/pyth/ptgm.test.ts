@@ -15,6 +15,7 @@ const initialFeeRecipient = "ST3CRXBDXQ2N5P7E25Q39MEX1HSMRDSEAP1JST19D";
 
 describe("pyth-governance-v1::update-fee-value mainnet VAAs", () => {
   const accounts = simnet.getAccounts();
+  const deployer = accounts.get("deployer")!;
   const sender = accounts.get("wallet_1")!;
 
   let block: ParsedTransactionResult[] | undefined = undefined;
@@ -22,7 +23,7 @@ describe("pyth-governance-v1::update-fee-value mainnet VAAs", () => {
   // Before starting the test suite, we have to setup the guardian set.
   beforeEach(async () => {
     block = wormhole.applyMainnetGuardianSetUpdates(
-      sender,
+      deployer,
       wormholeCoreContractName,
     );
   });
@@ -74,6 +75,7 @@ describe("pyth-governance-v1::update-fee-value mainnet VAAs", () => {
 
 describe("pyth-governance-v1::update-fee-value", () => {
   const accounts = simnet.getAccounts();
+  const deployer = accounts.get("deployer")!;
   const sender = accounts.get("wallet_1")!;
   const guardianSet = wormhole.generateGuardianSetKeychain(19);
   let updateFeeValue = {
@@ -87,7 +89,7 @@ describe("pyth-governance-v1::update-fee-value", () => {
     wormhole.applyGuardianSetUpdate(
       guardianSet,
       1,
-      sender,
+      deployer,
       wormholeCoreContractName,
     );
   });
@@ -160,6 +162,7 @@ describe("pyth-governance-v1::update-fee-value", () => {
 
 describe("pyth-governance-v1::update-fee-recipient", () => {
   const accounts = simnet.getAccounts();
+  const deployer = accounts.get("deployer")!;
   const sender = accounts.get("wallet_1")!;
   const guardianSet = wormhole.generateGuardianSetKeychain(19);
   let updateFeeRecipient = {
@@ -172,7 +175,7 @@ describe("pyth-governance-v1::update-fee-recipient", () => {
     wormhole.applyGuardianSetUpdate(
       guardianSet,
       1,
-      sender,
+      deployer,
       wormholeCoreContractName,
     );
   });
@@ -253,7 +256,7 @@ describe("pyth-governance-v1::update-wormhole-core-contract", () => {
     wormhole.applyGuardianSetUpdate(
       guardianSet,
       1,
-      sender,
+      deployer,
       wormholeCoreContractName,
     );
   });
@@ -369,7 +372,7 @@ describe("pyth-governance-v1::update-pyth-decoder-contract", () => {
     wormhole.applyGuardianSetUpdate(
       guardianSet,
       1,
-      sender,
+      deployer,
       wormholeCoreContractName,
     );
   });
@@ -498,7 +501,7 @@ describe("pyth-governance-v1::update-pyth-store-contract", () => {
     wormhole.applyGuardianSetUpdate(
       guardianSet,
       1,
-      sender,
+      deployer,
       wormholeCoreContractName,
     );
   });
@@ -625,7 +628,7 @@ describe("pyth-governance-v1::update-pyth-oracle-contract", () => {
     wormhole.applyGuardianSetUpdate(
       guardianSet,
       1,
-      sender,
+      deployer,
       wormholeCoreContractName,
     );
   });
@@ -717,6 +720,7 @@ describe("pyth-governance-v1::update-pyth-oracle-contract", () => {
 
 describe("pyth-governance-v1::update-prices-data-sources", () => {
   const accounts = simnet.getAccounts();
+  const deployer = accounts.get("deployer")!;
   const sender = accounts.get("wallet_1")!;
   const guardianSet = wormhole.generateGuardianSetKeychain(19);
   let updatePricesDataSources = [
@@ -740,7 +744,7 @@ describe("pyth-governance-v1::update-prices-data-sources", () => {
     wormhole.applyGuardianSetUpdate(
       guardianSet,
       1,
-      sender,
+      deployer,
       wormholeCoreContractName,
     );
   });
@@ -805,6 +809,7 @@ describe("pyth-governance-v1::update-prices-data-sources", () => {
 
 describe("pyth-governance-v1::update-governance-data-source", () => {
   const accounts = simnet.getAccounts();
+  const deployer = accounts.get("deployer")!;
   const sender = accounts.get("wallet_1")!;
   const guardianSet = wormhole.generateGuardianSetKeychain(19);
   let updateGovernanceDataSource = {
@@ -819,7 +824,7 @@ describe("pyth-governance-v1::update-governance-data-source", () => {
     wormhole.applyGuardianSetUpdate(
       guardianSet,
       1,
-      sender,
+      deployer,
       wormholeCoreContractName,
     );
 
@@ -1049,6 +1054,7 @@ describe("pyth-governance-v1::update-governance-data-source", () => {
 
 describe("pyth-governance-v1::update-stale-price-threshold", () => {
   const accounts = simnet.getAccounts();
+  const deployer = accounts.get("deployer")!;
   const sender = accounts.get("wallet_1")!;
   const guardianSet = wormhole.generateGuardianSetKeychain(19);
   let updateStalePriceThreshold = {
@@ -1061,7 +1067,7 @@ describe("pyth-governance-v1::update-stale-price-threshold", () => {
     wormhole.applyGuardianSetUpdate(
       guardianSet,
       1,
-      sender,
+      deployer,
       wormholeCoreContractName,
     );
   });
