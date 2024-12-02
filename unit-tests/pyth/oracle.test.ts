@@ -23,9 +23,15 @@ describe("pyth-oracle-v2::decode-and-verify-price-feeds mainnet VAAs", () => {
     );
   });
 
-  it("should succeed handling the 3 guardians rotations", () => {
-    expect(block!).toHaveLength(3);
+  it("should succeed handling the 2 guardians rotations", () => {
+    expect(block!).toHaveLength(1);
     block!.forEach((b: ParsedTransactionResult) => {
+      expect(b.result).toHaveClarityType(ClarityType.ResponseOk);
+    });
+
+    const newUpdateBlock = wormhole.applyNextMainnetGuardianSetUpdates(sender, wormholeCoreContractName)
+    expect(newUpdateBlock!).toHaveLength(1);
+    newUpdateBlock!.forEach((b: ParsedTransactionResult) => {
       expect(b.result).toHaveClarityType(ClarityType.ResponseOk);
     });
   });

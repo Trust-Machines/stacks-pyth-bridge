@@ -202,8 +202,10 @@
         (consolidated-public-keys (fold check-and-consolidate-public-keys 
           uncompressed-public-keys 
           { cursor: u0, eth-addresses: eth-addresses, result: (list) }))
+        (result (get result consolidated-public-keys))
         )
     ;; Ensure that enough uncompressed-public-keys were provided
+    (try! (fold is-valid-guardian-entry result (ok true)))
     (asserts! (is-eq (len uncompressed-public-keys) (len eth-addresses)) 
       ERR_GSU_UNCOMPRESSED_PUBLIC_KEYS)
     ;; Check emitting address
@@ -211,7 +213,7 @@
     ;; Check emitting address
     (asserts! (is-eq (get emitter-chain vaa) GSU-EMITTING-CHAIN) ERR_GSU_CHECK_EMITTER)
     ;; Update storage
-    (map-set guardian-sets { set-id: set-id } (get result consolidated-public-keys))
+    (map-set guardian-sets { set-id: set-id } result)
     (var-set active-guardian-set-id set-id)
     (var-set guardian-set-initialized true)
     ;; Emit Event
@@ -380,3 +382,17 @@
       cursor: (+ u1 (get cursor acc)), 
       result: (get result acc),
     }))
+
+(define-private (is-valid-guardian-entry (entry { compressed-public-key: (buff 33), uncompressed-public-key: (buff 64)}) (prev-res (response bool uint)))
+  (begin 
+    (try! prev-res)
+    (let (
+      (compressed (get compressed-public-key entry))
+      (uncompressed (get uncompressed-public-key entry)))
+      (if (or (is-eq 0x compressed) (is-eq 0x uncompressed))
+        ERR_GSU_PARSING_GUARDIAN_LEN
+        (ok true)
+      )
+    )
+  )
+)

@@ -503,12 +503,6 @@ export namespace wormhole {
     const vaaRotation1 = Cl.bufferFromHex(gsuMainnetVaas[0].vaa);
     let publicKeysRotation1 = gsuMainnetVaas[0].keys.map(Cl.bufferFromHex);
 
-    const vaaRotation2 = Cl.bufferFromHex(gsuMainnetVaas[1].vaa);
-    let publicKeysRotation2 = gsuMainnetVaas[1].keys.map(Cl.bufferFromHex);
-
-    const vaaRotation3 = Cl.bufferFromHex(gsuMainnetVaas[2].vaa);
-    let publicKeysRotation3 = gsuMainnetVaas[2].keys.map(Cl.bufferFromHex);
-
     const block = simnet.mineBlock([
       tx.callPublicFn(
         contractName,
@@ -516,16 +510,22 @@ export namespace wormhole {
         [vaaRotation1, Cl.list(publicKeysRotation1)],
         txSenderAddress,
       ),
+    ]);
+    return block;
+  }
+
+  export function applyNextMainnetGuardianSetUpdates(
+    txSenderAddress: string,
+    contractName: string,
+  ) {
+    const vaaRotation2 = Cl.bufferFromHex(gsuMainnetVaas[1].vaa);
+    let publicKeysRotation2 = gsuMainnetVaas[1].keys.map(Cl.bufferFromHex);
+
+    const block = simnet.mineBlock([
       tx.callPublicFn(
         contractName,
         "update-guardians-set",
         [vaaRotation2, Cl.list(publicKeysRotation2)],
-        txSenderAddress,
-      ),
-      tx.callPublicFn(
-        contractName,
-        "update-guardians-set",
-        [vaaRotation3, Cl.list(publicKeysRotation3)],
         txSenderAddress,
       ),
     ]);

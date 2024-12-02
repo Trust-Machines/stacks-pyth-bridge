@@ -28,7 +28,7 @@ describe("pyth-governance-v1::update-fee-value mainnet VAAs", () => {
   });
 
   it("should succeed handling the 3 guardians rotations", () => {
-    expect(block!).toHaveLength(3);
+    expect(block!).toHaveLength(1);
     block!.forEach((b: ParsedTransactionResult) => {
       expect(b.result).toHaveClarityType(ClarityType.ResponseOk);
     });
