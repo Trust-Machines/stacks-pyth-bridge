@@ -435,7 +435,7 @@ describe("wormhole-core-v2::update-guardians-set success", () => {
         sender,
       ),
     ])[0].result;
-    expect(res).toBeErr(Cl.uint(1207));
+    expect(res).toBeErr(Cl.uint(1205));
   });
 });
 
@@ -672,9 +672,15 @@ describe("wormhole-core-v2::update-guardians-set mainnet guardian rotations", ()
     block = wormhole.applyMainnetGuardianSetUpdates(sender, contractName);
   });
 
-  it("should succeed handling the 3 guardians rotations", () => {
-    expect(block!).toHaveLength(3);
+  it("should succeed handling the 2 guardians rotations", () => {
+    expect(block!).toHaveLength(1);
     block!.forEach((b: ParsedTransactionResult) => {
+      expect(b.result).toHaveClarityType(ClarityType.ResponseOk);
+    });
+
+    const newUpdateBlock = wormhole.applyNextMainnetGuardianSetUpdates(sender, contractName)
+    expect(newUpdateBlock!).toHaveLength(1);
+    newUpdateBlock!.forEach((b: ParsedTransactionResult) => {
       expect(b.result).toHaveClarityType(ClarityType.ResponseOk);
     });
   });
