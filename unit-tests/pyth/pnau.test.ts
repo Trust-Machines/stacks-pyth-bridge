@@ -11,6 +11,7 @@ const wormholeCoreContractName = "wormhole-core-v2";
 
 describe("pyth-pnau-decoder-v1::decode-and-verify-price-feeds success", () => {
   const accounts = simnet.getAccounts();
+  const deployer = accounts.get("deployer")!;
   const sender = accounts.get("wallet_1")!;
   const guardianSet = wormhole.generateGuardianSetKeychain(19);
   let pricesUpdates = pyth.buildPriceUpdateBatch([
@@ -35,7 +36,7 @@ describe("pyth-pnau-decoder-v1::decode-and-verify-price-feeds success", () => {
     wormhole.applyGuardianSetUpdate(
       guardianSet,
       1,
-      sender,
+      deployer,
       wormholeCoreContractName,
     );
 
@@ -132,6 +133,7 @@ describe("pyth-pnau-decoder-v1::decode-and-verify-price-feeds success", () => {
 
 describe("pyth-pnau-decoder-v1::decode-and-verify-price-feeds failures", () => {
   const accounts = simnet.getAccounts();
+  const deployer = accounts.get("deployer")!;
   const sender = accounts.get("wallet_1")!;
   const guardianSet = wormhole.generateGuardianSetKeychain(19);
   let pricesUpdates = pyth.buildPriceUpdateBatch([
@@ -170,7 +172,7 @@ describe("pyth-pnau-decoder-v1::decode-and-verify-price-feeds failures", () => {
     wormhole.applyGuardianSetUpdate(
       guardianSet,
       1,
-      sender,
+      deployer,
       wormholeCoreContractName,
     );
 

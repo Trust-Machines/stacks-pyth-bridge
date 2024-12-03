@@ -68,6 +68,8 @@
 (define-constant ERR_GSU_CHECK_INDEX (err u1304))
 ;; Guardian Set Update emission payload unauthorized
 (define-constant ERR_GSU_CHECK_EMITTER (err u1305))
+;; First guardian set is not being updated by the deployer
+(define-constant ERR_NOT_DEPLOYER (err u1306))
 
 ;; Guardian set upgrade emitting address
 (define-constant GSU-EMITTING-ADDRESS 0x0000000000000000000000000000000000000000000000000000000000000004)
@@ -81,6 +83,8 @@
 
 ;; Guardian Set Update uncompressed public keys invalid
 (define-data-var guardian-set-initialized bool false)
+;; Contract deployer
+(define-constant deployer contract-caller)
 ;; Keep track of the active guardian set-id
 (define-data-var active-guardian-set-id uint u0)
 
@@ -195,7 +199,10 @@
 (define-public (update-guardians-set (guardian-set-vaa (buff 2048)) (uncompressed-public-keys (list 19 (buff 64))))
   (let ((vaa (if (var-get guardian-set-initialized)
           (try! (parse-and-verify-vaa guardian-set-vaa))
-          (get vaa (try! (parse-vaa guardian-set-vaa)))))
+          (begin
+            (asserts! (is-eq contract-caller deployer) ERR_NOT_DEPLOYER)
+            (get vaa (try! (parse-vaa guardian-set-vaa)))
+          )))
         (cursor-guardians-data (try! (parse-and-verify-guardians-set (get payload vaa))))
         (set-id (get new-index (get value cursor-guardians-data)))
         (eth-addresses (get guardians-eth-addresses (get value cursor-guardians-data)))
