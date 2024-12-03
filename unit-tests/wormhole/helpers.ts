@@ -45,6 +45,12 @@ export namespace wormhole {
     return keychain;
   };
 
+  export interface NewEmitter {
+    chain: number;
+    sequence: bigint;
+    address: Uint8Array;
+  }
+
   export interface Emitter {
     chain: number;
     address: Uint8Array;
@@ -84,6 +90,7 @@ export namespace wormhole {
 
   export const GovernanceUpdateEmitter = {
     chain: 1,
+    sequence: 0,
     address: hexToBytes(
       "0000000000000000000000000000000000000000000000000000000000000004",
     ),

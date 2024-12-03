@@ -40,7 +40,7 @@ describe("pyth-pnau-decoder-v1::decode-and-verify-price-feeds success", () => {
     );
 
     pyth.applyGovernanceDataSourceUpdate(
-      pyth.DefaultGovernanceDataSource,
+      pyth.DefaultGovernanceDataSourceUpdate,
       pyth.InitialGovernanceDataSource,
       guardianSet,
       sender,
@@ -175,7 +175,7 @@ describe("pyth-pnau-decoder-v1::decode-and-verify-price-feeds failures", () => {
     );
 
     pyth.applyGovernanceDataSourceUpdate(
-      pyth.DefaultGovernanceDataSource,
+      pyth.DefaultGovernanceDataSourceUpdate,
       pyth.InitialGovernanceDataSource,
       guardianSet,
       sender,

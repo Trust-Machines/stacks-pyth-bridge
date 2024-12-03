@@ -271,11 +271,16 @@
     ;; Ensure that the lastest wormhole contract is used
     (try! (expect-active-wormhole-contract wormhole-core-contract expected-execution-plan))
     ;; Update prices-data-sources
-    (let ((updated-data (try! (parse-and-verify-governance-data-source (get body ptgm)))))
-      (var-set governance-data-source updated-data)
+    (let (
+        (updated-data (try! (parse-and-verify-governance-data-source (get body ptgm))))
+        (data-source {emitter-chain: (get emitter-chain updated-data), emitter-address: (get emitter-address updated-data)})
+        (new-sequence (get emitter-sequence updated-data)))
+      (var-set governance-data-source data-source)
+      (var-set last-sequence-processed new-sequence)
       ;; Emit event
       (print { type: "governance-data-source", action: "updated", data: updated-data })
-      (ok updated-data))))
+      (ok updated-data)    
+    )))
 
 (define-private (check-update-source (emitter-chain uint) (emitter-address (buff 32)))
   (let ((authorized-data-source (var-get governance-data-source)))
@@ -398,10 +403,13 @@
   (let ((cursor-ptgm-body (contract-call? 'SP2J933XB2CP2JQ1A4FGN8JA968BBG3NK3EKZ7Q9F.hk-cursor-v2 new ptgm-body none))
         (cursor-emitter-chain (unwrap! (contract-call? 'SP2J933XB2CP2JQ1A4FGN8JA968BBG3NK3EKZ7Q9F.hk-cursor-v2 read-uint-16 (get next cursor-ptgm-body))
           ERR_INVALID_ACTION_PAYLOAD))
-        (cursor-emitter-address (unwrap! (contract-call? 'SP2J933XB2CP2JQ1A4FGN8JA968BBG3NK3EKZ7Q9F.hk-cursor-v2 read-buff-32 (get next cursor-emitter-chain))
+        (cursor-emitter-sequence (unwrap! (contract-call? 'SP2J933XB2CP2JQ1A4FGN8JA968BBG3NK3EKZ7Q9F.hk-cursor-v2 read-uint-64 (get next cursor-emitter-chain))
+          ERR_INVALID_ACTION_PAYLOAD))
+        (cursor-emitter-address (unwrap! (contract-call? 'SP2J933XB2CP2JQ1A4FGN8JA968BBG3NK3EKZ7Q9F.hk-cursor-v2 read-buff-32 (get next cursor-emitter-sequence))
           ERR_INVALID_ACTION_PAYLOAD)))
     (ok { 
-      emitter-chain: (get value cursor-emitter-chain), 
+      emitter-chain: (get value cursor-emitter-chain),
+      emitter-sequence: (get value cursor-emitter-sequence),
       emitter-address: (get value cursor-emitter-address) 
     })))
 
