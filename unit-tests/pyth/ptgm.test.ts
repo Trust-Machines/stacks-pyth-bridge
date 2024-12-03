@@ -207,7 +207,7 @@ describe("pyth-governance-v1::update-fee-recipient", () => {
     expect(Cl.ok(res.result)).toBeOk(
       Cl.tuple({
         address: Cl.standardPrincipal(updateFeeRecipient.address),
-        exponent: Cl.uint(1),
+        exponent: Cl.uint(0),
         mantissa: Cl.uint(1),
       }),
     );

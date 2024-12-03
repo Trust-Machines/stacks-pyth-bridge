@@ -60,7 +60,7 @@
     { emitter-chain: u26, emitter-address: 0xe101faedac5851e32b9b23b5f9411a8c2bac4aae3ed4dd7b811dd1a72ea4aa71 }))
 (define-data-var fee-value 
   { mantissa: uint, exponent: uint } 
-  { mantissa: u1, exponent: u1 })
+  { mantissa: u1, exponent: u0 })
 (define-data-var stale-price-threshold uint (if is-in-mainnet (* u2 u60 u60) (* u5 u365 u24 u60 u60))) ;; defaults: 2 hours on Mainnet, 5 years on Testnet
 (define-data-var fee-recipient-address principal (if is-in-mainnet 'SP3CRXBDXQ2N5P7E25Q39MEX1HSMRDSEAP3CFK2Z3 'ST3CRXBDXQ2N5P7E25Q39MEX1HSMRDSEAP1JST19D))
 (define-data-var last-sequence-processed uint u0)
