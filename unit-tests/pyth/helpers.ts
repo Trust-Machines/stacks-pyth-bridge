@@ -70,6 +70,14 @@ export namespace pyth {
       "00000000000000000000000000000000000000000000000000000000000000FF",
     ),
   };
+
+  export const DefaultGovernanceDataSourceUpdate = {
+    chain: 99,
+    sequence: 1n,
+    address: hexToBytes(
+      "00000000000000000000000000000000000000000000000000000000000000FF",
+    ),
+  };
   export const DefaultPricesDataSources = [
     {
       chain: 1,
@@ -135,7 +143,7 @@ export namespace pyth {
     updateStoreContract?: PtgmUpdateContract;
     updateDecoderContract?: PtgmUpdateContract;
     updatePricesDataSources?: wormhole.Emitter[];
-    updateGovernanceDataSource?: wormhole.Emitter;
+    updateGovernanceDataSource?: wormhole.NewEmitter;
   }
 
   export interface PtgmUpdateFeeValue {
@@ -170,7 +178,7 @@ export namespace pyth {
     updateOracleContract?: PtgmUpdateContract;
     updateStoreContract?: PtgmUpdateContract;
     updateDecoderContract?: PtgmUpdateContract;
-    updateGovernanceDataSource?: wormhole.Emitter;
+    updateGovernanceDataSource?: wormhole.NewEmitter;
   }
 
   export interface PnauHeader {
@@ -368,6 +376,8 @@ export namespace pyth {
       v = Buffer.alloc(2);
       v.writeUint16BE(payload.updateGovernanceDataSource.chain, 0);
       components.push(v);
+      // sequence
+      components.push(bigintToBuffer(payload.updateGovernanceDataSource.sequence, 8))
       // Address
       components.push(payload.updateGovernanceDataSource.address);
     } else if (payload.updatePricesDataSources) {
@@ -601,7 +611,7 @@ export namespace pyth {
   }
 
   export function applyGovernanceDataSourceUpdate(
-    updateGovernanceDataSource: wormhole.Emitter,
+    updateGovernanceDataSource: wormhole.NewEmitter,
     emitter: wormhole.Emitter,
     guardianSet: wormhole.Guardian[],
     txSenderAddress: string,

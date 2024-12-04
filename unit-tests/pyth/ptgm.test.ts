@@ -814,6 +814,7 @@ describe("pyth-governance-v1::update-governance-data-source", () => {
   const guardianSet = wormhole.generateGuardianSetKeychain(19);
   let updateGovernanceDataSource = {
     chain: 0xff,
+    sequence: 100n,
     address: hexToBytes(
       "FF00000000000000000000000000000000000000000000000000000000000000",
     ),
@@ -829,7 +830,7 @@ describe("pyth-governance-v1::update-governance-data-source", () => {
     );
 
     pyth.applyGovernanceDataSourceUpdate(
-      pyth.DefaultGovernanceDataSource,
+      pyth.DefaultGovernanceDataSourceUpdate,
       pyth.InitialGovernanceDataSource,
       guardianSet,
       sender,
@@ -869,6 +870,87 @@ describe("pyth-governance-v1::update-governance-data-source", () => {
       Cl.tuple({
         "emitter-address": Cl.buffer(updateGovernanceDataSource.address),
         "emitter-chain": Cl.uint(updateGovernanceDataSource.chain),
+        "emitter-sequence": Cl.uint(updateGovernanceDataSource.sequence)
+      }),
+    );
+  });
+
+  it("should update governance data source on lower sequence", () => {
+    let ptgmVaaPayload = pyth.buildPtgmVaaPayload({
+      updateGovernanceDataSource,
+    });
+    let payload = pyth.serializePtgmVaaPayloadToBuffer(ptgmVaaPayload);
+    let body = wormhole.buildValidVaaBodySpecs({
+      payload,
+      emitter: pyth.DefaultGovernanceDataSource,
+      sequence: 2n,
+    });
+    let header = wormhole.buildValidVaaHeader(guardianSet, body, {
+      version: 1,
+      guardianSetId: 1,
+    });
+    let vaa = wormhole.serializeVaaToBuffer(header, body);
+
+    let wormholeContract = Cl.contractPrincipal(
+      simnet.deployer,
+      wormholeCoreContractName,
+    );
+    let res = simnet.callPublicFn(
+      pythGovernanceContractName,
+      `update-governance-data-source`,
+      [Cl.buffer(vaa), wormholeContract],
+      sender,
+    );
+    expect(res.result).toBeOk(
+      Cl.tuple({
+        "emitter-address": Cl.buffer(updateGovernanceDataSource.address),
+        "emitter-chain": Cl.uint(updateGovernanceDataSource.chain),
+        "emitter-sequence": Cl.uint(updateGovernanceDataSource.sequence)
+      }),
+    );
+
+    // update emitter with new emitter with lower sequence
+    let newEmitter = {
+      chain: 0xff,
+      sequence: 0n,
+      address: hexToBytes(
+        "FF00000000000000000000000000000000000000000000000000000000000000",
+      ),
+    };
+    
+    ptgmVaaPayload = pyth.buildPtgmVaaPayload({
+      updateGovernanceDataSource: newEmitter,
+    });
+
+    let currentEmitter = {
+      chain: 0xff,
+      address: hexToBytes(
+        "FF00000000000000000000000000000000000000000000000000000000000000",
+      ),
+    };
+
+    payload = pyth.serializePtgmVaaPayloadToBuffer(ptgmVaaPayload);
+    body = wormhole.buildValidVaaBodySpecs({
+      payload,
+      emitter: currentEmitter,
+      sequence: 101n,
+    });
+    header = wormhole.buildValidVaaHeader(guardianSet, body, {
+      version: 1,
+      guardianSetId: 1,
+    });
+    vaa = wormhole.serializeVaaToBuffer(header, body);
+    res = simnet.callPublicFn(
+      pythGovernanceContractName,
+      `update-governance-data-source`,
+      [Cl.buffer(vaa), wormholeContract],
+      sender,
+    );
+    expect(res.result).toBeOk(
+      Cl.tuple({
+        "emitter-address": Cl.buffer(newEmitter.address),
+        "emitter-chain": Cl.uint(newEmitter.chain),
+        "emitter-sequence": Cl.uint(newEmitter.sequence)
       }),
     );
   });
