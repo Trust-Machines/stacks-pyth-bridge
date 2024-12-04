@@ -75,6 +75,8 @@
 (define-constant GSU-EMITTING-ADDRESS 0x0000000000000000000000000000000000000000000000000000000000000004)
 ;; Guardian set upgrade emitting chain
 (define-constant GSU-EMITTING-CHAIN u1)
+;; Stacks chain id attributed by Pyth
+(define-constant EXPECTED_CHAIN_ID (if is-in-mainnet u60038 u50039))
 
 
 (define-constant hk-cursor-v2 'SP2J933XB2CP2JQ1A4FGN8JA968BBG3NK3EKZ7Q9F.hk-cursor-v2)
@@ -356,8 +358,7 @@
     (asserts! (is-eq (get value cursor-action) u2) 
       ERR_GSU_CHECK_ACTION)
     ;; Ensure that this message is matching the adequate action
-    (asserts! (is-eq (get value cursor-chain) u0) 
-      ERR_GSU_CHECK_CHAIN)
+    (asserts! (or (is-eq (get value cursor-chain) EXPECTED_CHAIN_ID) (is-eq (get value cursor-chain) u0) ) ERR_GSU_CHECK_CHAIN)
     (if is-guardian-set-initialized
       ;; Ensure that next index = current index + 1
       (asserts! (is-eq (get value cursor-new-index) (+ u1 (var-get active-guardian-set-id))) ERR_GSU_CHECK_INDEX)
