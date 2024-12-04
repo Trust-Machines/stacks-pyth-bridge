@@ -197,13 +197,14 @@
 ;; the addresses embedded in the VAA. `secp256k1-verify` returns a compressed 
 ;; public key, and uncompressing the key in clarity would be inefficient and expansive. 
 (define-public (update-guardians-set (guardian-set-vaa (buff 2048)) (uncompressed-public-keys (list 19 (buff 64))))
-  (let ((vaa (if (var-get guardian-set-initialized)
+  (let ((is-guardian-set-initialized (var-get guardian-set-initialized))
+        (vaa (if is-guardian-set-initialized
           (try! (parse-and-verify-vaa guardian-set-vaa))
           (begin
             (asserts! (is-eq contract-caller deployer) ERR_NOT_DEPLOYER)
             (get vaa (try! (parse-vaa guardian-set-vaa)))
           )))
-        (cursor-guardians-data (try! (parse-and-verify-guardians-set (get payload vaa))))
+        (cursor-guardians-data (try! (parse-and-verify-guardians-set (get payload vaa) is-guardian-set-initialized)))
         (set-id (get new-index (get value cursor-guardians-data)))
         (eth-addresses (get guardians-eth-addresses (get value cursor-guardians-data)))
         (consolidated-public-keys (fold check-and-consolidate-public-keys 
@@ -332,7 +333,7 @@
   }))
 
 ;; @desc Parse and verify payload's VAA  
-(define-private (parse-and-verify-guardians-set (bytes (buff 8192)))
+(define-private (parse-and-verify-guardians-set (bytes (buff 8192)) (is-guardian-set-initialized bool))
   (let 
       ((cursor-module (unwrap! (contract-call? 'SP2J933XB2CP2JQ1A4FGN8JA968BBG3NK3EKZ7Q9F.hk-cursor-v2 read-buff-32 { bytes: bytes, pos: u0 }) 
           ERR_GSU_PARSING_MODULE))
@@ -357,9 +358,13 @@
     ;; Ensure that this message is matching the adequate action
     (asserts! (is-eq (get value cursor-chain) u0) 
       ERR_GSU_CHECK_CHAIN)
-    ;; Ensure that next index > current index
-    (asserts! (> (get value cursor-new-index) (var-get active-guardian-set-id)) 
-      ERR_GSU_CHECK_INDEX)
+    (if is-guardian-set-initialized
+      ;; Ensure that next index = current index + 1
+      (asserts! (is-eq (get value cursor-new-index) (+ u1 (var-get active-guardian-set-id))) ERR_GSU_CHECK_INDEX)
+      ;; Ensure that next index > current index
+      (asserts! (> (get value cursor-new-index) (var-get active-guardian-set-id)) ERR_GSU_CHECK_INDEX)
+    )
+    
     ;; Good to go!
     (ok {
       value: {
