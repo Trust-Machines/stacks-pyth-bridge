@@ -149,13 +149,13 @@
           ERR_VAA_PARSING_CONSISTENCY_LEVEL))
         (cursor-payload (unwrap! (contract-call? 'SP2J933XB2CP2JQ1A4FGN8JA968BBG3NK3EKZ7Q9F.hk-cursor-v2 read-buff-8192-max (get next cursor-consistency-level) none)
           ERR_VAA_PARSING_PAYLOAD))
-        (overlay-check (asserts! (is-eq (get pos (get next cursor-payload)) (len vaa-bytes)) ERR_GSU_CHECK_OVERLAY))
         (public-keys-results (fold batch-recover-public-keys
           (get value cursor-signatures)
           {
               message-hash: vaa-body-hash,
               value: (list)
           })))
+    (asserts! (is-eq (get pos (get next cursor-payload)) (len vaa-bytes)) ERR_GSU_CHECK_OVERLAY)
     (print { payload: (get value cursor-payload) })
     (ok { 
         vaa: {
@@ -351,9 +351,9 @@
           ERR_GSU_PARSING_GUARDIAN_LEN))
       (guardians-bytes (unwrap! (contract-call? 'SP2J933XB2CP2JQ1A4FGN8JA968BBG3NK3EKZ7Q9F.hk-cursor-v2 read-buff-8192-max (get next cursor-guardians-count) (some (* (get value cursor-guardians-count) u20))) 
           ERR_GSU_PARSING_GUARDIANS_BYTES))
-      (overlay-check (asserts! (is-eq (get pos (get next guardians-bytes)) (len bytes)) ERR_GSU_CHECK_OVERLAY))
       (guardians-cues (get result (fold is-guardian-cue (get value guardians-bytes) { cursor: u0, result: (list) })))
       (eth-addresses (get result (fold parse-guardian guardians-cues { bytes: (get value guardians-bytes), result: (list) }))))
+    (asserts! (is-eq (get pos (get next guardians-bytes)) (len bytes)) ERR_GSU_CHECK_OVERLAY)
     ;; Ensure that this message was emitted from authorized module
     (asserts! (is-eq (get value cursor-module) 0x00000000000000000000000000000000000000000000000000000000436f7265) 
       ERR_GSU_CHECK_MODULE)

@@ -392,8 +392,8 @@
         (cursor-mantissa (unwrap! (contract-call? 'SP2J933XB2CP2JQ1A4FGN8JA968BBG3NK3EKZ7Q9F.hk-cursor-v2 read-uint-64 (get next cursor-ptgm-body)) 
           ERR_INVALID_ACTION_PAYLOAD))
         (cursor-exponent (unwrap! (contract-call? 'SP2J933XB2CP2JQ1A4FGN8JA968BBG3NK3EKZ7Q9F.hk-cursor-v2 read-uint-64 (get next cursor-mantissa)) 
-          ERR_INVALID_ACTION_PAYLOAD))
-        (overlay-check (asserts! (is-eq (get pos (get next cursor-exponent)) (len ptgm-body)) ERR_PTGM_CHECK_OVERLAY)))
+          ERR_INVALID_ACTION_PAYLOAD)))
+    (asserts! (is-eq (get pos (get next cursor-exponent)) (len ptgm-body)) ERR_PTGM_CHECK_OVERLAY)
     (ok { 
       mantissa: (get value cursor-mantissa), 
       exponent: (get value cursor-exponent) 
@@ -402,8 +402,8 @@
 (define-private (parse-and-verify-stale-price-threshold (ptgm-body (buff 8192)))
   (let ((cursor-ptgm-body (contract-call? 'SP2J933XB2CP2JQ1A4FGN8JA968BBG3NK3EKZ7Q9F.hk-cursor-v2 new ptgm-body none))
         (cursor-stale-price-threshold (unwrap! (contract-call? 'SP2J933XB2CP2JQ1A4FGN8JA968BBG3NK3EKZ7Q9F.hk-cursor-v2 read-uint-64 (get next cursor-ptgm-body)) 
-          ERR_INVALID_ACTION_PAYLOAD))
-        (overlay-check (asserts! (is-eq (get pos (get next cursor-stale-price-threshold)) (len ptgm-body)) ERR_PTGM_CHECK_OVERLAY)))
+          ERR_INVALID_ACTION_PAYLOAD)))
+    (asserts! (is-eq (get pos (get next cursor-stale-price-threshold)) (len ptgm-body)) ERR_PTGM_CHECK_OVERLAY)     
     (ok (get value cursor-stale-price-threshold))))
 
 (define-private (parse-and-verify-governance-data-source (ptgm-body (buff 8192)))
@@ -413,8 +413,8 @@
         (cursor-emitter-sequence (unwrap! (contract-call? 'SP2J933XB2CP2JQ1A4FGN8JA968BBG3NK3EKZ7Q9F.hk-cursor-v2 read-uint-64 (get next cursor-emitter-chain))
           ERR_INVALID_ACTION_PAYLOAD))
         (cursor-emitter-address (unwrap! (contract-call? 'SP2J933XB2CP2JQ1A4FGN8JA968BBG3NK3EKZ7Q9F.hk-cursor-v2 read-buff-32 (get next cursor-emitter-sequence))
-          ERR_INVALID_ACTION_PAYLOAD))
-        (overlay-check (asserts! (is-eq (get pos (get next cursor-emitter-address)) (len ptgm-body)) ERR_PTGM_CHECK_OVERLAY)))
+          ERR_INVALID_ACTION_PAYLOAD)))
+    (asserts! (is-eq (get pos (get next cursor-emitter-address)) (len ptgm-body)) ERR_PTGM_CHECK_OVERLAY)      
     (ok { 
       emitter-chain: (get value cursor-emitter-chain),
       emitter-sequence: (get value cursor-emitter-sequence),
@@ -426,6 +426,7 @@
         (cursor-principal-len (try! (contract-call? 'SP2J933XB2CP2JQ1A4FGN8JA968BBG3NK3EKZ7Q9F.hk-cursor-v2 read-uint-8 (get next cursor-ptgm-body))))
         (principal-bytes (contract-call? 'SP2J933XB2CP2JQ1A4FGN8JA968BBG3NK3EKZ7Q9F.hk-cursor-v2 slice (get next cursor-principal-len) (some (get value cursor-principal-len))))
         (new-principal (unwrap! (from-consensus-buff? principal principal-bytes) ERR_UNEXPECTED_ACTION_PAYLOAD)))
+    (asserts! (is-eq (+ (get pos (get next cursor-principal-len)) (get value cursor-principal-len)) (len ptgm-body)) ERR_PTGM_CHECK_OVERLAY)    
     (asserts! (is-standard new-principal) ERR_NOT_STANDARD_PRINCIPAL)
     (ok new-principal))) 
 
@@ -433,7 +434,7 @@
   (let ((cursor-ptgm-body (contract-call? 'SP2J933XB2CP2JQ1A4FGN8JA968BBG3NK3EKZ7Q9F.hk-cursor-v2 new ptgm-body none))
         (cursor-num-data-sources (try! (contract-call? 'SP2J933XB2CP2JQ1A4FGN8JA968BBG3NK3EKZ7Q9F.hk-cursor-v2 read-uint-8 (get next cursor-ptgm-body))))
         (cursor-data-sources-bytes (contract-call? 'SP2J933XB2CP2JQ1A4FGN8JA968BBG3NK3EKZ7Q9F.hk-cursor-v2 slice (get next cursor-num-data-sources) none))
-        (data-sources (get result (fold parse-data-source cursor-data-sources-bytes { 
+        (data-sources-bundle (fold parse-data-source cursor-data-sources-bytes { 
           result: (list), 
           cursor: {
             index: u0,
@@ -441,7 +442,9 @@
           },
           bytes: cursor-data-sources-bytes,
           limit: (get value cursor-num-data-sources) 
-        }))))
+        }))
+        (data-sources (get result data-sources-bundle)))
+    (asserts! (is-eq (get next-update-index (get cursor data-sources-bundle)) (len cursor-data-sources-bytes)) ERR_PTGM_CHECK_OVERLAY)    
     (ok data-sources)))
 
 (define-private (parse-data-source
