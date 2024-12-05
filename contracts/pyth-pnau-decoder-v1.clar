@@ -117,7 +117,7 @@
     ;; Check major version
     (asserts! (is-eq (get value cursor-version-maj) PYTHNET_MAJOR_VERSION) ERR_VERSION_MAJ)
     ;; Check minor version
-    (asserts! (is-eq (get value cursor-version-min) PYTHNET_MINOR_VERSION) ERR_VERSION_MIN)
+    (asserts! (>= (get value cursor-version-min) PYTHNET_MINOR_VERSION) ERR_VERSION_MIN)
     ;; Check proof type
     (asserts! (is-eq (get value cursor-proof-type) u0) ERR_PROOF_TYPE)
     (ok {

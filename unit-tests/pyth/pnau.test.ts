@@ -564,7 +564,7 @@ describe("pyth-pnau-decoder-v1::decode-and-verify-price-feeds failures", () => {
     expect(res.result).toBeErr(Cl.uint(2002));
   });
 
-  it("should fail if PNAU minor version is incorrect", () => {
+  it("should not fail if PNAU minor version is above minimum minor due to forward compatibility", () => {
     let actualPricesUpdates = pyth.buildPriceUpdateBatch([
       [pyth.BtcPriceIdentifier, { price: 100n }],
     ]);
@@ -597,7 +597,7 @@ describe("pyth-pnau-decoder-v1::decode-and-verify-price-feeds failures", () => {
       [Cl.buffer(pnau), executionPlan],
       sender,
     );
-    expect(res.result).toBeErr(Cl.uint(2003));
+    expect(res.result.type).toBe(ClarityType.ResponseOk)
   });
 
   it("should fail if PNAU proof type version is incorrect", () => {
