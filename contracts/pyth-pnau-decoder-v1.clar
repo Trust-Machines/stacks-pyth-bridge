@@ -42,6 +42,8 @@
 (define-constant ERR_UNAUTHORIZED_FLOW (err u2404))
 ;; Price update not signed by an authorized source 
 (define-constant ERR_UNAUTHORIZED_PRICE_UPDATE (err u2401))
+;; VAA buffer has unused, extra leading bytes (overlay)
+(define-constant ERR_OVERLAY_PRESENT (err u2402))
 
 ;;;; Public functions
 (define-public (decode-and-verify-price-feeds (pnau-bytes (buff 8192)) (wormhole-core-address <wormhole-core-trait>))
@@ -132,7 +134,7 @@
 (define-private (parse-and-verify-prices-updates (bytes (buff 8192)) (merkle-root-hash (buff 20)))
   (let ((cursor-num-updates (try! (contract-call? 'SP2J933XB2CP2JQ1A4FGN8JA968BBG3NK3EKZ7Q9F.hk-cursor-v2 read-uint-8 { bytes: bytes, pos: u0 })))
         (cursor-updates-bytes (contract-call? 'SP2J933XB2CP2JQ1A4FGN8JA968BBG3NK3EKZ7Q9F.hk-cursor-v2 slice (get next cursor-num-updates) none))
-        (updates (get result (fold parse-price-info-and-proof cursor-updates-bytes { 
+        (updates-data (fold parse-price-info-and-proof cursor-updates-bytes {
           result: (list), 
           cursor: {
             index: u0,
@@ -140,12 +142,15 @@
           },
           bytes: cursor-updates-bytes,
           limit: (get value cursor-num-updates) 
-        })))
+        }))
+        (updates (get result updates-data))
         (merkle-proof-checks-success (get result (fold check-merkle-proof updates {
           result: true,
           merkle-root-hash: merkle-root-hash
         }))))
     (asserts! merkle-proof-checks-success MERKLE_ROOT_MISMATCH)
+    ;; Overlay check; 1 is added because 1 byte is used to store "cursor-num-updates"
+    (asserts! (is-eq (+ u1 (get next-update-index (get cursor updates-data))) (len bytes)) ERR_OVERLAY_PRESENT)
     (ok updates)))
 
 (define-private (check-merkle-proof

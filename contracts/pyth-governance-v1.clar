@@ -50,6 +50,8 @@
 (define-constant ERR_INVALID_PTGM (err u4007))
 ;; Error not standard principal
 (define-constant ERR_NOT_STANDARD_PRINCIPAL (err u4008))
+;; Error Ptgm overlay bytes
+(define-constant ERR_PTGM_CHECK_OVERLAY (err u4009))
 
 (define-data-var governance-data-source 
   { emitter-chain: uint, emitter-address: (buff 32) }
@@ -365,7 +367,8 @@
         (cursor-target-chain-id (unwrap! (contract-call? 'SP2J933XB2CP2JQ1A4FGN8JA968BBG3NK3EKZ7Q9F.hk-cursor-v2 read-buff-2 (get next cursor-action)) 
           ERR_INVALID_PTGM))
         (cursor-body (unwrap! (contract-call? 'SP2J933XB2CP2JQ1A4FGN8JA968BBG3NK3EKZ7Q9F.hk-cursor-v2 read-buff-8192-max (get next cursor-target-chain-id) none)
-          ERR_INVALID_PTGM)))
+          ERR_INVALID_PTGM))
+        (overlay-check (asserts! (is-eq (get pos (get next cursor-body)) (len ptgm-bytes)) ERR_PTGM_CHECK_OVERLAY)))
     ;; Check magic bytes
     (asserts! (is-eq (get value cursor-magic) PTGM_MAGIC) ERR_INVALID_PTGM)
     ;; Check target-chain-id
@@ -389,7 +392,8 @@
         (cursor-mantissa (unwrap! (contract-call? 'SP2J933XB2CP2JQ1A4FGN8JA968BBG3NK3EKZ7Q9F.hk-cursor-v2 read-uint-64 (get next cursor-ptgm-body)) 
           ERR_INVALID_ACTION_PAYLOAD))
         (cursor-exponent (unwrap! (contract-call? 'SP2J933XB2CP2JQ1A4FGN8JA968BBG3NK3EKZ7Q9F.hk-cursor-v2 read-uint-64 (get next cursor-mantissa)) 
-          ERR_INVALID_ACTION_PAYLOAD)))
+          ERR_INVALID_ACTION_PAYLOAD))
+        (overlay-check (asserts! (is-eq (get pos (get next cursor-exponent)) (len ptgm-body)) ERR_PTGM_CHECK_OVERLAY)))
     (ok { 
       mantissa: (get value cursor-mantissa), 
       exponent: (get value cursor-exponent) 
@@ -398,7 +402,8 @@
 (define-private (parse-and-verify-stale-price-threshold (ptgm-body (buff 8192)))
   (let ((cursor-ptgm-body (contract-call? 'SP2J933XB2CP2JQ1A4FGN8JA968BBG3NK3EKZ7Q9F.hk-cursor-v2 new ptgm-body none))
         (cursor-stale-price-threshold (unwrap! (contract-call? 'SP2J933XB2CP2JQ1A4FGN8JA968BBG3NK3EKZ7Q9F.hk-cursor-v2 read-uint-64 (get next cursor-ptgm-body)) 
-          ERR_INVALID_ACTION_PAYLOAD)))
+          ERR_INVALID_ACTION_PAYLOAD))
+        (overlay-check (asserts! (is-eq (get pos (get next cursor-stale-price-threshold)) (len ptgm-body)) ERR_PTGM_CHECK_OVERLAY)))
     (ok (get value cursor-stale-price-threshold))))
 
 (define-private (parse-and-verify-governance-data-source (ptgm-body (buff 8192)))
@@ -408,7 +413,8 @@
         (cursor-emitter-sequence (unwrap! (contract-call? 'SP2J933XB2CP2JQ1A4FGN8JA968BBG3NK3EKZ7Q9F.hk-cursor-v2 read-uint-64 (get next cursor-emitter-chain))
           ERR_INVALID_ACTION_PAYLOAD))
         (cursor-emitter-address (unwrap! (contract-call? 'SP2J933XB2CP2JQ1A4FGN8JA968BBG3NK3EKZ7Q9F.hk-cursor-v2 read-buff-32 (get next cursor-emitter-sequence))
-          ERR_INVALID_ACTION_PAYLOAD)))
+          ERR_INVALID_ACTION_PAYLOAD))
+        (overlay-check (asserts! (is-eq (get pos (get next cursor-emitter-address)) (len ptgm-body)) ERR_PTGM_CHECK_OVERLAY)))
     (ok { 
       emitter-chain: (get value cursor-emitter-chain),
       emitter-sequence: (get value cursor-emitter-sequence),

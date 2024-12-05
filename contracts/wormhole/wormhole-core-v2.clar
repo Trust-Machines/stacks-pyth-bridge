@@ -70,6 +70,8 @@
 (define-constant ERR_GSU_CHECK_EMITTER (err u1305))
 ;; First guardian set is not being updated by the deployer
 (define-constant ERR_NOT_DEPLOYER (err u1306))
+;; Overlay present in vaa bytes
+(define-constant ERR_GSU_CHECK_OVERLAY (err u1307))
 
 ;; Guardian set upgrade emitting address
 (define-constant GSU-EMITTING-ADDRESS 0x0000000000000000000000000000000000000000000000000000000000000004)
@@ -147,6 +149,7 @@
           ERR_VAA_PARSING_CONSISTENCY_LEVEL))
         (cursor-payload (unwrap! (contract-call? 'SP2J933XB2CP2JQ1A4FGN8JA968BBG3NK3EKZ7Q9F.hk-cursor-v2 read-buff-8192-max (get next cursor-consistency-level) none)
           ERR_VAA_PARSING_PAYLOAD))
+        (overlay-check (asserts! (is-eq (get pos (get next cursor-payload)) (len vaa-bytes)) ERR_GSU_CHECK_OVERLAY))
         (public-keys-results (fold batch-recover-public-keys
           (get value cursor-signatures)
           {
@@ -348,6 +351,7 @@
           ERR_GSU_PARSING_GUARDIAN_LEN))
       (guardians-bytes (unwrap! (contract-call? 'SP2J933XB2CP2JQ1A4FGN8JA968BBG3NK3EKZ7Q9F.hk-cursor-v2 read-buff-8192-max (get next cursor-guardians-count) (some (* (get value cursor-guardians-count) u20))) 
           ERR_GSU_PARSING_GUARDIANS_BYTES))
+      (overlay-check (asserts! (is-eq (get pos (get next guardians-bytes)) (len bytes)) ERR_GSU_CHECK_OVERLAY))
       (guardians-cues (get result (fold is-guardian-cue (get value guardians-bytes) { cursor: u0, result: (list) })))
       (eth-addresses (get result (fold parse-guardian guardians-cues { bytes: (get value guardians-bytes), result: (list) }))))
     ;; Ensure that this message was emitted from authorized module
