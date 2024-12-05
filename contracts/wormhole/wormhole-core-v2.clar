@@ -76,7 +76,7 @@
 ;; Guardian set upgrade emitting chain
 (define-constant GSU-EMITTING-CHAIN u1)
 ;; Stacks chain id attributed by Pyth
-(define-constant EXPECTED_CHAIN_ID (if is-in-mainnet u60038 u50039))
+(define-constant EXPECTED_CHAIN_ID (if is-in-mainnet 0xea86 0xc377))
 
 
 (define-constant hk-cursor-v2 'SP2J933XB2CP2JQ1A4FGN8JA968BBG3NK3EKZ7Q9F.hk-cursor-v2)
@@ -199,14 +199,13 @@
 ;; the addresses embedded in the VAA. `secp256k1-verify` returns a compressed 
 ;; public key, and uncompressing the key in clarity would be inefficient and expansive. 
 (define-public (update-guardians-set (guardian-set-vaa (buff 2048)) (uncompressed-public-keys (list 19 (buff 64))))
-  (let ((is-guardian-set-initialized (var-get guardian-set-initialized))
-        (vaa (if is-guardian-set-initialized
+  (let ((vaa (if (var-get guardian-set-initialized)
           (try! (parse-and-verify-vaa guardian-set-vaa))
           (begin
             (asserts! (is-eq contract-caller deployer) ERR_NOT_DEPLOYER)
             (get vaa (try! (parse-vaa guardian-set-vaa)))
           )))
-        (cursor-guardians-data (try! (parse-and-verify-guardians-set (get payload vaa) is-guardian-set-initialized)))
+        (cursor-guardians-data (try! (parse-and-verify-guardians-set (get payload vaa))))
         (set-id (get new-index (get value cursor-guardians-data)))
         (eth-addresses (get guardians-eth-addresses (get value cursor-guardians-data)))
         (consolidated-public-keys (fold check-and-consolidate-public-keys 
@@ -335,7 +334,7 @@
   }))
 
 ;; @desc Parse and verify payload's VAA  
-(define-private (parse-and-verify-guardians-set (bytes (buff 8192)) (is-guardian-set-initialized bool))
+(define-private (parse-and-verify-guardians-set (bytes (buff 8192)))
   (let 
       ((cursor-module (unwrap! (contract-call? 'SP2J933XB2CP2JQ1A4FGN8JA968BBG3NK3EKZ7Q9F.hk-cursor-v2 read-buff-32 { bytes: bytes, pos: u0 }) 
           ERR_GSU_PARSING_MODULE))
@@ -358,8 +357,8 @@
     (asserts! (is-eq (get value cursor-action) u2) 
       ERR_GSU_CHECK_ACTION)
     ;; Ensure that this message is matching the adequate action
-    (asserts! (or (is-eq (get value cursor-chain) EXPECTED_CHAIN_ID) (is-eq (get value cursor-chain) u0) ) ERR_GSU_CHECK_CHAIN)
-    (if is-guardian-set-initialized
+    (asserts! (or (is-eq (get value cursor-chain) (buff-to-uint-be EXPECTED_CHAIN_ID)) (is-eq (get value cursor-chain) u0) ) ERR_GSU_CHECK_CHAIN)
+    (if (var-get guardian-set-initialized)
       ;; Ensure that next index = current index + 1
       (asserts! (is-eq (get value cursor-new-index) (+ u1 (var-get active-guardian-set-id))) ERR_GSU_CHECK_INDEX)
       ;; Ensure that next index > current index
