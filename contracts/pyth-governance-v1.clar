@@ -48,6 +48,8 @@
 (define-constant ERR_UNAUTHORIZED_UPDATE (err u4006))
 ;; Error parsing PTGM
 (define-constant ERR_INVALID_PTGM (err u4007))
+;; Error not standard principal
+(define-constant ERR_NOT_STANDARD_PRINCIPAL (err u4008))
 
 (define-data-var governance-data-source 
   { emitter-chain: uint, emitter-address: (buff 32) }
@@ -418,6 +420,7 @@
         (cursor-principal-len (try! (contract-call? 'SP2J933XB2CP2JQ1A4FGN8JA968BBG3NK3EKZ7Q9F.hk-cursor-v2 read-uint-8 (get next cursor-ptgm-body))))
         (principal-bytes (contract-call? 'SP2J933XB2CP2JQ1A4FGN8JA968BBG3NK3EKZ7Q9F.hk-cursor-v2 slice (get next cursor-principal-len) (some (get value cursor-principal-len))))
         (new-principal (unwrap! (from-consensus-buff? principal principal-bytes) ERR_UNEXPECTED_ACTION_PAYLOAD)))
+    (asserts! (is-standard new-principal) ERR_NOT_STANDARD_PRINCIPAL)
     (ok new-principal))) 
 
 (define-private (parse-and-verify-prices-data-sources (ptgm-body (buff 8192)))
