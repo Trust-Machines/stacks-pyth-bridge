@@ -32,6 +32,16 @@
       prev-publish-time: uint,
     } uint))
 
+    (read-price-with-staleness-check ((buff 32)) (response {
+      price: int,
+      conf: uint,
+      expo: int,
+      ema-price: int,
+      ema-conf: uint,
+      publish-time: uint,
+      prev-publish-time: uint,
+    } uint))
+
     (write ((list 64 {
       price-identifier: (buff 32),
       price: int,

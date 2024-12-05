@@ -12,6 +12,15 @@
 ;; Balance insufficient for handling fee
 (define-constant ERR_BALANCE_INSUFFICIENT (err u402))
 
+(define-public (get-price
+    (price-feed-id (buff 32))
+    (pyth-storage-address <pyth-storage-trait>))
+  (begin
+    ;; Check execution flow
+    (try! (contract-call? .pyth-governance-v1 check-storage-contract pyth-storage-address))
+    ;; Perform contract-call
+    (contract-call? pyth-storage-address read-price-with-staleness-check price-feed-id)))
+
 (define-public (read-price-feed 
     (price-feed-id (buff 32))
     (pyth-storage-address <pyth-storage-trait>))

@@ -48,6 +48,15 @@
   (let ((entry (unwrap! (map-get? prices price-identifier) (err u404))))
     (ok entry)))
 
+(define-read-only (read-price-with-staleness-check (price-identifier (buff 32)))
+  (let (
+      (entry (unwrap! (map-get? prices price-identifier) (err u404)))
+      (stale-price-threshold (contract-call? .pyth-governance-v1 get-stale-price-threshold))
+      (latest-bitcoin-timestamp (unwrap! (get-stacks-block-info? time (- stacks-block-height u1)) ERR_STALE_PRICE))
+    )
+    (asserts! (>= (get publish-time entry) (+ (- latest-bitcoin-timestamp stale-price-threshold) STACKS_BLOCK_TIME)) ERR_STALE_PRICE)
+    (ok entry)))
+
 (define-public (write (batch-updates (list 64 {
     price-identifier: (buff 32),
     price: int,
