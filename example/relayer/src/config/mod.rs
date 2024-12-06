@@ -60,7 +60,7 @@ impl Config {
         let config_file: ConfigFile = match toml::from_slice(&file_buffer) {
             Ok(s) => s,
             Err(e) => {
-                return Err(format!("Config file malformatted {}", e.to_string()));
+                return Err(format!("Config file malformed {}", e.to_string()));
             }
         };
         Config::from_config_file(config_file)

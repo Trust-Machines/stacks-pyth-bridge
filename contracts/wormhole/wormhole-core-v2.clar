@@ -50,7 +50,7 @@
 (define-constant ERR_GSU_PARSING_INDEX (err u1204))
 ;; Guardian Set Update length is invalid
 (define-constant ERR_GSU_PARSING_GUARDIAN_LEN (err u1205))
-;; Guardian Set Update guardians payload is malformatted
+;; Guardian Set Update guardians payload is malformed
 (define-constant ERR_GSU_PARSING_GUARDIANS_BYTES (err u1206))
 ;; Guardian Set Update uncompressed public keys invalid
 (define-constant ERR_GSU_UNCOMPRESSED_PUBLIC_KEYS (err u1207))
@@ -196,10 +196,10 @@
       (ok (get vaa message)))))
 
 ;; @desc Update the active set of guardians 
-;; @param guardian-set-vaa: VAA embedding the Guardian Set Update informations
+;; @param guardian-set-vaa: VAA embedding the Guardian Set Update information
 ;; @param uncompressed-public-keys: uncompressed public keys, used for recomputing
 ;; the addresses embedded in the VAA. `secp256k1-verify` returns a compressed 
-;; public key, and uncompressing the key in clarity would be inefficient and expansive. 
+;; public key, and uncompressing the key in clarity would be inefficient and expensive. 
 (define-public (update-guardians-set (guardian-set-vaa (buff 2048)) (uncompressed-public-keys (list 19 (buff 64))))
   (let ((vaa (if (var-get guardian-set-initialized)
           (try! (parse-and-verify-vaa guardian-set-vaa))
@@ -251,7 +251,7 @@
 
 ;;;; Private functions
 
-;; @desc Foldable function admitting an uncompressed 64 byts public key as an input, producing a record { uncompressed-public-key, compressed-public-key }
+;; @desc Foldable function admitting an uncompressed 64 bytes public key as an input, producing a record { uncompressed-public-key, compressed-public-key }
 (define-private (check-and-consolidate-public-keys 
       (uncompressed-public-key (buff 64)) 
       (acc { 

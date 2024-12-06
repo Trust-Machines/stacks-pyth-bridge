@@ -117,7 +117,7 @@ $ curl https://hermes.pyth.network/api/latest_price_feeds?ids[]=ec7a775f46379b5e
 504e41550100000003b8...a7b10321ad7c2404a910
 ```
 
-This sequence of bytes is a Verified Action Approvals (VAA) including the price informations including its cryptographic elements helping the Pyth contract ensuring the authenticity of the data.
+This sequence of bytes is a Verified Action Approvals (VAA) including the price information including its cryptographic elements helping the Pyth contract ensuring the authenticity of the data.
 
 This VAA can be encoded as a Clarity buffer, and submitted to the Pyth contract using the following:
 
@@ -154,6 +154,7 @@ Including all the prices successfully updating the oracle.
 All of the implementation details can be found in [Pyth documentation](https://docs.pyth.network/documentation/how-pyth-works).
 
 # Upgrades
+
 - Ported the codebase to Clarity V3
 - bump up nodejs dependencies
 - introduced a utility function `set-price-testnet` in the `pyth-store-v1` contract to set the price data for a specific feed without the need to produce a valid attestation. This function will only work on testnet.

@@ -132,11 +132,11 @@
   (let ((expected-execution-plan (var-get current-execution-plan))
         (vaa (try! (contract-call? wormhole-core-contract parse-and-verify-vaa vaa-bytes)))
         (ptgm (try! (parse-and-verify-ptgm (get payload vaa) (get sequence vaa)))))
-    ;; Ensure action's expectation
+    ;; Ensure action's expected
     (asserts! (is-eq (get action ptgm) PTGM_UPDATE_FEE) ERR_UNEXPECTED_ACTION)
     ;; Ensure that the action is authorized
     (try! (check-update-source (get emitter-chain vaa) (get emitter-address vaa)))
-    ;; Ensure that the lastest wormhole contract is used
+    ;; Ensure that the latest wormhole contract is used
     (try! (expect-active-wormhole-contract wormhole-core-contract expected-execution-plan))
     ;; Update fee-value
     (let ((updated-data (try! (parse-and-verify-fee-value (get body ptgm)))))
@@ -149,11 +149,11 @@
   (let ((expected-execution-plan (var-get current-execution-plan))
         (vaa (try! (contract-call? wormhole-core-contract parse-and-verify-vaa vaa-bytes)))
         (ptgm (try! (parse-and-verify-ptgm (get payload vaa) (get sequence vaa)))))
-    ;; Ensure action's expectation
+    ;; Ensure action's expected
     (asserts! (is-eq (get action ptgm) PTGM_STALE_PRICE_THRESHOLD) ERR_UNEXPECTED_ACTION)
     ;; Ensure that the action is authorized
     (try! (check-update-source (get emitter-chain vaa) (get emitter-address vaa)))
-    ;; Ensure that the lastest wormhole contract is used
+    ;; Ensure that the latest wormhole contract is used
     (try! (expect-active-wormhole-contract wormhole-core-contract expected-execution-plan))
     ;; Update stale-price-threshold
     (let ((updated-data (try! (parse-and-verify-stale-price-threshold (get body ptgm)))))
@@ -166,11 +166,11 @@
   (let ((expected-execution-plan (var-get current-execution-plan))
         (vaa (try! (contract-call? wormhole-core-contract parse-and-verify-vaa vaa-bytes)))
         (ptgm (try! (parse-and-verify-ptgm (get payload vaa) (get sequence vaa)))))
-    ;; Ensure action's expectation
+    ;; Ensure action's expected
     (asserts! (is-eq (get action ptgm) PTGM_UPDATE_RECIPIENT_ADDRESS) ERR_UNEXPECTED_ACTION)
       ;; Ensure that the action is authorized
     (try! (check-update-source (get emitter-chain vaa) (get emitter-address vaa)))
-    ;; Ensure that the lastest wormhole contract is used
+    ;; Ensure that the latest wormhole contract is used
     (try! (expect-active-wormhole-contract wormhole-core-contract expected-execution-plan))
     ;; Update fee-recipient-address
     (let ((updated-data (try! (parse-principal (get body ptgm)))))
@@ -183,11 +183,11 @@
   (let ((expected-execution-plan (var-get current-execution-plan))
         (vaa (try! (contract-call? wormhole-core-contract parse-and-verify-vaa vaa-bytes)))
         (ptgm (try! (parse-and-verify-ptgm (get payload vaa) (get sequence vaa)))))
-    ;; Ensure action's expectation
+    ;; Ensure action's expected
     (asserts! (is-eq (get action ptgm) PTGM_UPDATE_WORMHOLE_CORE_ADDRESS) ERR_UNEXPECTED_ACTION)
     ;; Ensure that the action is authorized
     (try! (check-update-source (get emitter-chain vaa) (get emitter-address vaa)))
-    ;; Ensure that the lastest wormhole contract is used
+    ;; Ensure that the latest wormhole contract is used
     (try! (expect-active-wormhole-contract wormhole-core-contract expected-execution-plan))
     ;; Update execution plan
     (let ((updated-data (try! (parse-principal (get body ptgm)))))
@@ -200,11 +200,11 @@
   (let ((expected-execution-plan (var-get current-execution-plan))
         (vaa (try! (contract-call? wormhole-core-contract parse-and-verify-vaa vaa-bytes)))
         (ptgm (try! (parse-and-verify-ptgm (get payload vaa) (get sequence vaa)))))
-    ;; Ensure action's expectation
+    ;; Ensure action's expected
     (asserts! (is-eq (get action ptgm) PTGM_UPDATE_PYTH_ORACLE_ADDRESS) ERR_UNEXPECTED_ACTION)
     ;; Ensure that the action is authorized
     (try! (check-update-source (get emitter-chain vaa) (get emitter-address vaa)))
-    ;; Ensure that the lastest wormhole contract is used
+    ;; Ensure that the latest wormhole contract is used
     (try! (expect-active-wormhole-contract wormhole-core-contract expected-execution-plan))
     ;; Update execution plan
     (let ((updated-data (try! (parse-principal (get body ptgm)))))
@@ -217,11 +217,11 @@
   (let ((expected-execution-plan (var-get current-execution-plan))
         (vaa (try! (contract-call? wormhole-core-contract parse-and-verify-vaa vaa-bytes)))
         (ptgm (try! (parse-and-verify-ptgm (get payload vaa) (get sequence vaa)))))
-    ;; Ensure action's expectation
+    ;; Ensure action's expected
     (asserts! (is-eq (get action ptgm) PTGM_UPDATE_PYTH_DECODER_ADDRESS) ERR_UNEXPECTED_ACTION)
     ;; Ensure that the action is authorized
     (try! (check-update-source (get emitter-chain vaa) (get emitter-address vaa)))
-    ;; Ensure that the lastest wormhole contract is used
+    ;; Ensure that the latest wormhole contract is used
     (try! (expect-active-wormhole-contract wormhole-core-contract expected-execution-plan))
     ;; Update execution plan
     (let ((updated-data (try! (parse-principal (get body ptgm)))))
@@ -234,11 +234,11 @@
   (let ((expected-execution-plan (var-get current-execution-plan))
         (vaa (try! (contract-call? wormhole-core-contract parse-and-verify-vaa vaa-bytes)))
         (ptgm (try! (parse-and-verify-ptgm (get payload vaa) (get sequence vaa)))))
-    ;; Ensure action's expectation
+    ;; Ensure action's expected
     (asserts! (is-eq (get action ptgm) PTGM_UPDATE_PYTH_STORE_ADDRESS) ERR_UNEXPECTED_ACTION)
     ;; Ensure that the action is authorized
     (try! (check-update-source (get emitter-chain vaa) (get emitter-address vaa)))
-    ;; Ensure that the lastest wormhole contract is used
+    ;; Ensure that the latest wormhole contract is used
     (try! (expect-active-wormhole-contract wormhole-core-contract expected-execution-plan))
     ;; Update execution plan
     (let ((updated-data (try! (parse-principal (get body ptgm)))))
@@ -251,11 +251,11 @@
   (let ((expected-execution-plan (var-get current-execution-plan))
         (vaa (try! (contract-call? wormhole-core-contract parse-and-verify-vaa vaa-bytes)))
         (ptgm (try! (parse-and-verify-ptgm (get payload vaa) (get sequence vaa)))))
-    ;; Ensure action's expectation
+    ;; Ensure action's expected
     (asserts! (is-eq (get action ptgm) PTGM_UPDATE_PRICES_DATA_SOURCES) ERR_UNEXPECTED_ACTION)
     ;; Ensure that the action is authorized
     (try! (check-update-source (get emitter-chain vaa) (get emitter-address vaa)))
-    ;; Ensure that the lastest wormhole contract is used
+    ;; Ensure that the latest wormhole contract is used
     (try! (expect-active-wormhole-contract wormhole-core-contract expected-execution-plan))
     ;; Update prices-data-sources
     (let ((updated-data (try! (parse-and-verify-prices-data-sources (get body ptgm)))))
@@ -268,11 +268,11 @@
   (let ((expected-execution-plan (var-get current-execution-plan))
         (vaa (try! (contract-call? wormhole-core-contract parse-and-verify-vaa vaa-bytes)))
         (ptgm (try! (parse-and-verify-ptgm (get payload vaa) (get sequence vaa)))))
-    ;; Ensure action's expectation
+    ;; Ensure action's expected
     (asserts! (is-eq (get action ptgm) PTGM_UPDATE_GOVERNANCE_DATA_SOURCE) ERR_UNEXPECTED_ACTION)
     ;; Ensure that the action is authorized
     (try! (check-update-source (get emitter-chain vaa) (get emitter-address vaa)))
-    ;; Ensure that the lastest wormhole contract is used
+    ;; Ensure that the latest wormhole contract is used
     (try! (expect-active-wormhole-contract wormhole-core-contract expected-execution-plan))
     ;; Update governance-data-source
     (let (

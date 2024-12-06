@@ -10,7 +10,7 @@
 ;;;; Constants
 
 (define-constant PNAU_MAGIC 0x504e4155) ;; 'PNAU': Pyth Network Accumulator Update
-(define-constant AUWV_MAGIC 0x41555756) ;; 'AUWV': Accumulator Update Wormhole Verficiation
+(define-constant AUWV_MAGIC 0x41555756) ;; 'AUWV': Accumulator Update Wormhole Verification
 (define-constant PYTHNET_MAJOR_VERSION u1)
 (define-constant PYTHNET_MINOR_VERSION u0)
 (define-constant UPDATE_TYPE_WORMHOLE_MERKLE u0)
