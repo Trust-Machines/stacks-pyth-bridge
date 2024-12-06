@@ -1,5 +1,5 @@
 ;; Title: pyth-store
-;; Version: v1
+;; Version: v2
 ;; Check for latest version: https://github.com/hirosystems/stacks-pyth-bridge#latest-version
 ;; Report an issue: https://github.com/hirosystems/stacks-pyth-bridge/issues
 
@@ -83,11 +83,11 @@
       prev-publish-time: uint,
     }))
     (let ((stale-price-threshold (contract-call? .pyth-governance-v1 get-stale-price-threshold))
-          (latest-bitcoin-timestamp (unwrap! (get-stacks-block-info? time (- stacks-block-height u1)) ERR_STALE_PRICE)))
+          (latest-stacks-timestamp (unwrap! (get-stacks-block-info? time (- stacks-block-height u1)) ERR_STALE_PRICE)))
       ;; Ensure that we have not processed a newer price
       (asserts! (is-price-update-more-recent (get price-identifier entry) (get publish-time entry)) ERR_NEWER_PRICE_AVAILABLE)
       ;; Ensure that price is not stale
-      (asserts! (>= (get publish-time entry) (+ (- latest-bitcoin-timestamp stale-price-threshold) STACKS_BLOCK_TIME)) ERR_STALE_PRICE)
+      (asserts! (>= (get publish-time entry) (+ (- latest-stacks-timestamp stale-price-threshold) STACKS_BLOCK_TIME)) ERR_STALE_PRICE)
       ;; Update storage
       (map-set prices 
         (get price-identifier entry) 
