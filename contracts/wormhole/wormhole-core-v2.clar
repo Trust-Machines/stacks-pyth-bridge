@@ -88,9 +88,7 @@
 ;;;; Data maps
 
 ;; Map tracking guardians set
-(define-map guardian-sets 
-  { set-id: uint } 
-  (list 19 { compressed-public-key: (buff 33), uncompressed-public-key: (buff 64) }))
+(define-map guardian-sets uint (list 19 { compressed-public-key: (buff 33), uncompressed-public-key: (buff 64) }))
 
 ;;;; Public functions
 
@@ -174,7 +172,7 @@
       ;; Ensure that the guardian-set-id is the active one
       (asserts! (is-eq (get guardian-set-id (get vaa message)) (var-get active-guardian-set-id)) 
         ERR_VAA_CHECKS_GUARDIAN_SET_CONSISTENCY)
-    (let ((active-guardians (unwrap! (map-get? guardian-sets { set-id: (get guardian-set-id (get vaa message)) }) ERR_VAA_CHECKS_GUARDIAN_SET_CONSISTENCY))
+    (let ((active-guardians (unwrap! (map-get? guardian-sets (get guardian-set-id (get vaa message))) ERR_VAA_CHECKS_GUARDIAN_SET_CONSISTENCY))
           (signatures-from-active-guardians (fold batch-check-active-public-keys (get recovered-public-keys message)
             {
                 active-guardians: active-guardians,
@@ -218,7 +216,7 @@
     ;; Check emitting address
     (asserts! (is-eq (get emitter-chain vaa) GSU-EMITTING-CHAIN) ERR_GSU_CHECK_EMITTER)
     ;; Update storage
-    (map-set guardian-sets { set-id: set-id } result)
+    (map-set guardian-sets set-id result)
     (var-set active-guardian-set-id set-id)
     (var-set guardian-set-initialized true)
     ;; Emit Event
@@ -237,7 +235,7 @@
 
 (define-read-only (get-active-guardian-set) 
   (let ((set-id (var-get active-guardian-set-id))
-        (guardians (unwrap-panic (map-get? guardian-sets { set-id: set-id }))))
+        (guardians (unwrap-panic (map-get? guardian-sets set-id))))
       (ok {
         set-id: set-id,
         guardians: guardians
