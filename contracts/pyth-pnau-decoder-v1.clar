@@ -9,10 +9,6 @@
 
 ;;;; Constants
 
-;; Price Feeds Ids (https://pyth.network/developers/price-feed-ids#pyth-evm-mainnet)
-(define-constant STX_USD 0xec7a775f46379b5e943c3526b1c8d54cd49749176b0b98e02dde68d1bd335c17)
-(define-constant BTC_USD 0xe62df6c8b4a85fe1a67db44dc12de5db330f7ac66b72dc658afedf0f4a415b43)
-
 (define-constant PNAU_MAGIC 0x504e4155) ;; 'PNAU': Pyth Network Accumulator Update
 (define-constant AUWV_MAGIC 0x41555756) ;; 'AUWV': Accumulator Update Wormhole Verficiation
 (define-constant PYTHNET_MAJOR_VERSION u1)

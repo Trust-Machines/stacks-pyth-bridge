@@ -76,9 +76,6 @@
 ;; Stacks chain id attributed by Pyth
 (define-constant EXPECTED_CHAIN_ID (if is-in-mainnet 0xea86 0xc377))
 
-
-(define-constant hk-cursor-v2 'SP2J933XB2CP2JQ1A4FGN8JA968BBG3NK3EKZ7Q9F.hk-cursor-v2)
-
 ;;;; Data vars
 
 ;; Guardian Set Update uncompressed public keys invalid
