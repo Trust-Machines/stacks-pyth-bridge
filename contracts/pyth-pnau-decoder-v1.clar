@@ -1,7 +1,7 @@
 ;; Title: pyth-pnau-decoder
 ;; Version: v1
-;; Check for latest version: https://github.com/hirosystems/stacks-pyth-bridge#latest-version
-;; Report an issue: https://github.com/hirosystems/stacks-pyth-bridge/issues
+;; Check for latest version: https://github.com/Trust-Machines/stacks-pyth-bridge#latest-version
+;; Report an issue: https://github.com/Trust-Machines/stacks-pyth-bridge/issues
 
 ;;;; Traits
 (impl-trait .pyth-traits-v1.decoder-trait)

@@ -1,3 +1,8 @@
+;; Title: core-traits
+;; Version: v1
+;; Check for latest version: https://github.com/Trust-Machines/stacks-pyth-bridge#latest-version
+;; Report an issue: https://github.com/Trust-Machines/stacks-pyth-bridge/issues
+
 (define-trait core-trait
   (
     ;; Parse and Verify cryptographic validity of a VAA

@@ -1,7 +1,7 @@
 ;; Title: pyth-governance
 ;; Version: v1
-;; Check for latest version: https://github.com/hirosystems/stacks-pyth-bridge#latest-version
-;; Report an issue: https://github.com/hirosystems/stacks-pyth-bridge/issues
+;; Check for latest version: https://github.com/Trust-Machines/stacks-pyth-bridge#latest-version
+;; Report an issue: https://github.com/Trust-Machines/stacks-pyth-bridge/issues
 
 (use-trait pyth-proxy-trait .pyth-traits-v1.proxy-trait)
 (use-trait pyth-decoder-trait .pyth-traits-v1.decoder-trait)
