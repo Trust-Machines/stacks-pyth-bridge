@@ -262,7 +262,7 @@
       result: (unwrap-panic (as-max-len? (append (get result acc) entry) u19)),
     }))
 
-;; @desc Foldable function admitting an uncompressed 64 byts public key as an input, producing a record { uncompressed-public-key, compressed-public-key }
+;; @desc Foldable function admitting an guardian input and their signature as an input, producing a record { recovered-compressed-public-key }
 (define-private (batch-recover-public-keys 
       (entry { guardian-id: uint, signature: (buff 65) }) 
       (acc { message-hash: (buff 32), value: (list 19 { recovered-compressed-public-key: (buff 33), guardian-id: uint }) }))
@@ -351,7 +351,7 @@
     ;; Ensure that this message is matching the adequate action
     (asserts! (is-eq (get value cursor-action) u2) 
       ERR_GSU_CHECK_ACTION)
-    ;; Ensure that this message is matching the adequate action
+    ;; Ensure that this message is matching the expected chain
     (asserts! (or (is-eq (get value cursor-chain) (buff-to-uint-be EXPECTED_CHAIN_ID)) (is-eq (get value cursor-chain) u0) ) ERR_GSU_CHECK_CHAIN)
     (if (var-get guardian-set-initialized)
       ;; Ensure that next index = current index + 1

@@ -153,7 +153,7 @@
     (try! (check-update-source (get emitter-chain vaa) (get emitter-address vaa)))
     ;; Ensure that the lastest wormhole contract is used
     (try! (expect-active-wormhole-contract wormhole-core-contract expected-execution-plan))
-    ;; Update fee-value
+    ;; Update stale-price-threshold
     (let ((updated-data (try! (parse-and-verify-stale-price-threshold (get body ptgm)))))
       (var-set stale-price-threshold updated-data)
       ;; Emit event
@@ -170,7 +170,7 @@
     (try! (check-update-source (get emitter-chain vaa) (get emitter-address vaa)))
     ;; Ensure that the lastest wormhole contract is used
     (try! (expect-active-wormhole-contract wormhole-core-contract expected-execution-plan))
-    ;; Update fee-recipient address
+    ;; Update fee-recipient-address
     (let ((updated-data (try! (parse-principal (get body ptgm)))))
       (var-set fee-recipient-address updated-data)
       ;; Emit event
@@ -272,7 +272,7 @@
     (try! (check-update-source (get emitter-chain vaa) (get emitter-address vaa)))
     ;; Ensure that the lastest wormhole contract is used
     (try! (expect-active-wormhole-contract wormhole-core-contract expected-execution-plan))
-    ;; Update prices-data-sources
+    ;; Update governance-data-source
     (let (
         (updated-data (try! (parse-and-verify-governance-data-source (get body ptgm))))
         (data-source {emitter-chain: (get emitter-chain updated-data), emitter-address: (get emitter-address updated-data)})
@@ -463,7 +463,6 @@
       (let ((buffer (contract-call? 'SP2J933XB2CP2JQ1A4FGN8JA968BBG3NK3EKZ7Q9F.hk-cursor-v2 new (get bytes acc) (some (get index (get cursor acc)))))
             (cursor-emitter-chain (unwrap-panic (contract-call? 'SP2J933XB2CP2JQ1A4FGN8JA968BBG3NK3EKZ7Q9F.hk-cursor-v2 read-uint-16 (get next buffer))))
             (cursor-emitter-address (unwrap-panic (contract-call? 'SP2J933XB2CP2JQ1A4FGN8JA968BBG3NK3EKZ7Q9F.hk-cursor-v2 read-buff-32 (get next cursor-emitter-chain)))))
-        ;; Perform assertions
         {
           cursor: { 
             index: (+ (get index (get cursor acc)) u1),

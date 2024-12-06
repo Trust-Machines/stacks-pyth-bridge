@@ -277,7 +277,6 @@
       ;; Parse update
       (let ((cursor-hash (contract-call? 'SP2J933XB2CP2JQ1A4FGN8JA968BBG3NK3EKZ7Q9F.hk-cursor-v2 new (get bytes acc) (some (get index (get cursor acc)))))
             (hash (get value (unwrap-panic (contract-call? 'SP2J933XB2CP2JQ1A4FGN8JA968BBG3NK3EKZ7Q9F.hk-cursor-v2 read-buff-20 (get next cursor-hash))))))
-        ;; Perform assertions
         {
           cursor: { 
             index: (+ (get index (get cursor acc)) u1),
