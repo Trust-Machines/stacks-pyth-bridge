@@ -7,10 +7,8 @@
 (use-trait pyth-decoder-trait .pyth-traits-v1.decoder-trait)
 (use-trait wormhole-core-trait .wormhole-traits-v1.core-trait)
 
-;; Generic error
-(define-constant ERR_PANIC (err u0))
 ;; Balance insufficient for handling fee
-(define-constant ERR_BALANCE_INSUFFICIENT (err u402))
+(define-constant ERR_BALANCE_INSUFFICIENT (err u3001))
 
 (define-public (get-price
     (price-feed-id (buff 32))

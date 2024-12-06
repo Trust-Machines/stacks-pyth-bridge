@@ -34,24 +34,22 @@
 ;; Stacks module id attributed by Pyth
 (define-constant EXPECTED_MODULE 0x03)
 
-;; Error unauthorized control flow
-(define-constant ERR_UNAUTHORIZED_ACCESS (err u4004))
 ;; Error unexpected action
 (define-constant ERR_UNEXPECTED_ACTION (err u4001))
-;; Error unexpected action payload
-(define-constant ERR_UNEXPECTED_ACTION_PAYLOAD (err u4002))
 ;; Error unexpected action
-(define-constant ERR_INVALID_ACTION_PAYLOAD (err u4003))
+(define-constant ERR_INVALID_ACTION_PAYLOAD (err u4002))
+;; Error unauthorized control flow
+(define-constant ERR_UNAUTHORIZED_ACCESS (err u4003))
 ;; Error outdated action
-(define-constant ERR_OUTDATED (err u4005))
+(define-constant ERR_OUTDATED (err u4004))
 ;; Error unauthorized update
-(define-constant ERR_UNAUTHORIZED_UPDATE (err u4006))
+(define-constant ERR_UNAUTHORIZED_UPDATE (err u4005))
 ;; Error parsing PTGM
-(define-constant ERR_INVALID_PTGM (err u4007))
+(define-constant ERR_INVALID_PTGM (err u4006))
 ;; Error not standard principal
-(define-constant ERR_NOT_STANDARD_PRINCIPAL (err u4008))
+(define-constant ERR_NOT_STANDARD_PRINCIPAL (err u4007))
 ;; Error Ptgm overlay bytes
-(define-constant ERR_PTGM_CHECK_OVERLAY (err u4009))
+(define-constant ERR_PTGM_CHECK_OVERLAY (err u4008))
 
 (define-data-var governance-data-source 
   { emitter-chain: uint, emitter-address: (buff 32) }
@@ -425,7 +423,7 @@
   (let ((cursor-ptgm-body (contract-call? 'SP2J933XB2CP2JQ1A4FGN8JA968BBG3NK3EKZ7Q9F.hk-cursor-v2 new ptgm-body none))
         (cursor-principal-len (try! (contract-call? 'SP2J933XB2CP2JQ1A4FGN8JA968BBG3NK3EKZ7Q9F.hk-cursor-v2 read-uint-8 (get next cursor-ptgm-body))))
         (principal-bytes (contract-call? 'SP2J933XB2CP2JQ1A4FGN8JA968BBG3NK3EKZ7Q9F.hk-cursor-v2 slice (get next cursor-principal-len) (some (get value cursor-principal-len))))
-        (new-principal (unwrap! (from-consensus-buff? principal principal-bytes) ERR_UNEXPECTED_ACTION_PAYLOAD)))
+        (new-principal (unwrap! (from-consensus-buff? principal principal-bytes) ERR_INVALID_ACTION_PAYLOAD)))
     (asserts! (is-eq (+ (get pos (get next cursor-principal-len)) (get value cursor-principal-len)) (len ptgm-body)) ERR_PTGM_CHECK_OVERLAY)    
     (asserts! (is-standard new-principal) ERR_NOT_STANDARD_PRINCIPAL)
     (ok new-principal))) 

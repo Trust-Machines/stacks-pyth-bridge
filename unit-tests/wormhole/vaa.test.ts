@@ -582,7 +582,7 @@ describe("wormhole-core-v2::parse-and-verify-vaa failures", () => {
       [Cl.buffer(vaa)],
       sender,
     );
-    expect(res.result).toBeErr(Cl.uint(1105));
+    expect(res.result).toBeErr(Cl.uint(1103));
   });
 
   it("should fail if one key is being used multiple times", () => {

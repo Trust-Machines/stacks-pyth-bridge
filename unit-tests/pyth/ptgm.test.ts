@@ -329,7 +329,7 @@ describe("pyth-governance-v1::update-wormhole-core-contract", () => {
       [Cl.bufferFromHex("00"), Cl.tuple(executionPlanBase)],
       sender,
     );
-    expect(res.result).toBeErr(Cl.uint(4004));
+    expect(res.result).toBeErr(Cl.uint(4003));
   });
 
   it("should fail if action mismatches", () => {
@@ -445,7 +445,7 @@ describe("pyth-governance-v1::update-pyth-decoder-contract", () => {
       [Cl.bufferFromHex("00"), Cl.tuple(executionPlanBase)],
       sender,
     );
-    expect(res.result).toBeErr(Cl.uint(4004));
+    expect(res.result).toBeErr(Cl.uint(4003));
   });
 
   it("should not be callable directly", () => {
@@ -458,7 +458,7 @@ describe("pyth-governance-v1::update-pyth-decoder-contract", () => {
       ],
       sender,
     );
-    expect(res.result).toBeErr(Cl.uint(4004));
+    expect(res.result).toBeErr(Cl.uint(4003));
   });
 
   it("should fail if action mismatches", () => {
@@ -574,7 +574,7 @@ describe("pyth-governance-v1::update-pyth-store-contract", () => {
       [Cl.bufferFromHex("00"), Cl.tuple(executionPlanBase)],
       sender,
     );
-    expect(res.result).toBeErr(Cl.uint(4004));
+    expect(res.result).toBeErr(Cl.uint(4003));
 
     res = simnet.callPublicFn(
       pythOracleContractName,
@@ -585,7 +585,7 @@ describe("pyth-governance-v1::update-pyth-store-contract", () => {
       ],
       sender,
     );
-    expect(res.result).toBeErr(Cl.uint(4004));
+    expect(res.result).toBeErr(Cl.uint(4003));
   });
 
   it("should fail if action mismatches", () => {
@@ -691,7 +691,7 @@ describe("pyth-governance-v1::update-pyth-oracle-contract", () => {
       [Cl.bufferFromHex("00"), Cl.tuple(executionPlanBase)],
       sender,
     );
-    expect(res.result).toBeErr(Cl.uint(4004));
+    expect(res.result).toBeErr(Cl.uint(4003));
   });
 
   it("should fail if action mismatches", () => {
@@ -1012,7 +1012,7 @@ describe("pyth-governance-v1::update-governance-data-source", () => {
       [Cl.buffer(vaa), wormholeContract],
       sender,
     );
-    expect(res.result).toBeErr(Cl.uint(4007));
+    expect(res.result).toBeErr(Cl.uint(4006));
   });
 
   it("should fail if target chain id is mismatching", () => {
@@ -1042,7 +1042,7 @@ describe("pyth-governance-v1::update-governance-data-source", () => {
       [Cl.buffer(vaa), wormholeContract],
       sender,
     );
-    expect(res.result).toBeErr(Cl.uint(4007));
+    expect(res.result).toBeErr(Cl.uint(4006));
   });
 
   it("should fail if module is mismatching", () => {
@@ -1072,7 +1072,7 @@ describe("pyth-governance-v1::update-governance-data-source", () => {
       [Cl.buffer(vaa), wormholeContract],
       sender,
     );
-    expect(res.result).toBeErr(Cl.uint(4007));
+    expect(res.result).toBeErr(Cl.uint(4006));
   });
 
   it("should fail if sequence is outdated", () => {
@@ -1101,7 +1101,7 @@ describe("pyth-governance-v1::update-governance-data-source", () => {
       [Cl.buffer(vaa), wormholeContract],
       sender,
     );
-    expect(res.result).toBeErr(Cl.uint(4005));
+    expect(res.result).toBeErr(Cl.uint(4004));
   });
 
   it("should fail if data source is unauthorized", () => {
@@ -1130,7 +1130,7 @@ describe("pyth-governance-v1::update-governance-data-source", () => {
       [Cl.buffer(vaa), wormholeContract],
       sender,
     );
-    expect(res.result).toBeErr(Cl.uint(4006));
+    expect(res.result).toBeErr(Cl.uint(4005));
   });
 });
 

@@ -5,9 +5,10 @@
 
 (impl-trait .pyth-traits-v1.storage-trait)
 
-(define-constant ERR_NEWER_PRICE_AVAILABLE (err u5000))
-(define-constant ERR_STALE_PRICE (err u5001))
+(define-constant ERR_NEWER_PRICE_AVAILABLE (err u5001))
+(define-constant ERR_STALE_PRICE (err u5002))
 (define-constant ERR_RESTRICTED_TO_TESTNET (err u5003))
+(define-constant ERR_PRICE_FEED_NOT_FOUND (err u5004))
 
 (define-constant STACKS_BLOCK_TIME u5)
 
@@ -41,16 +42,16 @@
 )
 
 (define-public (read (price-identifier (buff 32)))
-  (let ((entry (unwrap! (map-get? prices price-identifier) (err u404))))
+  (let ((entry (unwrap! (map-get? prices price-identifier) ERR_PRICE_FEED_NOT_FOUND)))
     (ok entry)))
 
 (define-read-only (get-price (price-identifier (buff 32)))
-  (let ((entry (unwrap! (map-get? prices price-identifier) (err u404))))
+  (let ((entry (unwrap! (map-get? prices price-identifier) ERR_PRICE_FEED_NOT_FOUND)))
     (ok entry)))
 
 (define-read-only (read-price-with-staleness-check (price-identifier (buff 32)))
   (let (
-      (entry (unwrap! (map-get? prices price-identifier) (err u404)))
+      (entry (unwrap! (map-get? prices price-identifier) ERR_PRICE_FEED_NOT_FOUND))
       (stale-price-threshold (contract-call? .pyth-governance-v1 get-stale-price-threshold))
       (latest-bitcoin-timestamp (unwrap! (get-stacks-block-info? time (- stacks-block-height u1)) ERR_STALE_PRICE))
     )

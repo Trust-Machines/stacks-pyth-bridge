@@ -10,8 +10,6 @@
 
 ;;;; Constants
 
-;; Generic error
-(define-constant ERR_PANIC (err u0))
 ;; VAA version not supported
 (define-constant ERR_VAA_PARSING_VERSION (err u1001))
 ;; Unable to extract the guardian set-id from the VAA
@@ -40,10 +38,8 @@
 (define-constant ERR_VAA_CHECKS_VERSION_UNSUPPORTED (err u1101))
 ;; Number of valid signatures insufficient (min: 13/19)
 (define-constant ERR_VAA_CHECKS_THRESHOLD_SIGNATURE (err u1102))
-;; Multiple signatures were issued by the same guardian
-(define-constant ERR_VAA_CHECKS_REDUNDANT_SIGNATURE (err u1103))
 ;; Guardian signature not comprised in guardian set specified
-(define-constant ERR_VAA_CHECKS_GUARDIAN_SET_CONSISTENCY (err u1105))
+(define-constant ERR_VAA_CHECKS_GUARDIAN_SET_CONSISTENCY (err u1103))
 ;; Guardian Set Update initiated by an unauthorized module
 (define-constant ERR_GSU_PARSING_MODULE (err u1201))
 ;; Guardian Set Update initiated from an unauthorized module

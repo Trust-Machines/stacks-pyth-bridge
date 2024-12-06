@@ -18,8 +18,6 @@
 (define-constant PYTHNET_MAJOR_VERSION u1)
 (define-constant PYTHNET_MINOR_VERSION u0)
 
-;; Generic error
-(define-constant ERR_PANIC (err u0))
 ;; Unable to price feed magic bytes
 (define-constant ERR_MAGIC_BYTES (err u2001))
 ;; Unable to parse major version
@@ -35,11 +33,7 @@
 ;; Merkle root mismatch
 (define-constant ERR_INVALID_AUWV (err u2007))
 ;; Merkle root mismatch
-(define-constant MERKLE_ROOT_MISMATCH (err u2008))
-;; Price not found
-(define-constant ERR_NOT_FOUND (err u0))
-;; Price not found
-(define-constant ERR_UNAUTHORIZED_FLOW (err u2404))
+(define-constant ERR_MERKLE_ROOT_MISMATCH (err u2008))
 ;; Price update not signed by an authorized source 
 (define-constant ERR_UNAUTHORIZED_PRICE_UPDATE (err u2401))
 ;; VAA buffer has unused, extra leading bytes (overlay)
@@ -148,7 +142,7 @@
           result: true,
           merkle-root-hash: merkle-root-hash
         }))))
-    (asserts! merkle-proof-checks-success MERKLE_ROOT_MISMATCH)
+    (asserts! merkle-proof-checks-success ERR_MERKLE_ROOT_MISMATCH)
     ;; Overlay check; 1 is added because 1 byte is used to store "cursor-num-updates"
     (asserts! (is-eq (+ u1 (get next-update-index (get cursor updates-data))) (len bytes)) ERR_OVERLAY_PRESENT)
     (ok updates)))
