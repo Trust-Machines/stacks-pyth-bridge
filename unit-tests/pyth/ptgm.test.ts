@@ -7,7 +7,7 @@ import { ParsedTransactionResult } from "@hirosystems/clarinet-sdk";
 import { ptgmTestnetVaas } from "./fixtures";
 
 const pythOracleContractName = "pyth-oracle-v2";
-const pythStorageContractName = "pyth-store-v2";
+const pythStorageContractName = "pyth-storage-v2";
 const pythDecoderPnauContractName = "pyth-pnau-decoder-v1";
 const pythGovernanceContractName = "pyth-governance-v1";
 const wormholeCoreContractName = "wormhole-core-v2";

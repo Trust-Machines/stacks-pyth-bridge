@@ -24,8 +24,8 @@ path = 'contracts/pyth-oracle-v2.clar'
 clarity_version = 3
 epoch = 3.0
 
-[contracts.pyth-store-v2]
-path = 'contracts/pyth-store-v2.clar'
+[contracts.pyth-storage-v2]
+path = 'contracts/pyth-storage-v2.clar'
 clarity_version = 3
 epoch = 3.0
 

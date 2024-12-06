@@ -6,7 +6,7 @@ import { pyth } from "./helpers";
 const pythOracleContractName = "pyth-oracle-v2";
 const pythDecoderPnauContractName = "pyth-pnau-decoder-v1";
 const pythGovernanceContractName = "pyth-governance-v1";
-const pythStorageContractName = "pyth-store-v2";
+const pythStorageContractName = "pyth-storage-v2";
 const wormholeCoreContractName = "wormhole-core-v2";
 
 describe("pyth-pnau-decoder-v1::decode-and-verify-price-feeds success", () => {

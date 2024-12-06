@@ -17,7 +17,7 @@ contract_id = "ST2T5JKWWP3FYYX4YRK8GK5BG2YCNGEAEY1JKX06E.wormhole-core-v1"
 contract_id = "ST2T5JKWWP3FYYX4YRK8GK5BG2YCNGEAEY1JKX06E.wormhole-core-v2"
 
 [[project.requirements]]
-contract_id = 'ST2T5JKWWP3FYYX4YRK8GK5BG2YCNGEAEY1JKX06E.pyth-store-v2'
+contract_id = 'ST2T5JKWWP3FYYX4YRK8GK5BG2YCNGEAEY1JKX06E.pyth-storage-v2'
 
 [[project.requirements]]
 contract_id = 'ST2T5JKWWP3FYYX4YRK8GK5BG2YCNGEAEY1JKX06E.pyth-pnau-decoder-v1'

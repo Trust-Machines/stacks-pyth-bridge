@@ -44,10 +44,10 @@ plan:
             anchor-block-only: true
             clarity-version: 3
         - contract-publish:
-            contract-name: pyth-store-v2
+            contract-name: pyth-storage-v2
             expected-sender: SP3BZKCHK73FFAPVVRSZXMQAVV371ER8MMWD6M06T
             cost: 1487263
-            path: contracts/pyth-store-v2.clar
+            path: contracts/pyth-storage-v2.clar
             anchor-block-only: true
             clarity-version: 3
         - contract-publish:
