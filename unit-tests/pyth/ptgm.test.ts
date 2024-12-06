@@ -298,7 +298,10 @@ describe("pyth-governance-v1::update-wormhole-core-contract", () => {
         updateWormholeContract.contractName,
       ),
     });
-    expect(res.result).toBeOk(executionPlan);
+    expect(res.result).toBeOk(Cl.contractPrincipal(
+      updateWormholeContract.address,
+      updateWormholeContract.contractName,
+    ));
 
     res = simnet.callReadOnlyFn(
       pythGovernanceContractName,
@@ -414,7 +417,10 @@ describe("pyth-governance-v1::update-pyth-decoder-contract", () => {
         wormholeCoreContractName,
       ),
     });
-    expect(res.result).toBeOk(executionPlan);
+    expect(res.result).toBeOk(Cl.contractPrincipal(
+      updateDecoderContract.address,
+      updateDecoderContract.contractName,
+    ));
 
     res = simnet.callReadOnlyFn(
       pythGovernanceContractName,
@@ -543,7 +549,10 @@ describe("pyth-governance-v1::update-pyth-store-contract", () => {
         wormholeCoreContractName,
       ),
     });
-    expect(res.result).toBeOk(executionPlan);
+    expect(res.result).toBeOk(Cl.contractPrincipal(
+      updateStoreContract.address,
+      updateStoreContract.contractName,
+    ));
 
     res = simnet.callReadOnlyFn(
       pythGovernanceContractName,
@@ -674,7 +683,10 @@ describe("pyth-governance-v1::update-pyth-oracle-contract", () => {
       ),
       ...executionPlanBase,
     });
-    expect(res.result).toBeOk(executionPlan);
+    expect(res.result).toBeOk( Cl.contractPrincipal(
+      updateOracleContract.address,
+      updateOracleContract.contractName,
+    ));
 
     res = simnet.callReadOnlyFn(
       pythGovernanceContractName,

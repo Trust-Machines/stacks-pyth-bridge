@@ -192,7 +192,7 @@
       (var-set current-execution-plan (merge expected-execution-plan { wormhole-core-contract: updated-data }))
       ;; Emit event
       (print { type: "wormhole-core-contract", action: "updated", data: updated-data })
-      (ok (var-get current-execution-plan)))))
+      (ok updated-data))))
 
 (define-public (update-pyth-oracle-contract (vaa-bytes (buff 8192)) (wormhole-core-contract <wormhole-core-trait>))
   (let ((expected-execution-plan (var-get current-execution-plan))
@@ -209,7 +209,7 @@
       (var-set current-execution-plan (merge expected-execution-plan { pyth-oracle-contract: updated-data }))
       ;; Emit event
       (print { type: "pyth-oracle-contract", action: "updated", data: updated-data })
-      (ok (var-get current-execution-plan)))))
+      (ok updated-data))))
 
 (define-public (update-pyth-decoder-contract (vaa-bytes (buff 8192)) (wormhole-core-contract <wormhole-core-trait>))
   (let ((expected-execution-plan (var-get current-execution-plan))
@@ -226,7 +226,7 @@
       (var-set current-execution-plan (merge expected-execution-plan { pyth-decoder-contract: updated-data }))
       ;; Emit event
       (print { type: "pyth-decoder-contract", action: "updated", data: updated-data })
-      (ok (var-get current-execution-plan)))))
+      (ok updated-data))))
 
 (define-public (update-pyth-store-contract (vaa-bytes (buff 8192)) (wormhole-core-contract <wormhole-core-trait>))
   (let ((expected-execution-plan (var-get current-execution-plan))
@@ -243,7 +243,7 @@
       (var-set current-execution-plan (merge expected-execution-plan { pyth-storage-contract: updated-data }))
       ;; Emit event
       (print { type: "pyth-store-contract", action: "updated", data: updated-data })
-      (ok (var-get current-execution-plan)))))
+      (ok updated-data))))
 
 (define-public (update-prices-data-sources (vaa-bytes (buff 8192)) (wormhole-core-contract <wormhole-core-trait>))
   (let ((expected-execution-plan (var-get current-execution-plan))
