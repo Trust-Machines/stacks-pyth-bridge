@@ -70,6 +70,8 @@
 (define-constant ERR_GSU_CHECK_EMITTER (err u1305))
 ;; First guardian set is not being updated by the deployer
 (define-constant ERR_NOT_DEPLOYER (err u1306))
+;; Overlay present in vaa bytes
+(define-constant ERR_GSU_CHECK_OVERLAY (err u1307))
 
 ;; Guardian set upgrade emitting address
 (define-constant GSU-EMITTING-ADDRESS 0x0000000000000000000000000000000000000000000000000000000000000004)
@@ -153,6 +155,7 @@
               message-hash: vaa-body-hash,
               value: (list)
           })))
+    (asserts! (is-eq (get pos (get next cursor-payload)) (len vaa-bytes)) ERR_GSU_CHECK_OVERLAY)
     (print { payload: (get value cursor-payload) })
     (ok { 
         vaa: {
@@ -350,6 +353,7 @@
           ERR_GSU_PARSING_GUARDIANS_BYTES))
       (guardians-cues (get result (fold is-guardian-cue (get value guardians-bytes) { cursor: u0, result: (list) })))
       (eth-addresses (get result (fold parse-guardian guardians-cues { bytes: (get value guardians-bytes), result: (list) }))))
+    (asserts! (is-eq (get pos (get next guardians-bytes)) (len bytes)) ERR_GSU_CHECK_OVERLAY)
     ;; Ensure that this message was emitted from authorized module
     (asserts! (is-eq (get value cursor-module) 0x00000000000000000000000000000000000000000000000000000000436f7265) 
       ERR_GSU_CHECK_MODULE)
