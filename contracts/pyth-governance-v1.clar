@@ -174,7 +174,7 @@
     (let ((updated-data (try! (parse-principal (get body ptgm)))))
       (var-set fee-recipient-address updated-data)
       ;; Emit event
-      (print { type: "fee-recipient", action: "updated", data: updated-data })
+      (print { type: "fee-recipient-address", action: "updated", data: updated-data })
       (ok updated-data))))
 
 (define-public (update-wormhole-core-contract (vaa-bytes (buff 8192)) (wormhole-core-contract <wormhole-core-trait>))
@@ -242,7 +242,7 @@
     (let ((updated-data (try! (parse-principal (get body ptgm)))))
       (var-set current-execution-plan (merge expected-execution-plan { pyth-storage-contract: updated-data }))
       ;; Emit event
-      (print { type: "pyth-storage-contract", action: "updated", data: updated-data })
+      (print { type: "pyth-store-contract", action: "updated", data: updated-data })
       (ok (var-get current-execution-plan)))))
 
 (define-public (update-prices-data-sources (vaa-bytes (buff 8192)) (wormhole-core-contract <wormhole-core-trait>))

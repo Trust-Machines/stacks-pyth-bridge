@@ -221,7 +221,7 @@
     (var-set guardian-set-initialized true)
     ;; Emit Event
     (print { 
-      type: "guardian-set", 
+      type: "guardians-set", 
       action: "updated",
       id: set-id,
       data: { guardians-eth-addresses: eth-addresses, guardians-public-keys: uncompressed-public-keys }})
