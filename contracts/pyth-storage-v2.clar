@@ -84,11 +84,12 @@
       prev-publish-time: uint,
     }))
     (let ((stale-price-threshold (contract-call? .pyth-governance-v1 get-stale-price-threshold))
-          (latest-stacks-timestamp (unwrap! (get-stacks-block-info? time (- stacks-block-height u1)) ERR_STALE_PRICE)))
+          (latest-stacks-timestamp (unwrap! (get-stacks-block-info? time (- stacks-block-height u1)) ERR_STALE_PRICE))
+          (publish-time (get publish-time entry)))
       ;; Ensure that we have not processed a newer price
-      (asserts! (is-price-update-more-recent (get price-identifier entry) (get publish-time entry)) ERR_NEWER_PRICE_AVAILABLE)
+      (asserts! (is-price-update-more-recent (get price-identifier entry) publish-time) ERR_NEWER_PRICE_AVAILABLE)
       ;; Ensure that price is not stale
-      (asserts! (>= (get publish-time entry) (+ (- latest-stacks-timestamp stale-price-threshold) STACKS_BLOCK_TIME)) ERR_STALE_PRICE)
+      (asserts! (>= publish-time (+ (- latest-stacks-timestamp stale-price-threshold) STACKS_BLOCK_TIME)) ERR_STALE_PRICE)
       ;; Update storage
       (map-set prices 
         (get price-identifier entry) 
@@ -98,7 +99,7 @@
           expo: (get expo entry),
           ema-price: (get ema-price entry),
           ema-conf: (get ema-conf entry),
-          publish-time: (get publish-time entry),
+          publish-time: publish-time,
           prev-publish-time: (get prev-publish-time entry)
         })
       ;; Emit event

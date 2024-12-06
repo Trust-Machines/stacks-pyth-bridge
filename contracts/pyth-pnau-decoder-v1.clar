@@ -44,8 +44,7 @@
     ;; Check execution flow
     (try! (contract-call? .pyth-governance-v1 check-execution-flow contract-caller none))
     ;; Proceed to update
-    (let ((prices-updates (try! (decode-pnau-price-update pnau-bytes wormhole-core-address))))
-      (ok prices-updates))))
+    (decode-pnau-price-update pnau-bytes wormhole-core-address)))
 
 ;;;; Private functions
 ;; #[filter(pnau-bytes, wormhole-core-address)]

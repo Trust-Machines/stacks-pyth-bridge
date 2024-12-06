@@ -208,8 +208,8 @@
             (get vaa (try! (parse-vaa guardian-set-vaa)))
           )))
         (cursor-guardians-data (try! (parse-and-verify-guardians-set (get payload vaa))))
-        (set-id (get new-index (get value cursor-guardians-data)))
-        (eth-addresses (get guardians-eth-addresses (get value cursor-guardians-data)))
+        (set-id (get new-index cursor-guardians-data))
+        (eth-addresses (get guardians-eth-addresses cursor-guardians-data))
         (consolidated-public-keys (fold check-and-consolidate-public-keys 
           uncompressed-public-keys 
           { cursor: u0, eth-addresses: eth-addresses, result: (list) }))
@@ -370,19 +370,12 @@
     
     ;; Good to go!
     (ok {
-      value: {
         guardians-eth-addresses: eth-addresses,
         module: (get value cursor-module),
         action: (get value cursor-action),
         chain: (get value cursor-chain),
         new-index: (get value cursor-new-index)
-      },
-      next: { 
-        bytes: bytes, 
-        pos: (+ (get pos (get next cursor-guardians-count)) 
-                (* (get value cursor-guardians-count) GUARDIAN_ETH_ADDRESS_SIZE)) 
-      }
-    })))
+      })))
 
 (define-private (get-quorum (guardian-set-size uint))
   (+ (/ (* guardian-set-size u2) u3) u1))
