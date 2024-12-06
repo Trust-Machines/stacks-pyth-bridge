@@ -33,6 +33,8 @@
 (define-constant EXPECTED_CHAIN_ID (if is-in-mainnet 0xea86 0xc377))
 ;; Stacks module id attributed by Pyth
 (define-constant EXPECTED_MODULE 0x03)
+;; Emitter data size
+(define-constant SIZE_OF_EMITTER_DATA u34)
 
 ;; Error unexpected action
 (define-constant ERR_UNEXPECTED_ACTION (err u4001))
@@ -466,7 +468,7 @@
         {
           cursor: { 
             index: (+ (get index (get cursor acc)) u1),
-            next-update-index: (+ (get index (get cursor acc)) u34),
+            next-update-index: (+ (get index (get cursor acc)) SIZE_OF_EMITTER_DATA),
           },
           bytes: (get bytes acc),
           result: (unwrap-panic (as-max-len? (append (get result acc) { 

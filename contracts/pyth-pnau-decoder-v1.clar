@@ -13,6 +13,9 @@
 (define-constant AUWV_MAGIC 0x41555756) ;; 'AUWV': Accumulator Update Wormhole Verficiation
 (define-constant PYTHNET_MAJOR_VERSION u1)
 (define-constant PYTHNET_MINOR_VERSION u0)
+(define-constant UPDATE_TYPE_WORMHOLE_MERKLE u0)
+(define-constant MESSAGE_TYPE_PRICE_FEED u0)
+(define-constant MERKLE_PROOF_HASH_SIZE u20)
 
 ;; Unable to price feed magic bytes
 (define-constant ERR_MAGIC_BYTES (err u2001))
@@ -78,7 +81,7 @@
     ;; Check payload type
     (asserts! (is-eq (get value cursor-payload-type) AUWV_MAGIC) ERR_MAGIC_BYTES)
     ;; Check update type
-    (asserts! (is-eq (get value cursor-wh-update-type) u0) ERR_PROOF_TYPE)
+    (asserts! (is-eq (get value cursor-wh-update-type) UPDATE_TYPE_WORMHOLE_MERKLE) ERR_PROOF_TYPE)
     (ok {
       value: {
         merkle-root-slot: (get value cursor-merkle-root-slot),
@@ -109,7 +112,7 @@
     ;; Check minor version
     (asserts! (>= (get value cursor-version-min) PYTHNET_MINOR_VERSION) ERR_VERSION_MIN)
     ;; Check proof type
-    (asserts! (is-eq (get value cursor-proof-type) u0) ERR_PROOF_TYPE)
+    (asserts! (is-eq (get value cursor-proof-type) UPDATE_TYPE_WORMHOLE_MERKLE) ERR_PROOF_TYPE)
     (ok {
       value: {
         magic: (get value cursor-magic),
@@ -210,7 +213,7 @@
             (cursor-ema-conf (unwrap-panic (contract-call? 'SP2J933XB2CP2JQ1A4FGN8JA968BBG3NK3EKZ7Q9F.hk-cursor-v2 read-uint-64 (get next cursor-ema-price))))
             (cursor-proof (contract-call? 'SP2J933XB2CP2JQ1A4FGN8JA968BBG3NK3EKZ7Q9F.hk-cursor-v2 advance (get next cursor-message-size) (get value cursor-message-size)))
             (cursor-proof-size (unwrap-panic (contract-call? 'SP2J933XB2CP2JQ1A4FGN8JA968BBG3NK3EKZ7Q9F.hk-cursor-v2 read-uint-8 cursor-proof)))
-            (proof-bytes (contract-call? 'SP2J933XB2CP2JQ1A4FGN8JA968BBG3NK3EKZ7Q9F.hk-cursor-v2 slice (get next cursor-proof-size) (some (* u20 (get value cursor-proof-size)))))
+            (proof-bytes (contract-call? 'SP2J933XB2CP2JQ1A4FGN8JA968BBG3NK3EKZ7Q9F.hk-cursor-v2 slice (get next cursor-proof-size) (some (* MERKLE_PROOF_HASH_SIZE (get value cursor-proof-size)))))
             (leaf-bytes (contract-call? 'SP2J933XB2CP2JQ1A4FGN8JA968BBG3NK3EKZ7Q9F.hk-cursor-v2 slice (get next cursor-message-size) (some (get value cursor-message-size))))
             (proof (get result (fold parse-proof proof-bytes { 
               result: (list),
@@ -222,7 +225,7 @@
               limit: (get value cursor-proof-size)
             }))))
         ;; Check cursor-message-type
-        (unwrap-panic (if (is-eq (get value cursor-message-type) u0) (ok true) (err ERR_UPDATE_TYPE)))
+        (unwrap-panic (if (is-eq (get value cursor-message-type) MESSAGE_TYPE_PRICE_FEED) (ok true) (err ERR_UPDATE_TYPE)))
         {
           cursor: { 
             index: (+ (get index (get cursor acc)) u1),
@@ -232,7 +235,7 @@
                 u2
                 (get value cursor-message-size)
                 u1
-                (* (get value cursor-proof-size) u20)),
+                (* (get value cursor-proof-size) MERKLE_PROOF_HASH_SIZE)),
           },
           bytes: (get bytes acc),
           result: (unwrap-panic (as-max-len? (append (get result acc) {
@@ -280,7 +283,7 @@
         {
           cursor: { 
             index: (+ (get index (get cursor acc)) u1),
-            next-update-index: (+ (get index (get cursor acc)) u20),
+            next-update-index: (+ (get index (get cursor acc)) MERKLE_PROOF_HASH_SIZE),
           },
           bytes: (get bytes acc),
           result: (unwrap-panic (as-max-len? (append (get result acc) hash) u128)),

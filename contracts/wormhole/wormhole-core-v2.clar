@@ -75,6 +75,14 @@
 (define-constant GSU-EMITTING-CHAIN u1)
 ;; Stacks chain id attributed by Pyth
 (define-constant EXPECTED_CHAIN_ID (if is-in-mainnet 0xea86 0xc377))
+;; Core string module
+(define-constant CORE_STRING_MODULE 0x00000000000000000000000000000000000000000000000000000000436f7265)
+;; Guardian set update action
+(define-constant ACTION_GUARDIAN_SET_UPDATE u2)
+;; Core chain ID
+(define-constant CORE_CHAIN_ID u0)
+;; Guardian eth address size
+(define-constant GUARDIAN_ETH_ADDRESS_SIZE u20)
 
 ;;;; Data vars
 
@@ -340,19 +348,19 @@
           ERR_GSU_PARSING_INDEX))
       (cursor-guardians-count (unwrap! (contract-call? 'SP2J933XB2CP2JQ1A4FGN8JA968BBG3NK3EKZ7Q9F.hk-cursor-v2 read-uint-8 (get next cursor-new-index)) 
           ERR_GSU_PARSING_GUARDIAN_LEN))
-      (guardians-bytes (unwrap! (contract-call? 'SP2J933XB2CP2JQ1A4FGN8JA968BBG3NK3EKZ7Q9F.hk-cursor-v2 read-buff-8192-max (get next cursor-guardians-count) (some (* (get value cursor-guardians-count) u20))) 
+      (guardians-bytes (unwrap! (contract-call? 'SP2J933XB2CP2JQ1A4FGN8JA968BBG3NK3EKZ7Q9F.hk-cursor-v2 read-buff-8192-max (get next cursor-guardians-count) (some (* (get value cursor-guardians-count) GUARDIAN_ETH_ADDRESS_SIZE))) 
           ERR_GSU_PARSING_GUARDIANS_BYTES))
       (guardians-cues (get result (fold is-guardian-cue (get value guardians-bytes) { cursor: u0, result: (list) })))
       (eth-addresses (get result (fold parse-guardian guardians-cues { bytes: (get value guardians-bytes), result: (list) }))))
     (asserts! (is-eq (get pos (get next guardians-bytes)) (len bytes)) ERR_GSU_CHECK_OVERLAY)
     ;; Ensure that this message was emitted from authorized module
-    (asserts! (is-eq (get value cursor-module) 0x00000000000000000000000000000000000000000000000000000000436f7265) 
+    (asserts! (is-eq (get value cursor-module) CORE_STRING_MODULE) 
       ERR_GSU_CHECK_MODULE)
     ;; Ensure that this message is matching the adequate action
-    (asserts! (is-eq (get value cursor-action) u2) 
+    (asserts! (is-eq (get value cursor-action) ACTION_GUARDIAN_SET_UPDATE) 
       ERR_GSU_CHECK_ACTION)
     ;; Ensure that this message is matching the expected chain
-    (asserts! (or (is-eq (get value cursor-chain) (buff-to-uint-be EXPECTED_CHAIN_ID)) (is-eq (get value cursor-chain) u0) ) ERR_GSU_CHECK_CHAIN)
+    (asserts! (or (is-eq (get value cursor-chain) (buff-to-uint-be EXPECTED_CHAIN_ID)) (is-eq (get value cursor-chain) CORE_CHAIN_ID) ) ERR_GSU_CHECK_CHAIN)
     (if (var-get guardian-set-initialized)
       ;; Ensure that next index = current index + 1
       (asserts! (is-eq (get value cursor-new-index) (+ u1 (var-get active-guardian-set-id))) ERR_GSU_CHECK_INDEX)
@@ -372,7 +380,7 @@
       next: { 
         bytes: bytes, 
         pos: (+ (get pos (get next cursor-guardians-count)) 
-                (* (get value cursor-guardians-count) u20)) 
+                (* (get value cursor-guardians-count) GUARDIAN_ETH_ADDRESS_SIZE)) 
       }
     })))
 
@@ -380,7 +388,7 @@
   (+ (/ (* guardian-set-size u2) u3) u1))
 
 (define-private (is-guardian-cue (byte (buff 1)) (acc { cursor: uint, result: (list 19 uint) }))
-  (if (is-eq u0 (mod (get cursor acc) u20))
+  (if (is-eq u0 (mod (get cursor acc) GUARDIAN_ETH_ADDRESS_SIZE))
     { 
       cursor: (+ u1 (get cursor acc)), 
       result: (unwrap-panic (as-max-len? (append (get result acc) (get cursor acc)) u19)),
