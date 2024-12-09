@@ -33,6 +33,8 @@
 (define-constant ERR_INVALID_AUWV (err u2007))
 ;; Merkle root mismatch
 (define-constant ERR_MERKLE_ROOT_MISMATCH (err u2008))
+;; Incorrect AUWV payload
+(define-constant ERR_INCORRECT_AUWV_PAYLOAD (err u2009))
 ;; Price update not signed by an authorized source 
 (define-constant ERR_UNAUTHORIZED_PRICE_UPDATE (err u2401))
 ;; VAA buffer has unused, extra leading bytes (overlay)
@@ -141,6 +143,7 @@
           merkle-root-hash: merkle-root-hash
         }))))
     (asserts! merkle-proof-checks-success ERR_MERKLE_ROOT_MISMATCH)
+    (asserts! (is-eq (get value cursor-num-updates) (len updates)) ERR_INCORRECT_AUWV_PAYLOAD)
     ;; Overlay check; 1 is added because 1 byte is used to store "cursor-num-updates"
     (asserts! (is-eq (+ u1 (get next-update-index (get cursor updates-data))) (len bytes)) ERR_OVERLAY_PRESENT)
     (ok updates)))

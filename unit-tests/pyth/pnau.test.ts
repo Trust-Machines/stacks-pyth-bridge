@@ -568,6 +568,9 @@ describe("pyth-pnau-decoder-v1::decode-and-verify-price-feeds failures", () => {
     let actualPricesUpdates = pyth.buildPriceUpdateBatch([
       [pyth.BtcPriceIdentifier, { price: 100n }],
     ]);
+    let pricesUpdatesToSubmit = [
+      pyth.BtcPriceIdentifier,
+    ];
     let actualPricesUpdatesVaaPayload =
       pyth.buildAuwvVaaPayload(actualPricesUpdates);
     let payload = pyth.serializeAuwvVaaPayloadToBuffer(
@@ -685,6 +688,9 @@ describe("pyth-pnau-decoder-v1::decode-and-verify-price-feeds failures", () => {
         },
       ],
     ]);
+    let pricesUpdatesToSubmit = [
+      pyth.BtcPriceIdentifier,
+    ];
     let actualPricesUpdatesVaaPayload =
       pyth.buildAuwvVaaPayload(actualPricesUpdates);
     let payload = pyth.serializeAuwvVaaPayloadToBuffer(
