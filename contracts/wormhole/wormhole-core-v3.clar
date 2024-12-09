@@ -68,6 +68,8 @@
 (define-constant ERR_NOT_DEPLOYER (err u1306))
 ;; Overlay present in vaa bytes
 (define-constant ERR_GSU_CHECK_OVERLAY (err u1307))
+;; Empty guardian set
+(define-constant ERR_EMPTY_GUARIDIAN_SET (err u1308))
 
 ;; Guardian set upgrade emitting address
 (define-constant GSU-EMITTING-ADDRESS 0x0000000000000000000000000000000000000000000000000000000000000004)
@@ -223,6 +225,8 @@
     (asserts! (is-eq (get emitter-address vaa) GSU-EMITTING-ADDRESS) ERR_GSU_CHECK_EMITTER)
     ;; Check emitting address
     (asserts! (is-eq (get emitter-chain vaa) GSU-EMITTING-CHAIN) ERR_GSU_CHECK_EMITTER)
+    ;; ensure guardian set has atleast one member
+    (asserts! (>= (len result) u1) ERR_EMPTY_GUARIDIAN_SET)
     ;; Update storage
     (map-set guardian-sets set-id result)
     (var-set active-guardian-set-id set-id)
