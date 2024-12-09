@@ -491,14 +491,14 @@ describe("pyth-governance-v1::update-pyth-decoder-contract", () => {
   });
 });
 
-describe("pyth-governance-v1::update-pyth-store-contract", () => {
+describe("pyth-governance-v1::update-pyth-storage-contract", () => {
   const accounts = simnet.getAccounts();
   const sender = accounts.get("wallet_1")!;
   const deployer = accounts.get("deployer")!;
   const guardianSet = wormhole.generateGuardianSetKeychain(19);
   let updateStoreContract = {
     address: "ST2CY5V39NHDPWSXMW9QDT3HC3GD6Q6XX4CFRK9AG",
-    contractName: "pyth-store-v3",
+    contractName: "pyth-storage-v3",
   };
   let ptgmVaaPayload = pyth.buildPtgmVaaPayload({ updateStoreContract });
 
@@ -527,7 +527,7 @@ describe("pyth-governance-v1::update-pyth-store-contract", () => {
     );
     let res = simnet.callPublicFn(
       pythGovernanceContractName,
-      `update-pyth-store-contract`,
+      `update-pyth-storage-contract`,
       [Cl.buffer(vaa), wormholeContract],
       sender,
     );
@@ -613,7 +613,7 @@ describe("pyth-governance-v1::update-pyth-store-contract", () => {
     );
     let res = simnet.callPublicFn(
       pythGovernanceContractName,
-      `update-pyth-store-contract`,
+      `update-pyth-storage-contract`,
       [Cl.buffer(vaa), wormholeContract],
       sender,
     );

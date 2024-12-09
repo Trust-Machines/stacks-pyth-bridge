@@ -65,7 +65,7 @@ That can be consumed with the following invocation:
     'SP2T5JKWWP3FYYX4YRK8GK5BG2YCNGEAEY2P2PKN0.pyth-oracle-v2                ;; Address of the helper contract
     read-price-feed
     0xe62df6c8b4a85fe1a67db44dc12de5db330f7ac66b72dc658afedf0f4a415b43      ;; BTC-USD price identifier
-    'SP2T5JKWWP3FYYX4YRK8GK5BG2YCNGEAEY2P2PKN0.pyth-store-v1)
+    'SP2T5JKWWP3FYYX4YRK8GK5BG2YCNGEAEY2P2PKN0.pyth-storage-v1)
 ```
 
 The authenticity of the price feeds is verified during their ingestion, making the cost of queries as light as possible.
@@ -80,7 +80,7 @@ The full list of prices is available [here](https://pyth.network/price-feeds/).
 
 ### Offchain
 
-For every new price recorded and stored on chain, the `pyth-store-v1` is emitting an event with the following shape:
+For every new price recorded and stored on chain, the `pyth-storage-v1` is emitting an event with the following shape:
 
 ```clarity
 {
@@ -127,7 +127,7 @@ This VAA can be encoded as a Clarity buffer, and submitted to the Pyth contract 
     verify-and-update-price
     0x504e41550100000003b8...a7b10321ad7c2404a910               ;; BTC-USD price update
     {
-      pyth-storage-contract: 'SP2T5JKWWP3FYYX4YRK8GK5BG2YCNGEAEY2P2PKN0.pyth-store-v1,
+      pyth-storage-contract: 'SP2T5JKWWP3FYYX4YRK8GK5BG2YCNGEAEY2P2PKN0.pyth-storage-v1,
       pyth-decoder-contract: 'SP2T5JKWWP3FYYX4YRK8GK5BG2YCNGEAEY2P2PKN0.pyth-pnau-decoder-v1,
       wormhole-core-contract: 'SP2T5JKWWP3FYYX4YRK8GK5BG2YCNGEAEY2P2PKN0.wormhole-core-v2
     })
@@ -157,4 +157,4 @@ All of the implementation details can be found in [Pyth documentation](https://d
 
 - Ported the codebase to Clarity V3
 - bump up nodejs dependencies
-- introduced a utility function `set-price-testnet` in the `pyth-store-v1` contract to set the price data for a specific feed without the need to produce a valid attestation. This function will only work on testnet.
+- introduced a utility function `set-price-testnet` in the `pyth-storage-v1` contract to set the price data for a specific feed without the need to produce a valid attestation. This function will only work on testnet.

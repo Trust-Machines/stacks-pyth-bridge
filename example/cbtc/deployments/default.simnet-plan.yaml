@@ -90,9 +90,9 @@ plan:
             path: ".cache/requirements/ST2T5JKWWP3FYYX4YRK8GK5BG2YCNGEAEY1JKX06E.pyth-pnau-decoder-v1.clar"
             clarity-version: 3
         - emulated-contract-publish:
-            contract-name: pyth-store-v1
+            contract-name: pyth-storage-v1
             emulated-sender: ST2T5JKWWP3FYYX4YRK8GK5BG2YCNGEAEY1JKX06E
-            path: ".cache/requirements/ST2T5JKWWP3FYYX4YRK8GK5BG2YCNGEAEY1JKX06E.pyth-store-v1.clar"
+            path: ".cache/requirements/ST2T5JKWWP3FYYX4YRK8GK5BG2YCNGEAEY1JKX06E.pyth-storage-v1.clar"
             clarity-version: 3
         - emulated-contract-publish:
             contract-name: wormhole-core-v1

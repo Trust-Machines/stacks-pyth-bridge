@@ -230,7 +230,7 @@
       (print { type: "pyth-decoder-contract", action: "updated", data: updated-data })
       (ok updated-data))))
 
-(define-public (update-pyth-store-contract (vaa-bytes (buff 8192)) (wormhole-core-contract <wormhole-core-trait>))
+(define-public (update-pyth-storage-contract (vaa-bytes (buff 8192)) (wormhole-core-contract <wormhole-core-trait>))
   (let ((expected-execution-plan (var-get current-execution-plan))
         (vaa (try! (contract-call? wormhole-core-contract parse-and-verify-vaa vaa-bytes)))
         (ptgm (try! (parse-and-verify-ptgm (get payload vaa) (get sequence vaa)))))
@@ -244,7 +244,7 @@
     (let ((updated-data (try! (parse-principal (get body ptgm)))))
       (var-set current-execution-plan (merge expected-execution-plan { pyth-storage-contract: updated-data }))
       ;; Emit event
-      (print { type: "pyth-store-contract", action: "updated", data: updated-data })
+      (print { type: "pyth-storage-contract", action: "updated", data: updated-data })
       (ok updated-data))))
 
 (define-public (update-prices-data-sources (vaa-bytes (buff 8192)) (wormhole-core-contract <wormhole-core-trait>))
