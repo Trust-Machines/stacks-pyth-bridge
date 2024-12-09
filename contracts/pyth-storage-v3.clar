@@ -53,9 +53,9 @@
   (let (
       (entry (unwrap! (map-get? prices price-identifier) ERR_PRICE_FEED_NOT_FOUND))
       (stale-price-threshold (contract-call? .pyth-governance-v2 get-stale-price-threshold))
-      (latest-bitcoin-timestamp (unwrap! (get-stacks-block-info? time (- stacks-block-height u1)) ERR_STALE_PRICE))
+      (latest-stacks-timestamp (unwrap! (get-stacks-block-info? time (- stacks-block-height u1)) ERR_STALE_PRICE))
     )
-    (asserts! (>= (get publish-time entry) (+ (- latest-bitcoin-timestamp stale-price-threshold) STACKS_BLOCK_TIME)) ERR_STALE_PRICE)
+    (asserts! (>= (get publish-time entry) (+ (- latest-stacks-timestamp stale-price-threshold) STACKS_BLOCK_TIME)) ERR_STALE_PRICE)
     (ok entry)))
 
 (define-public (write (batch-updates (list 64 {

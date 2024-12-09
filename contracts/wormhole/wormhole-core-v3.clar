@@ -72,6 +72,8 @@
 (define-constant ERR_EMPTY_GUARIDIAN_SET (err u1308))
 ;; Guardian Set Update emission payload unauthorized
 (define-constant ERR_DUPLICATED_GUARDIAN_ADDRESSES (err u1309))
+;; Unable to get stacks timestamp
+(define-constant ERR_STACKS_TIMESTAMP (err u1310))
 
 ;; Guardian set upgrade emitting address
 (define-constant GSU-EMITTING-ADDRESS 0x0000000000000000000000000000000000000000000000000000000000000004)
@@ -87,7 +89,8 @@
 (define-constant CORE_CHAIN_ID u0)
 ;; Guardian eth address size
 (define-constant GUARDIAN_ETH_ADDRESS_SIZE u20)
-
+;; 24 hours in seconds
+(define-constant TWENTY_FOUR_HOURS u86400)
 ;;;; Data vars
 
 ;; Guardian Set Update uncompressed public keys invalid
@@ -96,6 +99,8 @@
 (define-constant deployer contract-caller)
 ;; Keep track of the active guardian set-id
 (define-data-var active-guardian-set-id uint u0)
+;; Keep track of exiting guardian set
+(define-data-var previous-guardian-set {set-id: uint, expires-at: uint} {set-id: u0, expires-at: u0})
 
 ;;;; Data maps
 
@@ -180,11 +185,13 @@
 ;; @desc Parse and check the validity of a Verified Action Approval (VAA)
 ;; @param vaa-bytes: 
 (define-read-only (parse-and-verify-vaa (vaa-bytes (buff 8192)))
-    (let ((message (try! (parse-vaa vaa-bytes))))
-      ;; Ensure that the guardian-set-id is the active one
-      (asserts! (is-eq (get guardian-set-id (get vaa message)) (var-get active-guardian-set-id)) 
-        ERR_VAA_CHECKS_GUARDIAN_SET_CONSISTENCY)
-    (let ((active-guardians (unwrap! (map-get? guardian-sets (get guardian-set-id (get vaa message))) ERR_VAA_CHECKS_GUARDIAN_SET_CONSISTENCY))
+    (let (
+        (message (try! (parse-vaa vaa-bytes)))
+        (guradian-set-id (get guardian-set-id (get vaa message)))
+      )
+      ;; Ensure that the guardian-set-id is the active one or unexpired previous one
+      (asserts! (try! (is-valid-guardian-set guradian-set-id)) ERR_VAA_CHECKS_GUARDIAN_SET_CONSISTENCY)
+    (let ((active-guardians (unwrap! (map-get? guardian-sets guradian-set-id) ERR_VAA_CHECKS_GUARDIAN_SET_CONSISTENCY))
           (signatures-from-active-guardians (fold batch-check-active-public-keys (get recovered-public-keys message)
             {
                 active-guardians: active-guardians,
@@ -231,7 +238,7 @@
     (asserts! (>= (len result) u1) ERR_EMPTY_GUARIDIAN_SET)
     ;; Update storage
     (map-set guardian-sets set-id result)
-    (var-set active-guardian-set-id set-id)
+    (try! (set-new-guradian-set-id set-id))
     (var-set guardian-set-initialized true)
     ;; Emit Event
     (print { 
@@ -413,5 +420,34 @@
         (ok true)
       )
     )
+  )
+)
+
+(define-private (set-new-guradian-set-id (new-set-id uint))
+  (if (var-get guardian-set-initialized)
+    (let (
+        (latest-stacks-timestamp (unwrap! (get-stacks-block-info? time (- stacks-block-height u1)) ERR_STACKS_TIMESTAMP))
+        (previous-set-expires-at (+ TWENTY_FOUR_HOURS latest-stacks-timestamp))
+      )
+      (var-set previous-guardian-set {
+          set-id: (var-get active-guardian-set-id),
+          expires-at: previous-set-expires-at
+        })
+      (var-set active-guardian-set-id new-set-id)
+      (ok true)
+    )
+    (begin (var-set active-guardian-set-id new-set-id) (ok true))
+  )
+)
+
+(define-private (is-valid-guardian-set (set-id uint))
+  (if (is-eq (var-get active-guardian-set-id) set-id)
+    (ok true)
+    (let (
+      (prev-guardian-set (var-get previous-guardian-set))
+      (prev-guardian-set-id (get set-id prev-guardian-set))
+      (prev-guardian-set-expires-at (get expires-at prev-guardian-set))
+      (latest-stacks-timestamp (unwrap! (get-stacks-block-info? time (- stacks-block-height u1)) ERR_STACKS_TIMESTAMP))
+    ) (ok (and (is-eq prev-guardian-set-id set-id) (>= prev-guardian-set-expires-at latest-stacks-timestamp))))
   )
 )
