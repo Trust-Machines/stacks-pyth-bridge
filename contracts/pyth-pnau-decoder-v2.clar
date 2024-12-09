@@ -1,5 +1,5 @@
 ;; Title: pyth-pnau-decoder
-;; Version: v1
+;; Version: v2
 ;; Check for latest version: https://github.com/Trust-Machines/stacks-pyth-bridge#latest-version
 ;; Report an issue: https://github.com/Trust-Machines/stacks-pyth-bridge/issues
 
@@ -44,7 +44,7 @@
 (define-public (decode-and-verify-price-feeds (pnau-bytes (buff 8192)) (wormhole-core-address <wormhole-core-trait>))
   (begin
     ;; Check execution flow
-    (try! (contract-call? .pyth-governance-v1 check-execution-flow contract-caller none))
+    (try! (contract-call? .pyth-governance-v2 check-execution-flow contract-caller none))
     ;; Proceed to update
     (decode-pnau-price-update pnau-bytes wormhole-core-address)))
 
@@ -60,7 +60,7 @@
           (contract-call? 'SP2J933XB2CP2JQ1A4FGN8JA968BBG3NK3EKZ7Q9F.hk-cursor-v2 slice (get next cursor-pnau-vaa) none)
           (get merkle-root-hash (get value cursor-merkle-root-data)))))
         (prices-updates (map cast-decoded-price decoded-prices-updates))
-        (authorized-prices-data-sources (contract-call? .pyth-governance-v1 get-authorized-prices-data-sources)))
+        (authorized-prices-data-sources (contract-call? .pyth-governance-v2 get-authorized-prices-data-sources)))
     ;; Ensure that update was published by an data source authorized by governance
     (unwrap! (index-of? 
         authorized-prices-data-sources 

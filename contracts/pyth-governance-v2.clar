@@ -1,5 +1,5 @@
 ;; Title: pyth-governance
-;; Version: v1
+;; Version: v2
 ;; Check for latest version: https://github.com/Trust-Machines/stacks-pyth-bridge#latest-version
 ;; Report an issue: https://github.com/Trust-Machines/stacks-pyth-bridge/issues
 
@@ -76,10 +76,10 @@
   pyth-storage-contract: principal,
   wormhole-core-contract: principal
 } { 
-    pyth-oracle-contract: .pyth-oracle-v2,
-    pyth-decoder-contract: .pyth-pnau-decoder-v1, 
-    pyth-storage-contract: .pyth-storage-v2,
-    wormhole-core-contract: .wormhole-core-v2
+    pyth-oracle-contract: .pyth-oracle-v3,
+    pyth-decoder-contract: .pyth-pnau-decoder-v2, 
+    pyth-storage-contract: .pyth-storage-v3,
+    wormhole-core-contract: .wormhole-core-v3
 })
 
 (define-read-only (check-execution-flow 

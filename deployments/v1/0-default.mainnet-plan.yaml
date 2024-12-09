@@ -23,10 +23,10 @@ plan:
             anchor-block-only: true
             clarity-version: 3
         - contract-publish:
-            contract-name: pyth-governance-v1
+            contract-name: pyth-governance-v2
             expected-sender: SP2T5JKWWP3FYYX4YRK8GK5BG2YCNGEAEY2P2PKN0
             cost: 1495228
-            path: contracts/pyth-governance-v1.clar
+            path: contracts/pyth-governance-v2.clar
             anchor-block-only: true
             clarity-version: 3
         - contract-publish:
@@ -37,10 +37,10 @@ plan:
             anchor-block-only: true
             clarity-version: 3
         - contract-publish:
-            contract-name: pyth-pnau-decoder-v1
+            contract-name: pyth-pnau-decoder-v2
             expected-sender: SP2T5JKWWP3FYYX4YRK8GK5BG2YCNGEAEY2P2PKN0
             cost: 1492627
-            path: contracts/pyth-pnau-decoder-v1.clar
+            path: contracts/pyth-pnau-decoder-v2.clar
             anchor-block-only: true
             clarity-version: 3
         - contract-publish:

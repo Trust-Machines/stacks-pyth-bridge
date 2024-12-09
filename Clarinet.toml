@@ -14,23 +14,23 @@ contract_id = 'SP2J933XB2CP2JQ1A4FGN8JA968BBG3NK3EKZ7Q9F.hk-ecc-v1'
 [[project.requirements]]
 contract_id = 'SP2J933XB2CP2JQ1A4FGN8JA968BBG3NK3EKZ7Q9F.hk-merkle-tree-keccak160-v1'
 
-[contracts.pyth-governance-v1]
-path = 'contracts/pyth-governance-v1.clar'
+[contracts.pyth-governance-v2]
+path = 'contracts/pyth-governance-v2.clar'
 clarity_version = 3
 epoch = 3.0
 
-[contracts.pyth-oracle-v2]
-path = 'contracts/pyth-oracle-v2.clar'
+[contracts.pyth-oracle-v3]
+path = 'contracts/pyth-oracle-v3.clar'
 clarity_version = 3
 epoch = 3.0
 
-[contracts.pyth-storage-v2]
-path = 'contracts/pyth-storage-v2.clar'
+[contracts.pyth-storage-v3]
+path = 'contracts/pyth-storage-v3.clar'
 clarity_version = 3
 epoch = 3.0
 
-[contracts.pyth-pnau-decoder-v1]
-path = 'contracts/pyth-pnau-decoder-v1.clar'
+[contracts.pyth-pnau-decoder-v2]
+path = 'contracts/pyth-pnau-decoder-v2.clar'
 clarity_version = 3
 epoch = 3.0
 
@@ -39,8 +39,8 @@ path = 'contracts/pyth-traits-v1.clar'
 clarity_version = 3
 epoch = 3.0
 
-[contracts.wormhole-core-v2]
-path = 'contracts/wormhole/wormhole-core-v2.clar'
+[contracts.wormhole-core-v3]
+path = 'contracts/wormhole/wormhole-core-v3.clar'
 clarity_version = 3
 epoch = 3.0
 

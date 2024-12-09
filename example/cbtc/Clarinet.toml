@@ -8,19 +8,19 @@ telemetry = false
 contract_id = "SP2J933XB2CP2JQ1A4FGN8JA968BBG3NK3EKZ7Q9F.hk-tokens-v1"
 
 [[project.requirements]]
-contract_id = "ST2T5JKWWP3FYYX4YRK8GK5BG2YCNGEAEY1JKX06E.pyth-oracle-v2"
+contract_id = "ST2T5JKWWP3FYYX4YRK8GK5BG2YCNGEAEY1JKX06E.pyth-oracle-v3"
 
 [[project.requirements]]
 contract_id = "ST2T5JKWWP3FYYX4YRK8GK5BG2YCNGEAEY1JKX06E.wormhole-core-v1"
 
 [[project.requirements]]
-contract_id = "ST2T5JKWWP3FYYX4YRK8GK5BG2YCNGEAEY1JKX06E.wormhole-core-v2"
+contract_id = "ST2T5JKWWP3FYYX4YRK8GK5BG2YCNGEAEY1JKX06E.wormhole-core-v3"
 
 [[project.requirements]]
-contract_id = 'ST2T5JKWWP3FYYX4YRK8GK5BG2YCNGEAEY1JKX06E.pyth-storage-v2'
+contract_id = 'ST2T5JKWWP3FYYX4YRK8GK5BG2YCNGEAEY1JKX06E.pyth-storage-v3'
 
 [[project.requirements]]
-contract_id = 'ST2T5JKWWP3FYYX4YRK8GK5BG2YCNGEAEY1JKX06E.pyth-pnau-decoder-v1'
+contract_id = 'ST2T5JKWWP3FYYX4YRK8GK5BG2YCNGEAEY1JKX06E.pyth-pnau-decoder-v2'
 
 [contracts.cbtc-token]
 path = "contracts/cbtc-token.clar"

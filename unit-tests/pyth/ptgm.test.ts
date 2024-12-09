@@ -6,14 +6,14 @@ import { bytesToHex, hexToBytes } from "@noble/hashes/utils";
 import { ParsedTransactionResult } from "@hirosystems/clarinet-sdk";
 import { ptgmTestnetVaas } from "./fixtures";
 
-const pythOracleContractName = "pyth-oracle-v2";
-const pythStorageContractName = "pyth-storage-v2";
-const pythDecoderPnauContractName = "pyth-pnau-decoder-v1";
-const pythGovernanceContractName = "pyth-governance-v1";
-const wormholeCoreContractName = "wormhole-core-v2";
+const pythOracleContractName = "pyth-oracle-v3";
+const pythStorageContractName = "pyth-storage-v3";
+const pythDecoderPnauContractName = "pyth-pnau-decoder-v2";
+const pythGovernanceContractName = "pyth-governance-v2";
+const wormholeCoreContractName = "wormhole-core-v3";
 const initialFeeRecipient = "ST3CRXBDXQ2N5P7E25Q39MEX1HSMRDSEAP1JST19D";
 
-describe("pyth-governance-v1::update-fee-value mainnet VAAs", () => {
+describe("pyth-governance-v2::update-fee-value mainnet VAAs", () => {
   const accounts = simnet.getAccounts();
   const deployer = accounts.get("deployer")!;
   const sender = accounts.get("wallet_1")!;
@@ -73,7 +73,7 @@ describe("pyth-governance-v1::update-fee-value mainnet VAAs", () => {
 });
 
 
-describe("pyth-governance-v1::update-fee-value", () => {
+describe("pyth-governance-v2::update-fee-value", () => {
   const accounts = simnet.getAccounts();
   const deployer = accounts.get("deployer")!;
   const sender = accounts.get("wallet_1")!;
@@ -160,7 +160,7 @@ describe("pyth-governance-v1::update-fee-value", () => {
   });
 });
 
-describe("pyth-governance-v1::update-fee-recipient", () => {
+describe("pyth-governance-v2::update-fee-recipient", () => {
   const accounts = simnet.getAccounts();
   const deployer = accounts.get("deployer")!;
   const sender = accounts.get("wallet_1")!;
@@ -240,7 +240,7 @@ describe("pyth-governance-v1::update-fee-recipient", () => {
   });
 });
 
-describe("pyth-governance-v1::update-wormhole-core-contract", () => {
+describe("pyth-governance-v2::update-wormhole-core-contract", () => {
   const accounts = simnet.getAccounts();
   const sender = accounts.get("wallet_1")!;
   const deployer = accounts.get("deployer")!;
@@ -359,7 +359,7 @@ describe("pyth-governance-v1::update-wormhole-core-contract", () => {
   });
 });
 
-describe("pyth-governance-v1::update-pyth-decoder-contract", () => {
+describe("pyth-governance-v2::update-pyth-decoder-contract", () => {
   const accounts = simnet.getAccounts();
   const sender = accounts.get("wallet_1")!;
   const deployer = accounts.get("deployer")!;
@@ -491,7 +491,7 @@ describe("pyth-governance-v1::update-pyth-decoder-contract", () => {
   });
 });
 
-describe("pyth-governance-v1::update-pyth-storage-contract", () => {
+describe("pyth-governance-v2::update-pyth-storage-contract", () => {
   const accounts = simnet.getAccounts();
   const sender = accounts.get("wallet_1")!;
   const deployer = accounts.get("deployer")!;
@@ -621,7 +621,7 @@ describe("pyth-governance-v1::update-pyth-storage-contract", () => {
   });
 });
 
-describe("pyth-governance-v1::update-pyth-oracle-contract", () => {
+describe("pyth-governance-v2::update-pyth-oracle-contract", () => {
   const accounts = simnet.getAccounts();
   const sender = accounts.get("wallet_1")!;
   const deployer = accounts.get("deployer")!;
@@ -730,7 +730,7 @@ describe("pyth-governance-v1::update-pyth-oracle-contract", () => {
   });
 });
 
-describe("pyth-governance-v1::update-prices-data-sources", () => {
+describe("pyth-governance-v2::update-prices-data-sources", () => {
   const accounts = simnet.getAccounts();
   const deployer = accounts.get("deployer")!;
   const sender = accounts.get("wallet_1")!;
@@ -819,7 +819,7 @@ describe("pyth-governance-v1::update-prices-data-sources", () => {
   });
 });
 
-describe("pyth-governance-v1::update-governance-data-source", () => {
+describe("pyth-governance-v2::update-governance-data-source", () => {
   const accounts = simnet.getAccounts();
   const deployer = accounts.get("deployer")!;
   const sender = accounts.get("wallet_1")!;
@@ -1146,7 +1146,7 @@ describe("pyth-governance-v1::update-governance-data-source", () => {
   });
 });
 
-describe("pyth-governance-v1::update-stale-price-threshold", () => {
+describe("pyth-governance-v2::update-stale-price-threshold", () => {
   const accounts = simnet.getAccounts();
   const deployer = accounts.get("deployer")!;
   const sender = accounts.get("wallet_1")!;

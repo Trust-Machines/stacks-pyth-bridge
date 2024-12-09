@@ -1,5 +1,5 @@
 ;; Title: pyth-storage
-;; Version: v2
+;; Version: v3
 ;; Check for latest version: https://github.com/Trust-Machines/stacks-pyth-bridge#latest-version
 ;; Report an issue: https://github.com/Trust-Machines/stacks-pyth-bridge/issues
 
@@ -52,7 +52,7 @@
 (define-read-only (read-price-with-staleness-check (price-identifier (buff 32)))
   (let (
       (entry (unwrap! (map-get? prices price-identifier) ERR_PRICE_FEED_NOT_FOUND))
-      (stale-price-threshold (contract-call? .pyth-governance-v1 get-stale-price-threshold))
+      (stale-price-threshold (contract-call? .pyth-governance-v2 get-stale-price-threshold))
       (latest-bitcoin-timestamp (unwrap! (get-stacks-block-info? time (- stacks-block-height u1)) ERR_STALE_PRICE))
     )
     (asserts! (>= (get publish-time entry) (+ (- latest-bitcoin-timestamp stale-price-threshold) STACKS_BLOCK_TIME)) ERR_STALE_PRICE)
@@ -70,7 +70,7 @@
   })))
   (let ((successful-updates (map unwrapped-entry (filter only-ok-entry (map write-batch-entry batch-updates)))))
     ;; Ensure that updates are always coming from the right contract
-    (try! (contract-call? .pyth-governance-v1 check-execution-flow contract-caller none))
+    (try! (contract-call? .pyth-governance-v2 check-execution-flow contract-caller none))
     (ok successful-updates)))
 
 (define-private (write-batch-entry (entry {
@@ -83,7 +83,7 @@
       publish-time: uint,
       prev-publish-time: uint,
     }))
-    (let ((stale-price-threshold (contract-call? .pyth-governance-v1 get-stale-price-threshold))
+    (let ((stale-price-threshold (contract-call? .pyth-governance-v2 get-stale-price-threshold))
           (latest-stacks-timestamp (unwrap! (get-stacks-block-info? time (- stacks-block-height u1)) ERR_STALE_PRICE))
           (publish-time (get publish-time entry)))
       ;; Ensure that we have not processed a newer price
