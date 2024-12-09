@@ -26,7 +26,7 @@
 ;; Special Stacks operation: update recipient address
 (define-constant PTGM_UPDATE_RECIPIENT_ADDRESS 0xa0)
 ;; Special Stacks operation: update storage contract address
-(define-constant PTGM_UPDATE_PYTH_STORE_ADDRESS 0xa1)
+(define-constant PTGM_UPDATE_PYTH_STORAGE_ADDRESS 0xa1)
 ;; Special Stacks operation: update decoder contract address
 (define-constant PTGM_UPDATE_PYTH_DECODER_ADDRESS 0xa2)
 ;; Stacks chain id attributed by Pyth
@@ -237,7 +237,7 @@
         (vaa (try! (contract-call? wormhole-core-contract parse-and-verify-vaa vaa-bytes)))
         (ptgm (try! (parse-and-verify-ptgm (get payload vaa) (get sequence vaa)))))
     ;; Ensure action's expected
-    (asserts! (is-eq (get action ptgm) PTGM_UPDATE_PYTH_STORE_ADDRESS) ERR_UNEXPECTED_ACTION)
+    (asserts! (is-eq (get action ptgm) PTGM_UPDATE_PYTH_STORAGE_ADDRESS) ERR_UNEXPECTED_ACTION)
     ;; Ensure that the action is authorized
     (try! (check-update-source (get emitter-chain vaa) (get emitter-address vaa)))
     ;; Ensure that the latest wormhole contract is used
