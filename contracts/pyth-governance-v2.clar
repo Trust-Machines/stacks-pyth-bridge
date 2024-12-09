@@ -52,6 +52,8 @@
 (define-constant ERR_NOT_STANDARD_PRINCIPAL (err u4007))
 ;; Error Ptgm overlay bytes
 (define-constant ERR_PTGM_CHECK_OVERLAY (err u4008))
+;; Error invalid price data source
+(define-constant ERR_INVALID_PRICE_DATA_SOURCES (err u4009))
 
 (define-data-var governance-data-source 
   { emitter-chain: uint, emitter-address: (buff 32) }
@@ -444,7 +446,8 @@
           limit: (get value cursor-num-data-sources) 
         }))
         (data-sources (get result data-sources-bundle)))
-    (asserts! (is-eq (get next-update-index (get cursor data-sources-bundle)) (len cursor-data-sources-bytes)) ERR_PTGM_CHECK_OVERLAY)    
+    (asserts! (is-eq (get next-update-index (get cursor data-sources-bundle)) (len cursor-data-sources-bytes)) ERR_PTGM_CHECK_OVERLAY)
+    (asserts! (is-eq (get value cursor-num-data-sources) (len data-sources)) ERR_INVALID_PRICE_DATA_SOURCES)  
     (ok data-sources)))
 
 (define-private (parse-data-source
