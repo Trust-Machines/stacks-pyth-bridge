@@ -70,6 +70,8 @@
 (define-constant ERR_GSU_CHECK_OVERLAY (err u1307))
 ;; Empty guardian set
 (define-constant ERR_EMPTY_GUARIDIAN_SET (err u1308))
+;; Guardian Set Update emission payload unauthorized
+(define-constant ERR_DUPLICATED_GUARDIAN_ADDRESSES (err u1309))
 
 ;; Guardian set upgrade emitting address
 (define-constant GSU-EMITTING-ADDRESS 0x0000000000000000000000000000000000000000000000000000000000000004)
@@ -334,10 +336,13 @@
   (let (
     (cursor-address-bytes (unwrap-panic (contract-call? 'SP2J933XB2CP2JQ1A4FGN8JA968BBG3NK3EKZ7Q9F.hk-cursor-v2 read-buff-20 { bytes: (get bytes acc), pos: cue-position })))
   )
-  {
-    bytes: (get bytes acc),
-    result: (unwrap-panic (as-max-len? (append (get result acc) (get value cursor-address-bytes)) u19))
-  }))
+  (if (is-none (index-of? (get result acc) (get value cursor-address-bytes)))
+    {
+      bytes: (get bytes acc),
+      result: (unwrap-panic (as-max-len? (append (get result acc) (get value cursor-address-bytes)) u19))
+    }
+    acc
+  )))
 
 ;; @desc Parse and verify payload's VAA  
 (define-private (parse-and-verify-guardians-set (bytes (buff 8192)))
@@ -357,6 +362,8 @@
       (guardians-cues (get result (fold is-guardian-cue (get value guardians-bytes) { cursor: u0, result: (list) })))
       (eth-addresses (get result (fold parse-guardian guardians-cues { bytes: (get value guardians-bytes), result: (list) }))))
     (asserts! (is-eq (get pos (get next guardians-bytes)) (len bytes)) ERR_GSU_CHECK_OVERLAY)
+    ;; Ensure there are no duplicated addresses
+    (asserts! (is-eq (len eth-addresses) (get value cursor-guardians-count)) ERR_DUPLICATED_GUARDIAN_ADDRESSES)
     ;; Ensure that this message was emitted from authorized module
     (asserts! (is-eq (get value cursor-module) CORE_STRING_MODULE) 
       ERR_GSU_CHECK_MODULE)
