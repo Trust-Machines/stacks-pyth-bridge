@@ -50,16 +50,6 @@ plan:
     - id: 0
       transactions:
         - emulated-contract-publish:
-            contract-name: hk-cursor-v2
-            emulated-sender: SP2J933XB2CP2JQ1A4FGN8JA968BBG3NK3EKZ7Q9F
-            path: "./.cache/requirements/SP2J933XB2CP2JQ1A4FGN8JA968BBG3NK3EKZ7Q9F.hk-cursor-v2.clar"
-            clarity-version: 2
-        - emulated-contract-publish:
-            contract-name: hk-ecc-v1
-            emulated-sender: SP2J933XB2CP2JQ1A4FGN8JA968BBG3NK3EKZ7Q9F
-            path: "./.cache/requirements/SP2J933XB2CP2JQ1A4FGN8JA968BBG3NK3EKZ7Q9F.hk-ecc-v1.clar"
-            clarity-version: 2
-        - emulated-contract-publish:
             contract-name: hk-merkle-tree-keccak160-v1
             emulated-sender: SP2J933XB2CP2JQ1A4FGN8JA968BBG3NK3EKZ7Q9F
             path: "./.cache/requirements/SP2J933XB2CP2JQ1A4FGN8JA968BBG3NK3EKZ7Q9F.hk-merkle-tree-keccak160-v1.clar"
