@@ -313,28 +313,16 @@
     ema-conf: (get ema-conf entry)
   })
 
-(define-private (read-buff-1 (cursor { bytes: (buff 8192), pos: uint }))
+(define-private (read-buff (cursor { bytes: (buff 8192), pos: uint }) (size uint))
     (ok { 
-        value: (unwrap! (as-max-len? (unwrap! (slice? (get bytes cursor) (get pos cursor) (+ (get pos cursor) u1)) (err u1)) u1) (err u1)), 
-        next: { bytes: (get bytes cursor), pos: (+ (get pos cursor) u1) }
-    }))
-
-(define-private (read-buff-2 (cursor { bytes: (buff 8192), pos: uint }))
-    (ok { 
-        value: (unwrap! (as-max-len? (unwrap! (slice? (get bytes cursor) (get pos cursor) (+ (get pos cursor) u2)) (err u1)) u2) (err u1)), 
-        next: { bytes: (get bytes cursor), pos: (+ (get pos cursor) u2) }
+        value: (unwrap! (slice? (get bytes cursor) (get pos cursor) (+ (get pos cursor) size)) (err u1)), 
+        next: { bytes: (get bytes cursor), pos: (+ (get pos cursor) size) }
     }))
 
 (define-private (read-buff-4 (cursor { bytes: (buff 8192), pos: uint }))
     (ok { 
         value: (unwrap! (as-max-len? (unwrap! (slice? (get bytes cursor) (get pos cursor) (+ (get pos cursor) u4)) (err u1)) u4) (err u1)), 
         next: { bytes: (get bytes cursor), pos: (+ (get pos cursor) u4) }
-    }))
-
-(define-private (read-buff-8 (cursor { bytes: (buff 8192), pos: uint }))
-    (ok { 
-        value: (unwrap! (as-max-len? (unwrap! (slice? (get bytes cursor) (get pos cursor) (+ (get pos cursor) u8)) (err u1)) u8) (err u1)), 
-        next: { bytes: (get bytes cursor), pos: (+ (get pos cursor) u8) }
     }))
 
 (define-read-only (read-buff-20 (cursor { bytes: (buff 8192), pos: uint }))
@@ -360,20 +348,20 @@
       })))
 
 (define-private (read-uint-8 (cursor { bytes: (buff 8192), pos: uint }))
-    (let ((cursor-bytes (try! (read-buff-1 cursor))))
-        (ok (merge cursor-bytes { value: (buff-to-uint-be (get value cursor-bytes)) }))))
+    (let ((cursor-bytes (try! (read-buff cursor u1))))
+        (ok (merge cursor-bytes { value: (buff-to-uint-be (unwrap-panic (as-max-len? (get value cursor-bytes) u1))) }))))
 
 (define-private (read-uint-16 (cursor { bytes: (buff 8192), pos: uint }))
-    (let ((cursor-bytes (try! (read-buff-2 cursor))))
-        (ok (merge cursor-bytes { value: (buff-to-uint-be (get value cursor-bytes)) }))))
+    (let ((cursor-bytes (try! (read-buff cursor u2))))
+        (ok (merge cursor-bytes { value: (buff-to-uint-be (unwrap-panic (as-max-len? (get value cursor-bytes) u2))) }))))
 
 (define-private (read-uint-32 (cursor { bytes: (buff 8192), pos: uint }))
-    (let ((cursor-bytes (try! (read-buff-4 cursor))))
-        (ok (merge cursor-bytes { value: (buff-to-uint-be (get value cursor-bytes)) }))))
+    (let ((cursor-bytes (try! (read-buff cursor u4))))
+        (ok (merge cursor-bytes { value: (buff-to-uint-be (unwrap-panic (as-max-len? (get value cursor-bytes) u4))) }))))
 
 (define-private (read-uint-64 (cursor { bytes: (buff 8192), pos: uint }))
-    (let ((cursor-bytes (try! (read-buff-8 cursor))))
-        (ok (merge cursor-bytes { value: (buff-to-uint-be (get value cursor-bytes)) }))))
+    (let ((cursor-bytes (try! (read-buff cursor u8))))
+        (ok (merge cursor-bytes { value: (buff-to-uint-be (unwrap-panic (as-max-len? (get value cursor-bytes) u8))) }))))
 
 (define-private (slice (cursor { bytes: (buff 8192), pos: uint }) (size (optional uint)))
     (match (slice? (get bytes cursor) 
@@ -384,13 +372,13 @@
         bytes bytes 0x))
 
 (define-private (read-int-32 (cursor { bytes: (buff 8192), pos: uint }))
-    (let ((cursor-bytes (try! (read-buff-4 cursor))))
+    (let ((cursor-bytes (try! (read-buff cursor u4))))
         (ok (merge 
             cursor-bytes 
-            { value: (bit-shift-right (bit-shift-left (buff-to-int-be (get value cursor-bytes)) u96) u96) }))))
+            { value: (bit-shift-right (bit-shift-left (buff-to-int-be (unwrap-panic (as-max-len? (get value cursor-bytes) u4))) u96) u96) }))))
 
 (define-private (read-int-64 (cursor { bytes: (buff 8192), pos: uint }))
-    (let ((cursor-bytes (try! (read-buff-8 cursor))))
+    (let ((cursor-bytes (try! (read-buff cursor u8))))
         (ok (merge 
             cursor-bytes 
-            { value: (bit-shift-right (bit-shift-left (buff-to-int-be (get value cursor-bytes)) u64) u64) }))))
+            { value: (bit-shift-right (bit-shift-left (buff-to-int-be (unwrap-panic (as-max-len? (get value cursor-bytes) u8))) u64) u64) }))))
