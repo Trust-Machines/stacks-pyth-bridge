@@ -163,9 +163,10 @@
         (sequence (unwrap! (read-uint-64 vaa-bytes (+ singnatures-offset u42)) ERR_VAA_PARSING_SEQUENCE))
         (consistency-level (unwrap! (read-uint-8 vaa-bytes (+ singnatures-offset u50)) ERR_VAA_PARSING_CONSISTENCY_LEVEL))
         (payload (unwrap! (slice? vaa-bytes (+ singnatures-offset u51) vaa-bytes-len) ERR_VAA_PARSING_PAYLOAD))
-        (public-keys-results (filter empty-key (map recover-public-key signatures (list vaa-body-hash vaa-body-hash vaa-body-hash vaa-body-hash vaa-body-hash 
+        (vaa-body-hash-list (unwrap-panic (slice? (list vaa-body-hash vaa-body-hash vaa-body-hash vaa-body-hash vaa-body-hash 
           vaa-body-hash vaa-body-hash vaa-body-hash vaa-body-hash vaa-body-hash vaa-body-hash 
-          vaa-body-hash vaa-body-hash vaa-body-hash vaa-body-hash vaa-body-hash vaa-body-hash vaa-body-hash vaa-body-hash))))
+          vaa-body-hash vaa-body-hash vaa-body-hash vaa-body-hash vaa-body-hash vaa-body-hash vaa-body-hash vaa-body-hash) u0 (len signatures))))
+        (public-keys-results (filter empty-key (map recover-public-key signatures vaa-body-hash-list)))
       )
     (ok { 
         vaa: {

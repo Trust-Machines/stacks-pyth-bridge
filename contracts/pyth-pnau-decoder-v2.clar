@@ -51,12 +51,13 @@
 ;;;; Private functions
 ;; #[filter(pnau-bytes, wormhole-core-address)]
 (define-private (decode-pnau-price-update (pnau-bytes (buff 8192)) (wormhole-core-address <wormhole-core-trait>))
-  (let ((cursor-pnau-header (try! (parse-pnau-header pnau-bytes)))
-        (cursor-pnau-vaa-size (try! (read-uint-16 (get next cursor-pnau-header))))
-        (cursor-pnau-vaa (try! (read-buff-8192-max (get next cursor-pnau-vaa-size) (some (get value cursor-pnau-vaa-size)))))
-        (vaa (try! (contract-call? wormhole-core-address parse-and-verify-vaa (get value cursor-pnau-vaa))))
+  (let ((pnau-header (try! (parse-pnau-header pnau-bytes)))
+        (offset (get pos pnau-header))
+        (pnau-vaa-size (try! (read-uint-16 pnau-bytes offset)))
+        (pnau-vaa (try! (read-buff-8192-max pnau-bytes (+ offset u2) (some pnau-vaa-size))))
+        (vaa (try! (contract-call? wormhole-core-address parse-and-verify-vaa pnau-vaa)))
         (cursor-merkle-root-data (try! (parse-merkle-root-data-from-vaa-payload (get payload vaa))))
-        (decoded-prices-updates (try! (parse-and-verify-prices-updates (slice (get next cursor-pnau-vaa) none) (get merkle-root-hash (get value cursor-merkle-root-data)))))
+        (decoded-prices-updates (try! (parse-and-verify-prices-updates (slice pnau-bytes (+ offset u2 pnau-vaa-size) none) (get merkle-root-hash (get value cursor-merkle-root-data)))))
         (prices-updates (map cast-decoded-price decoded-prices-updates))
         (authorized-prices-data-sources (contract-call? .pyth-governance-v2 get-authorized-prices-data-sources)))
     ;; Ensure that update was published by an data source authorized by governance
@@ -67,64 +68,61 @@
     (ok prices-updates)))
 
 (define-private (parse-merkle-root-data-from-vaa-payload (payload-vaa-bytes (buff 8192)))
-  (let ((cursor-payload-type (unwrap! (read-buff-4 { bytes: payload-vaa-bytes, pos: u0 }) ERR_INVALID_AUWV))
-        (cursor-wh-update-type (unwrap! (read-uint-8 (get next cursor-payload-type)) ERR_INVALID_AUWV))
-        (cursor-merkle-root-slot (unwrap! (read-uint-64 (get next cursor-wh-update-type)) ERR_INVALID_AUWV))
-        (cursor-merkle-root-ring-size (unwrap! (read-uint-32 (get next cursor-merkle-root-slot)) ERR_INVALID_AUWV))
-        (cursor-merkle-root-hash (unwrap! (read-buff-20 (get next cursor-merkle-root-ring-size)) ERR_INVALID_AUWV)))
+  (let ((payload-type (unwrap! (read-buff-4 payload-vaa-bytes u0) ERR_INVALID_AUWV))
+        (wh-update-type (unwrap! (read-uint-8 payload-vaa-bytes u4) ERR_INVALID_AUWV))
+        (merkle-root-slot (unwrap! (read-uint-64 payload-vaa-bytes u5) ERR_INVALID_AUWV))
+        (merkle-root-ring-size (unwrap! (read-uint-32 payload-vaa-bytes u13) ERR_INVALID_AUWV))
+        (merkle-root-hash (unwrap! (read-buff-20 payload-vaa-bytes u17) ERR_INVALID_AUWV)))
     ;; Check payload type
-    (asserts! (is-eq (get value cursor-payload-type) AUWV_MAGIC) ERR_MAGIC_BYTES)
+    (asserts! (is-eq payload-type AUWV_MAGIC) ERR_MAGIC_BYTES)
     ;; Check update type
-    (asserts! (is-eq (get value cursor-wh-update-type) UPDATE_TYPE_WORMHOLE_MERKLE) ERR_PROOF_TYPE)
+    (asserts! (is-eq wh-update-type UPDATE_TYPE_WORMHOLE_MERKLE) ERR_PROOF_TYPE)
     (ok {
       value: {
-        merkle-root-slot: (get value cursor-merkle-root-slot),
-        merkle-root-ring-size: (get value cursor-merkle-root-ring-size),
-        merkle-root-hash: (get value cursor-merkle-root-hash),
-        payload-type: (get value cursor-payload-type)
+        merkle-root-slot: merkle-root-slot,
+        merkle-root-ring-size: merkle-root-ring-size,
+        merkle-root-hash: merkle-root-hash,
+        payload-type: payload-type
       },
-      next: (get next cursor-merkle-root-hash)
+      next: merkle-root-hash
     })))
 
 (define-private (parse-pnau-header (pf-bytes (buff 8192)))
-  (let ((cursor-magic (unwrap! (read-buff-4 { bytes: pf-bytes, pos: u0 }) ERR_MAGIC_BYTES))
-        (cursor-version-maj (unwrap! (read-uint-8 (get next cursor-magic)) ERR_VERSION_MAJ))
-        (cursor-version-min (unwrap! (read-uint-8 (get next cursor-version-maj)) ERR_VERSION_MIN))
-        (cursor-header-trailing-size (unwrap! (read-uint-8 (get next cursor-version-min)) ERR_HEADER_TRAILING_SIZE))
-        (cursor-proof-type (unwrap! (read-uint-8 {
-            bytes: pf-bytes,
-            pos: (+ (get pos (get next cursor-header-trailing-size)) (get value cursor-header-trailing-size))})
-          ERR_PROOF_TYPE)))
+  (let ((magic (unwrap! (read-buff-4 pf-bytes u0) ERR_MAGIC_BYTES))
+        (version-major (unwrap! (read-uint-8 pf-bytes u4) ERR_VERSION_MAJ))
+        (version-minor (unwrap! (read-uint-8 pf-bytes u5) ERR_VERSION_MIN))
+        (header-trailing-size (unwrap! (read-uint-8 pf-bytes u6) ERR_HEADER_TRAILING_SIZE))
+        (proof-type (unwrap! (read-uint-8 pf-bytes (+ u7 header-trailing-size)) ERR_PROOF_TYPE)))
     ;; Check magic bytes
-    (asserts! (is-eq (get value cursor-magic) PNAU_MAGIC) ERR_MAGIC_BYTES)
+    (asserts! (is-eq magic PNAU_MAGIC) ERR_MAGIC_BYTES)
     ;; Check major version
-    (asserts! (is-eq (get value cursor-version-maj) PYTHNET_MAJOR_VERSION) ERR_VERSION_MAJ)
+    (asserts! (is-eq version-major PYTHNET_MAJOR_VERSION) ERR_VERSION_MAJ)
     ;; Check minor version
-    (asserts! (>= (get value cursor-version-min) PYTHNET_MINOR_VERSION) ERR_VERSION_MIN)
+    (asserts! (>= version-minor PYTHNET_MINOR_VERSION) ERR_VERSION_MIN)
     ;; Check proof type
-    (asserts! (is-eq (get value cursor-proof-type) UPDATE_TYPE_WORMHOLE_MERKLE) ERR_PROOF_TYPE)
+    (asserts! (is-eq proof-type UPDATE_TYPE_WORMHOLE_MERKLE) ERR_PROOF_TYPE)
     (ok {
       value: {
-        magic: (get value cursor-magic),
-        version-maj: (get value cursor-version-maj),
-        version-min: (get value cursor-version-min),
-        header-trailing-size: (get value cursor-header-trailing-size),
-        proof-type: (get value cursor-proof-type)
+        magic: magic,
+        version-major: version-major,
+        version-minor: version-minor,
+        header-trailing-size: header-trailing-size,
+        proof-type: proof-type
       },
-      next: (get next cursor-proof-type)
+      pos: (+ header-trailing-size u8)
     })))
 
 (define-private (parse-and-verify-prices-updates (bytes (buff 8192)) (merkle-root-hash (buff 20)))
-  (let ((cursor-num-updates (try! (read-uint-8 { bytes: bytes, pos: u0 })))
-        (cursor-updates-bytes (slice (get next cursor-num-updates) none))
-        (updates-data (fold parse-price-info-and-proof cursor-updates-bytes {
+  (let ((num-updates (try! (read-uint-8 bytes u0)))
+        (updates-bytes (slice bytes u1 none))
+        (updates-data (fold parse-price-info-and-proof updates-bytes {
           result: (list), 
           cursor: {
             index: u0,
             next-update-index: u0
           },
-          bytes: cursor-updates-bytes,
-          limit: (get value cursor-num-updates) 
+          bytes: updates-bytes,
+          limit: num-updates
         }))
         (updates (get result updates-data))
         (merkle-proof-checks-success (get result (fold check-merkle-proof updates {
@@ -132,7 +130,7 @@
           merkle-root-hash: merkle-root-hash
         }))))
     (asserts! merkle-proof-checks-success ERR_MERKLE_ROOT_MISMATCH)
-    (asserts! (is-eq (get value cursor-num-updates) (len updates)) ERR_INCORRECT_AUWV_PAYLOAD)
+    (asserts! (is-eq num-updates (len updates)) ERR_INCORRECT_AUWV_PAYLOAD)
     ;; Overlay check; 1 is added because 1 byte is used to store "cursor-num-updates"
     (asserts! (is-eq (+ u1 (get next-update-index (get cursor updates-data))) (len bytes)) ERR_OVERLAY_PRESENT)
     (ok updates)))
@@ -191,20 +189,22 @@
     acc
     (if (is-eq (get index (get cursor acc)) (get next-update-index (get cursor acc)))
       ;; Parse update
-      (let ((cursor-message-size (unwrap-panic (read-uint-16 {bytes: (get bytes acc), pos: (get index (get cursor acc))})))
-            (cursor-message-type (unwrap-panic (read-uint-8 (get next cursor-message-size))))
-            (cursor-price-identifier (unwrap-panic (read-buff-32 (get next cursor-message-type))))
-            (cursor-price (unwrap-panic (read-int-64 (get next cursor-price-identifier))))
-            (cursor-conf (unwrap-panic (read-uint-64 (get next cursor-price))))
-            (cursor-expo (unwrap-panic (read-int-32 (get next cursor-conf))))
-            (cursor-publish-time (unwrap-panic (read-uint-64 (get next cursor-expo))))
-            (cursor-prev-publish-time (unwrap-panic (read-uint-64 (get next cursor-publish-time))))
-            (cursor-ema-price (unwrap-panic (read-int-64 (get next cursor-prev-publish-time))))
-            (cursor-ema-conf (unwrap-panic (read-uint-64 (get next cursor-ema-price))))
-            (cursor-proof { bytes: (get bytes (get next cursor-message-size)), pos: (+ (get pos (get next cursor-message-size)) (get value cursor-message-size)) })
-            (cursor-proof-size (unwrap-panic (read-uint-8 cursor-proof)))
-            (proof-bytes (slice (get next cursor-proof-size) (some (* MERKLE_PROOF_HASH_SIZE (get value cursor-proof-size)))))
-            (leaf-bytes (slice (get next cursor-message-size) (some (get value cursor-message-size))))
+      (let ((offset (get index (get cursor acc)))
+            (bytes (get bytes acc))
+            (message-size (unwrap-panic (read-uint-16 bytes offset)))
+            (message-type (unwrap-panic (read-uint-8 bytes (+ offset u2))))
+            (price-identifier (unwrap-panic (read-buff-32 bytes (+ offset u3))))
+            (price (unwrap-panic (read-int-64 bytes (+ offset u35))))
+            (conf (unwrap-panic (read-uint-64 bytes (+ offset u43))))
+            (expo (unwrap-panic (read-int-32 bytes (+ offset u51))))
+            (publish-time (unwrap-panic (read-uint-64 bytes (+ offset u55))))
+            (prev-publish-time (unwrap-panic (read-uint-64 bytes (+ offset u63))))
+            (ema-price (unwrap-panic (read-int-64 bytes (+ offset u71))))
+            (ema-conf (unwrap-panic (read-uint-64 bytes (+ offset u79))))
+            (proof-offset (+ (+ offset u2) message-size))
+            (proof-size (unwrap-panic (read-uint-8 bytes proof-offset)))
+            (proof-bytes (slice bytes (+ proof-offset u1) (some (* MERKLE_PROOF_HASH_SIZE proof-size))))
+            (leaf-bytes (slice bytes (+ offset u2) (some message-size)))
             (proof (get result (fold parse-proof proof-bytes { 
               result: (list),
               cursor: {
@@ -212,10 +212,10 @@
                 next-update-index: u0
               },
               bytes: proof-bytes,
-              limit: (get value cursor-proof-size)
+              limit: proof-size
             }))))
         ;; Check cursor-message-type
-        (unwrap-panic (if (is-eq (get value cursor-message-type) MESSAGE_TYPE_PRICE_FEED) (ok true) (err ERR_UPDATE_TYPE)))
+        (unwrap-panic (if (is-eq message-type MESSAGE_TYPE_PRICE_FEED) (ok true) (err ERR_UPDATE_TYPE)))
         {
           cursor: { 
             index: (+ (get index (get cursor acc)) u1),
@@ -223,20 +223,20 @@
               (+
                 (get index (get cursor acc))
                 u2
-                (get value cursor-message-size)
+                message-size
                 u1
-                (* (get value cursor-proof-size) MERKLE_PROOF_HASH_SIZE)),
+                (* proof-size MERKLE_PROOF_HASH_SIZE)),
           },
           bytes: (get bytes acc),
           result: (unwrap-panic (as-max-len? (append (get result acc) {
-            price-identifier: (get value cursor-price-identifier),
-            price: (get value cursor-price),
-            conf: (get value cursor-conf),
-            expo:(get value cursor-expo),
-            publish-time: (get value cursor-publish-time),
-            prev-publish-time: (get value cursor-prev-publish-time),
-            ema-price: (get value cursor-ema-price),
-            ema-conf: (get value cursor-ema-conf),
+            price-identifier: price-identifier,
+            price: price,
+            conf: conf,
+            expo: expo,
+            publish-time: publish-time,
+            prev-publish-time: prev-publish-time,
+            ema-price: ema-price,
+            ema-conf: ema-conf,
             proof: proof,
             leaf-bytes: (unwrap-panic (as-max-len? leaf-bytes u255))
           }) u64)),
@@ -268,7 +268,7 @@
     acc
     (if (is-eq (get index (get cursor acc)) (get next-update-index (get cursor acc)))
       ;; Parse update
-      (let ((hash (get value (unwrap-panic (read-buff-20 {bytes: (get bytes acc), pos: (get index (get cursor acc))})))))
+      (let ((hash (unwrap-panic (read-buff-20 (get bytes acc) (get index (get cursor acc))))))
         {
           cursor: { 
             index: (+ (get index (get cursor acc)) u1),
@@ -313,75 +313,49 @@
     ema-conf: (get ema-conf entry)
   })
 
-(define-private (read-buff (cursor { bytes: (buff 8192), pos: uint }) (size uint))
-    (ok { 
-        value: (unwrap! (slice? (get bytes cursor) (get pos cursor) (+ (get pos cursor) size)) (err u1)), 
-        next: { bytes: (get bytes cursor), pos: (+ (get pos cursor) size) }
-    }))
+(define-private (read-buff (bytes (buff 8192)) (pos uint) (length uint))
+  (ok (unwrap! (slice? bytes pos (+ pos length)) (err u1))))
 
-(define-private (read-buff-4 (cursor { bytes: (buff 8192), pos: uint }))
-    (ok { 
-        value: (unwrap! (as-max-len? (unwrap! (slice? (get bytes cursor) (get pos cursor) (+ (get pos cursor) u4)) (err u1)) u4) (err u1)), 
-        next: { bytes: (get bytes cursor), pos: (+ (get pos cursor) u4) }
-    }))
+(define-private (read-buff-4 (bytes (buff 8192)) (pos uint))
+  (ok (unwrap! (as-max-len? (unwrap! (slice? bytes pos (+ pos u4)) (err u1)) u4) (err u1))))
 
-(define-read-only (read-buff-20 (cursor { bytes: (buff 8192), pos: uint }))
-    (ok { 
-        value: (unwrap! (as-max-len? (unwrap! (slice? (get bytes cursor) (get pos cursor) (+ (get pos cursor) u20)) (err u1)) u20) (err u1)), 
-        next: { bytes: (get bytes cursor), pos: (+ (get pos cursor) u20) }
-    }))
+(define-private (read-buff-20 (bytes (buff 8192)) (pos uint))
+  (ok (unwrap! (as-max-len? (unwrap! (slice? bytes pos (+ pos u20)) (err u1)) u20) (err u1))))
 
-(define-private (read-buff-32 (cursor { bytes: (buff 8192), pos: uint }))
-    (ok { 
-        value: (unwrap! (as-max-len? (unwrap! (slice? (get bytes cursor) (get pos cursor) (+ (get pos cursor) u32)) (err u1)) u32) (err u1)), 
-        next: { bytes: (get bytes cursor), pos: (+ (get pos cursor) u32) }
-    }))
+(define-private (read-buff-32 (bytes (buff 8192)) (pos uint))
+  (ok (unwrap! (as-max-len? (unwrap! (slice? bytes pos (+ pos u32)) (err u1)) u32) (err u1))))
 
-(define-private (read-buff-8192-max (cursor { bytes: (buff 8192), pos: uint }) (size (optional uint)))
-    (let ((min (get pos cursor))
-          (max (match size value 
-            (+ value (get pos cursor))
-            (len (get bytes cursor)))))
-      (ok { 
-          value: (unwrap! (as-max-len? (unwrap! (slice? (get bytes cursor) min max) (err u1)) u8192) (err u1)), 
-          next: { bytes: (get bytes cursor), pos: max }
-      })))
+(define-private (read-buff-8192-max (bytes (buff 8192)) (pos uint) (size (optional uint)))
+  (let ((min pos)
+        (max (match size value (+ value pos) (len bytes))))
+    (ok (unwrap! (as-max-len? (unwrap! (slice? bytes min max) (err u1)) u8192) (err u1)))))
 
-(define-private (read-uint-8 (cursor { bytes: (buff 8192), pos: uint }))
-    (let ((cursor-bytes (try! (read-buff cursor u1))))
-        (ok (merge cursor-bytes { value: (buff-to-uint-be (unwrap-panic (as-max-len? (get value cursor-bytes) u1))) }))))
+(define-private (read-uint-8 (bytes (buff 8192)) (pos uint))
+    (let ((cursor-bytes (try! (read-buff bytes pos u1))))
+        (ok (buff-to-uint-be (unwrap-panic (as-max-len? cursor-bytes u1))))))
 
-(define-private (read-uint-16 (cursor { bytes: (buff 8192), pos: uint }))
-    (let ((cursor-bytes (try! (read-buff cursor u2))))
-        (ok (merge cursor-bytes { value: (buff-to-uint-be (unwrap-panic (as-max-len? (get value cursor-bytes) u2))) }))))
+(define-private (read-uint-16 (bytes (buff 8192)) (pos uint))
+    (let ((cursor-bytes (try! (read-buff bytes pos u2))))
+        (ok (buff-to-uint-be (unwrap-panic (as-max-len? cursor-bytes u2))))))
 
-(define-private (read-uint-32 (cursor { bytes: (buff 8192), pos: uint }))
-    (let ((cursor-bytes (try! (read-buff cursor u4))))
-        (ok (merge cursor-bytes { value: (buff-to-uint-be (unwrap-panic (as-max-len? (get value cursor-bytes) u4))) }))))
+(define-private (read-uint-32 (bytes (buff 8192)) (pos uint))
+    (let ((cursor-bytes (try! (read-buff bytes pos u4))))
+        (ok (buff-to-uint-be (unwrap-panic (as-max-len? cursor-bytes u4))))))
 
-(define-private (read-uint-64 (cursor { bytes: (buff 8192), pos: uint }))
-    (let ((cursor-bytes (try! (read-buff cursor u8))))
-        (ok (merge cursor-bytes { value: (buff-to-uint-be (unwrap-panic (as-max-len? (get value cursor-bytes) u8))) }))))
+(define-private (read-uint-64 (bytes (buff 8192)) (pos uint))
+    (let ((cursor-bytes (try! (read-buff bytes pos u8))))
+        (ok (buff-to-uint-be (unwrap-panic (as-max-len? cursor-bytes u8))))))
 
-(define-private (slice (cursor { bytes: (buff 8192), pos: uint }) (size (optional uint)))
-    (match (slice? (get bytes cursor) 
-                   (get pos cursor) 
-                   (match size value 
-                   (+ (get pos cursor) value)    
-                      (len (get bytes cursor))))
-        bytes bytes 0x))
+(define-private (slice (bytes (buff 8192)) (pos uint) (size (optional uint)))
+    (match (slice? bytes pos (match size value (+ pos value) (len bytes))) b b 0x))
 
-(define-private (read-int-32 (cursor { bytes: (buff 8192), pos: uint }))
-    (let ((cursor-bytes (try! (read-buff cursor u4))))
-        (ok (merge 
-            cursor-bytes 
-            { value: (bit-shift-right (bit-shift-left (buff-to-int-be (unwrap-panic (as-max-len? (get value cursor-bytes) u4))) u96) u96) }))))
+(define-private (read-int-32 (bytes (buff 8192)) (pos uint))
+    (let ((cursor-bytes (try! (read-buff bytes pos u4))))
+        (ok (bit-shift-right (bit-shift-left (buff-to-int-be (unwrap-panic (as-max-len? cursor-bytes u4))) u96) u96))))
 
-(define-private (read-int-64 (cursor { bytes: (buff 8192), pos: uint }))
-    (let ((cursor-bytes (try! (read-buff cursor u8))))
-        (ok (merge 
-            cursor-bytes 
-            { value: (bit-shift-right (bit-shift-left (buff-to-int-be (unwrap-panic (as-max-len? (get value cursor-bytes) u8))) u64) u64) }))))
+(define-private (read-int-64 (bytes (buff 8192)) (pos uint))
+    (let ((cursor-bytes (try! (read-buff bytes pos u8))))
+        (ok (bit-shift-right (bit-shift-left (buff-to-int-be (unwrap-panic (as-max-len? cursor-bytes u8))) u64) u64))))
 
 (define-private (check-proof (root-hash (buff 20)) (leaf (buff 255)) (path (list 255 (buff 20))))
     (let ((hashed-leaf (hash-leaf leaf))

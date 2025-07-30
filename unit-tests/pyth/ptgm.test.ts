@@ -2,7 +2,7 @@ import { Cl, ClarityType } from "@stacks/transactions";
 import { beforeEach, describe, expect, it } from "vitest";
 import { wormhole } from "../wormhole/helpers";
 import { pyth } from "./helpers";
-import { bytesToHex, hexToBytes } from "@noble/hashes/utils";
+import { hexToBytes } from "@noble/hashes/utils";
 import { ParsedTransactionResult } from "@hirosystems/clarinet-sdk";
 import { ptgmTestnetVaas } from "./fixtures";
 
