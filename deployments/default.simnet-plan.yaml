@@ -50,14 +50,6 @@ plan:
     - id: 0
       transactions:
         - emulated-contract-publish:
-            contract-name: hk-merkle-tree-keccak160-v1
-            emulated-sender: SP2J933XB2CP2JQ1A4FGN8JA968BBG3NK3EKZ7Q9F
-            path: "./.cache/requirements/SP2J933XB2CP2JQ1A4FGN8JA968BBG3NK3EKZ7Q9F.hk-merkle-tree-keccak160-v1.clar"
-            clarity-version: 2
-      epoch: "2.4"
-    - id: 1
-      transactions:
-        - emulated-contract-publish:
             contract-name: wormhole-traits-v1
             emulated-sender: ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM
             path: contracts/wormhole/wormhole-traits-v1.clar

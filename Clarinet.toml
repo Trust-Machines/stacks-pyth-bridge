@@ -5,9 +5,6 @@ authors = []
 telemetry = false
 cache_dir = './.cache'
 
-[[project.requirements]]
-contract_id = 'SP2J933XB2CP2JQ1A4FGN8JA968BBG3NK3EKZ7Q9F.hk-merkle-tree-keccak160-v1'
-
 [contracts.pyth-governance-v2]
 path = 'contracts/pyth-governance-v2.clar'
 clarity_version = 3
