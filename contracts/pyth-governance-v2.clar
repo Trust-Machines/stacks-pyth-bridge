@@ -360,79 +360,78 @@
     (ok true)))
 
 (define-private (parse-and-verify-ptgm (ptgm-bytes (buff 8192)) (sequence uint))
-  (let ((cursor-magic (unwrap! (read-buff-4 { bytes: ptgm-bytes, pos: u0 }) ERR_INVALID_PTGM))
-        (cursor-module (unwrap! (read-buff-1 (get next cursor-magic)) ERR_INVALID_PTGM))
-        (cursor-action (unwrap! (read-buff-1 (get next cursor-module)) ERR_INVALID_PTGM))
-        (cursor-target-chain-id (unwrap! (read-buff-2 (get next cursor-action)) ERR_INVALID_PTGM))
-        (cursor-body (unwrap! (read-buff-8192-max (get next cursor-target-chain-id) none) ERR_INVALID_PTGM))
-        (overlay-check (asserts! (is-eq (get pos (get next cursor-body)) (len ptgm-bytes)) ERR_PTGM_CHECK_OVERLAY)))
+  (let ((magic (unwrap! (read-buff-4 ptgm-bytes u0) ERR_INVALID_PTGM))
+        (module (unwrap! (read-buff-1 ptgm-bytes u4) ERR_INVALID_PTGM))
+        (action (unwrap! (read-buff-1 ptgm-bytes u5) ERR_INVALID_PTGM))
+        (target-chain-id (unwrap! (read-buff-2 ptgm-bytes u6) ERR_INVALID_PTGM))
+        (body (unwrap! (read-buff-8192-max ptgm-bytes u8 none) ERR_INVALID_PTGM))
+      )
     ;; Check magic bytes
-    (asserts! (is-eq (get value cursor-magic) PTGM_MAGIC) ERR_INVALID_PTGM)
+    (asserts! (is-eq magic PTGM_MAGIC) ERR_INVALID_PTGM)
     ;; Check target-chain-id
-    (asserts! (is-eq (get value cursor-target-chain-id) EXPECTED_CHAIN_ID) ERR_INVALID_PTGM)
+    (asserts! (is-eq target-chain-id EXPECTED_CHAIN_ID) ERR_INVALID_PTGM)
     ;; Check module
-    (asserts! (is-eq (get value cursor-module) EXPECTED_MODULE) ERR_INVALID_PTGM)
+    (asserts! (is-eq module EXPECTED_MODULE) ERR_INVALID_PTGM)
     ;; Check Sequence
     (asserts! (> sequence (var-get last-sequence-processed)) ERR_OUTDATED)
     ;; Update Sequence
     (var-set last-sequence-processed sequence)
     (ok { 
-      action: (get value cursor-action), 
-      target-chain-id: (get value cursor-target-chain-id), 
-      module: (get value cursor-module),
-      cursor: cursor-target-chain-id,
-      body: (get value cursor-body)
+      action: action, 
+      target-chain-id: target-chain-id, 
+      module: module,
+      cursor: target-chain-id,
+      body: body
     })))
 
 (define-private (parse-and-verify-fee-value (ptgm-body (buff 8192)))
-  (let ((cursor-mantissa (unwrap! (read-uint-64 {bytes: ptgm-body, pos: u0}) ERR_INVALID_ACTION_PAYLOAD))
-        (cursor-exponent (unwrap! (read-uint-64 (get next cursor-mantissa)) ERR_INVALID_ACTION_PAYLOAD)))
-    (asserts! (is-eq (get pos (get next cursor-exponent)) (len ptgm-body)) ERR_PTGM_CHECK_OVERLAY)
+  (let ((mantissa (unwrap! (read-uint-64 ptgm-body u0) ERR_INVALID_ACTION_PAYLOAD))
+        (exponent (unwrap! (read-uint-64 ptgm-body u8) ERR_INVALID_ACTION_PAYLOAD)))
+    (asserts! (is-eq u16 (len ptgm-body)) ERR_PTGM_CHECK_OVERLAY)
     (ok { 
-      mantissa: (get value cursor-mantissa), 
-      exponent: (get value cursor-exponent) 
+      mantissa: mantissa, 
+      exponent: exponent 
     })))
 
 (define-private (parse-and-verify-stale-price-threshold (ptgm-body (buff 8192)))
-  (let ((cursor-stale-price-threshold (unwrap! (read-uint-64 {bytes: ptgm-body, pos: u0}) ERR_INVALID_ACTION_PAYLOAD)))
-    (asserts! (is-eq (get pos (get next cursor-stale-price-threshold)) (len ptgm-body)) ERR_PTGM_CHECK_OVERLAY)     
-    (ok (get value cursor-stale-price-threshold))))
+  (let ((stale-price-threshold-val (unwrap! (read-uint-64 ptgm-body u0) ERR_INVALID_ACTION_PAYLOAD)))
+    (asserts! (is-eq u8 (len ptgm-body)) ERR_PTGM_CHECK_OVERLAY)     
+    (ok stale-price-threshold-val)))
 
 (define-private (parse-and-verify-governance-data-source (ptgm-body (buff 8192)))
-  (let ((cursor-emitter-chain (unwrap! (read-uint-16 {bytes: ptgm-body, pos: u0})
-          ERR_INVALID_ACTION_PAYLOAD))
-        (cursor-emitter-sequence (unwrap! (read-uint-64 (get next cursor-emitter-chain)) ERR_INVALID_ACTION_PAYLOAD))
-        (cursor-emitter-address (unwrap! (read-buff-32 (get next cursor-emitter-sequence)) ERR_INVALID_ACTION_PAYLOAD)))
-    (asserts! (is-eq (get pos (get next cursor-emitter-address)) (len ptgm-body)) ERR_PTGM_CHECK_OVERLAY)      
+  (let ((emitter-chain (unwrap! (read-uint-16 ptgm-body u0) ERR_INVALID_ACTION_PAYLOAD))
+        (emitter-sequence (unwrap! (read-uint-64 ptgm-body u2) ERR_INVALID_ACTION_PAYLOAD))
+        (emitter-address (unwrap! (read-buff-32 ptgm-body u10) ERR_INVALID_ACTION_PAYLOAD)))
+    (asserts! (is-eq u42 (len ptgm-body)) ERR_PTGM_CHECK_OVERLAY)      
     (ok { 
-      emitter-chain: (get value cursor-emitter-chain),
-      emitter-sequence: (get value cursor-emitter-sequence),
-      emitter-address: (get value cursor-emitter-address) 
+      emitter-chain: emitter-chain,
+      emitter-sequence: emitter-sequence,
+      emitter-address: emitter-address 
     })))
 
 (define-private (parse-principal (ptgm-body (buff 8192)))
-  (let ((cursor-principal-len (try! (read-uint-8 {bytes: ptgm-body, pos: u0})))
-        (principal-bytes (slice (get next cursor-principal-len) (some (get value cursor-principal-len))))
+  (let ((principal-len (try! (read-uint-8 ptgm-body u0)))
+        (principal-bytes (slice ptgm-body u1 (some principal-len)))
         (new-principal (unwrap! (from-consensus-buff? principal principal-bytes) ERR_INVALID_ACTION_PAYLOAD)))
-    (asserts! (is-eq (+ (get pos (get next cursor-principal-len)) (get value cursor-principal-len)) (len ptgm-body)) ERR_PTGM_CHECK_OVERLAY)    
+    (asserts! (is-eq (+ u1 principal-len) (len ptgm-body)) ERR_PTGM_CHECK_OVERLAY)    
     (asserts! (is-standard new-principal) ERR_NOT_STANDARD_PRINCIPAL)
     (ok new-principal))) 
 
 (define-private (parse-and-verify-prices-data-sources (ptgm-body (buff 8192)))
-  (let ((cursor-num-data-sources (try! (read-uint-8 {bytes: ptgm-body, pos: u0})))
-        (cursor-data-sources-bytes (slice (get next cursor-num-data-sources) none))
-        (data-sources-bundle (fold parse-data-source cursor-data-sources-bytes { 
+  (let ((num-data-sources (try! (read-uint-8 ptgm-body u0)))
+        (data-sources-bytes (slice ptgm-body u1 none))
+        (data-sources-bundle (fold parse-data-source data-sources-bytes { 
           result: (list), 
           cursor: {
             index: u0,
             next-update-index: u0
           },
-          bytes: cursor-data-sources-bytes,
-          limit: (get value cursor-num-data-sources) 
+          bytes: data-sources-bytes,
+          limit: num-data-sources 
         }))
         (data-sources (get result data-sources-bundle)))
-    (asserts! (is-eq (get next-update-index (get cursor data-sources-bundle)) (len cursor-data-sources-bytes)) ERR_PTGM_CHECK_OVERLAY)
-    (asserts! (is-eq (get value cursor-num-data-sources) (len data-sources)) ERR_INVALID_PRICE_DATA_SOURCES)  
+    (asserts! (is-eq (get next-update-index (get cursor data-sources-bundle)) (len data-sources-bytes)) ERR_PTGM_CHECK_OVERLAY)
+    (asserts! (is-eq num-data-sources (len data-sources)) ERR_INVALID_PRICE_DATA_SOURCES)  
     (ok data-sources)))
 
 (define-private (parse-data-source
@@ -450,17 +449,20 @@
     acc
     (if (is-eq (get index (get cursor acc)) (get next-update-index (get cursor acc)))
       ;; Parse update
-      (let ((cursor-emitter-chain (unwrap-panic (read-uint-16 {bytes: (get bytes acc), pos: (get index (get cursor acc))})))
-            (cursor-emitter-address (unwrap-panic (read-buff-32 (get next cursor-emitter-chain)))))
+      (let (
+            (offset (get index (get cursor acc)))
+            (bytes (get bytes acc))
+            (emitter-chain (unwrap-panic (read-uint-16 bytes offset)))
+            (emitter-address (unwrap-panic (read-buff-32 bytes (+ offset u2)))))
         {
           cursor: { 
             index: (+ (get index (get cursor acc)) u1),
             next-update-index: (+ (get index (get cursor acc)) SIZE_OF_EMITTER_DATA),
           },
-          bytes: (get bytes acc),
+          bytes: bytes,
           result: (unwrap-panic (as-max-len? (append (get result acc) { 
-            emitter-chain: (get value cursor-emitter-chain), 
-            emitter-address: (get value cursor-emitter-address) 
+            emitter-chain: emitter-chain, 
+            emitter-address: emitter-address 
           }) u255)),
           limit: (get limit acc),
         })
@@ -475,62 +477,37 @@
           limit: (get limit acc)
       })))
 
-(define-private (read-buff (cursor { bytes: (buff 8192), pos: uint }) (size uint))
-    (ok { 
-        value: (unwrap! (slice? (get bytes cursor) (get pos cursor) (+ (get pos cursor) size)) (err u1)), 
-        next: { bytes: (get bytes cursor), pos: (+ (get pos cursor) size) }
-    }))
+(define-private (read-buff (bytes (buff 8192)) (pos uint) (length uint))
+  (ok (unwrap! (slice? bytes pos (+ pos length)) (err u1))))
 
-(define-private (read-buff-1 (cursor { bytes: (buff 8192), pos: uint }))
-    (ok { 
-        value: (unwrap! (as-max-len? (unwrap! (slice? (get bytes cursor) (get pos cursor) (+ (get pos cursor) u1)) (err u1)) u1) (err u1)), 
-        next: { bytes: (get bytes cursor), pos: (+ (get pos cursor) u1) }
-    }))
+(define-private (read-buff-1 (bytes (buff 8192)) (pos uint))
+  (ok (unwrap! (as-max-len? (unwrap! (slice? bytes pos (+ pos u1)) (err u1)) u1) (err u1))))
 
-(define-private (read-buff-2 (cursor { bytes: (buff 8192), pos: uint }))
-    (ok { 
-        value: (unwrap! (as-max-len? (unwrap! (slice? (get bytes cursor) (get pos cursor) (+ (get pos cursor) u2)) (err u1)) u2) (err u1)), 
-        next: { bytes: (get bytes cursor), pos: (+ (get pos cursor) u2) }
-    }))
+(define-private (read-buff-2 (bytes (buff 8192)) (pos uint))
+  (ok (unwrap! (as-max-len? (unwrap! (slice? bytes pos (+ pos u2)) (err u1)) u2) (err u1))))
 
-(define-private (read-buff-4 (cursor { bytes: (buff 8192), pos: uint }))
-    (ok { 
-        value: (unwrap! (as-max-len? (unwrap! (slice? (get bytes cursor) (get pos cursor) (+ (get pos cursor) u4)) (err u1)) u4) (err u1)), 
-        next: { bytes: (get bytes cursor), pos: (+ (get pos cursor) u4) }
-    }))
+(define-private (read-buff-4 (bytes (buff 8192)) (pos uint))
+  (ok (unwrap! (as-max-len? (unwrap! (slice? bytes pos (+ pos u4)) (err u1)) u4) (err u1))))
 
-(define-private (read-buff-32 (cursor { bytes: (buff 8192), pos: uint }))
-    (ok { 
-        value: (unwrap! (as-max-len? (unwrap! (slice? (get bytes cursor) (get pos cursor) (+ (get pos cursor) u32)) (err u1)) u32) (err u1)), 
-        next: { bytes: (get bytes cursor), pos: (+ (get pos cursor) u32) }
-    }))
+(define-private (read-buff-32 (bytes (buff 8192)) (pos uint))
+  (ok (unwrap! (as-max-len? (unwrap! (slice? bytes pos (+ pos u32)) (err u1)) u32) (err u1))))
 
-(define-private (read-buff-8192-max (cursor { bytes: (buff 8192), pos: uint }) (size (optional uint)))
-    (let ((min (get pos cursor))
-          (max (match size value 
-            (+ value (get pos cursor))
-            (len (get bytes cursor)))))
-      (ok { 
-          value: (unwrap! (as-max-len? (unwrap! (slice? (get bytes cursor) min max) (err u1)) u8192) (err u1)), 
-          next: { bytes: (get bytes cursor), pos: max }
-      })))    
+(define-private (read-buff-8192-max (bytes (buff 8192)) (pos uint) (size (optional uint)))
+  (let ((min pos)
+        (max (match size value (+ value pos) (len bytes))))
+    (ok (unwrap! (as-max-len? (unwrap! (slice? bytes min max) (err u1)) u8192) (err u1)))))
 
-(define-private (read-uint-8 (cursor { bytes: (buff 8192), pos: uint }))
-    (let ((cursor-bytes (try! (read-buff cursor u1))))
-        (ok (merge cursor-bytes { value: (buff-to-uint-be (unwrap-panic (as-max-len? (get value cursor-bytes) u1))) }))))
+(define-private (read-uint-8 (bytes (buff 8192)) (pos uint))
+    (let ((cursor-bytes (try! (read-buff bytes pos u1))))
+        (ok (buff-to-uint-be (unwrap-panic (as-max-len? cursor-bytes u1))))))
 
-(define-private (read-uint-16 (cursor { bytes: (buff 8192), pos: uint }))
-    (let ((cursor-bytes (try! (read-buff cursor u2))))
-        (ok (merge cursor-bytes { value: (buff-to-uint-be (unwrap-panic (as-max-len? (get value cursor-bytes) u2))) }))))
+(define-private (read-uint-16 (bytes (buff 8192)) (pos uint))
+    (let ((cursor-bytes (try! (read-buff bytes pos u2))))
+        (ok (buff-to-uint-be (unwrap-panic (as-max-len? cursor-bytes u2))))))
 
-(define-private (read-uint-64 (cursor { bytes: (buff 8192), pos: uint }))
-    (let ((cursor-bytes (try! (read-buff cursor u8))))
-        (ok (merge cursor-bytes { value: (buff-to-uint-be (unwrap-panic (as-max-len? (get value cursor-bytes) u8))) }))))
+(define-private (read-uint-64 (bytes (buff 8192)) (pos uint))
+    (let ((cursor-bytes (try! (read-buff bytes pos u8))))
+        (ok (buff-to-uint-be (unwrap-panic (as-max-len? cursor-bytes u8))))))
 
-(define-private (slice (cursor { bytes: (buff 8192), pos: uint }) (size (optional uint)))
-    (match (slice? (get bytes cursor) 
-                   (get pos cursor) 
-                   (match size value 
-                   (+ (get pos cursor) value)    
-                      (len (get bytes cursor))))
-        bytes bytes 0x))
+(define-private (slice (bytes (buff 8192)) (pos uint) (size (optional uint)))
+    (match (slice? bytes pos (match size value (+ pos value) (len bytes))) b b 0x))
