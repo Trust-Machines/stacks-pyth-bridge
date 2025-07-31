@@ -27,7 +27,10 @@ describe("pyth-pnau-decoder-v2::decode-and-verify-price-feeds success", () => {
   let pricesUpdatesToSubmit = [
     pyth.BtcPriceIdentifier,
     pyth.StxPriceIdentifier,
-    pyth.UsdcPriceIdentifier,
+    pyth.BatPriceIdentifier,
+    pyth.DaiPriceIdentifier,
+    pyth.TbtcPriceIdentifier,
+    pyth.UsdcPriceIdentifier
   ];
   let pricesUpdatesVaaPayload = pyth.buildAuwvVaaPayload(pricesUpdates);
 

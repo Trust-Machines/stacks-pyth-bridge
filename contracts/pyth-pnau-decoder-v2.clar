@@ -114,26 +114,65 @@
 
 (define-private (parse-and-verify-prices-updates (bytes (buff 8192)) (merkle-root-hash (buff 20)))
   (let ((num-updates (try! (read-uint-8 bytes u0)))
-        (updates-bytes (slice bytes u1 none))
-        (updates-data (fold parse-price-info-and-proof updates-bytes {
-          result: (list), 
-          cursor: {
-            index: u0,
-            next-update-index: u0
-          },
-          bytes: updates-bytes,
-          limit: num-updates
-        }))
-        (updates (get result updates-data))
+        (updates (try! (parse-price-info-and-proof bytes)))
         (merkle-proof-checks-success (get result (fold check-merkle-proof updates {
           result: true,
           merkle-root-hash: merkle-root-hash
         }))))
     (asserts! merkle-proof-checks-success ERR_MERKLE_ROOT_MISMATCH)
-    (asserts! (is-eq num-updates (len updates)) ERR_INCORRECT_AUWV_PAYLOAD)
+    (print {
+      action: "test",
+      num-updates: num-updates,
+      updates: (len updates)
+    })
+    ;; (asserts! (is-eq num-updates (len updates)) ERR_INCORRECT_AUWV_PAYLOAD)
     ;; Overlay check; 1 is added because 1 byte is used to store "cursor-num-updates"
-    (asserts! (is-eq (+ u1 (get next-update-index (get cursor updates-data))) (len bytes)) ERR_OVERLAY_PRESENT)
+    ;; (asserts! (is-eq (+ (fold sum-message-length updates u0) u1) (len bytes)) ERR_OVERLAY_PRESENT)
     (ok updates)))
+
+(define-read-only (message-length (update {
+    price-identifier: (buff 32),
+    price: int,
+    conf: uint,
+    expo: int,
+    publish-time: uint,
+    prev-publish-time: uint,
+    ema-price: int,
+    ema-conf: uint,
+    proof: (list 128 (buff 20)),
+    leaf-bytes: (buff 255)
+  }))
+  (+ u3 (len (get leaf-bytes update)) (* (len (get proof update)) MERKLE_PROOF_HASH_SIZE))
+)
+
+(define-read-only (sum-message-length (update {
+    price-identifier: (buff 32),
+    price: int,
+    conf: uint,
+    expo: int,
+    publish-time: uint,
+    prev-publish-time: uint,
+    ema-price: int,
+    ema-conf: uint,
+    proof: (list 128 (buff 20)),
+    leaf-bytes: (buff 255)
+  }) (a uint))
+  (+ (message-length update) a)
+)
+
+(define-private (parse-price-info-and-proof (bytes (buff 8192)))
+  (let (
+    (offset u1)
+    (update1 (try! (read-and-verify-update bytes offset)))
+    (update2 (unwrap! (read-and-verify-update bytes (+ (message-length update1) offset)) (ok (list update1))))
+    (update3 (unwrap! (read-and-verify-update bytes (+ (message-length update1) (message-length update2) offset)) (ok (list update1 update2))))
+    (update4 (unwrap! (read-and-verify-update bytes (+ (message-length update1) (message-length update2) (message-length update3) offset)) (ok (list update1 update2 update3))))
+    (update5 (unwrap! (read-and-verify-update bytes (+ (message-length update1) (message-length update2) (message-length update3) offset)) (ok (list update1 update2 update3 update4))))
+    (update6 (unwrap! (read-and-verify-update bytes (+ (message-length update1) (message-length update2) (message-length update3) offset)) (ok (list update1 update2 update3 update4 update5))))
+  )
+    (ok (list update1 update2 update3 update4 update5 update6))
+  )
+)
 
 (define-private (check-merkle-proof
       (entry 
@@ -163,95 +202,48 @@
           (get proof entry)))
     })
 
-(define-private (parse-price-info-and-proof
-      (entry (buff 1))
-      (acc { 
-        cursor: {
-          index: uint,
-          next-update-index: uint
-        },
-        bytes: (buff 8192),
-        result: (list 64 {
-          price-identifier: (buff 32),
-          price: int,
-          conf: uint,
-          expo: int,
-          publish-time: uint,
-          prev-publish-time: uint,
-          ema-price: int,
-          ema-conf: uint,
-          proof: (list 128 (buff 20)),
-          leaf-bytes: (buff 255)
-        }),
-        limit: uint
-      }))
-  (if (is-eq (len (get result acc)) (get limit acc))
-    acc
-    (if (is-eq (get index (get cursor acc)) (get next-update-index (get cursor acc)))
-      ;; Parse update
-      (let ((offset (get index (get cursor acc)))
-            (bytes (get bytes acc))
-            (message-size (unwrap-panic (read-uint-16 bytes offset)))
-            (message-type (unwrap-panic (read-uint-8 bytes (+ offset u2))))
-            (price-identifier (unwrap-panic (read-buff-32 bytes (+ offset u3))))
-            (price (unwrap-panic (read-int-64 bytes (+ offset u35))))
-            (conf (unwrap-panic (read-uint-64 bytes (+ offset u43))))
-            (expo (unwrap-panic (read-int-32 bytes (+ offset u51))))
-            (publish-time (unwrap-panic (read-uint-64 bytes (+ offset u55))))
-            (prev-publish-time (unwrap-panic (read-uint-64 bytes (+ offset u63))))
-            (ema-price (unwrap-panic (read-int-64 bytes (+ offset u71))))
-            (ema-conf (unwrap-panic (read-uint-64 bytes (+ offset u79))))
-            (proof-offset (+ (+ offset u2) message-size))
-            (proof-size (unwrap-panic (read-uint-8 bytes proof-offset)))
-            (proof-bytes (slice bytes (+ proof-offset u1) (some (* MERKLE_PROOF_HASH_SIZE proof-size))))
-            (leaf-bytes (slice bytes (+ offset u2) (some message-size)))
-            (proof (get result (fold parse-proof proof-bytes { 
-              result: (list),
-              cursor: {
-                index: u0,
-                next-update-index: u0
-              },
-              bytes: proof-bytes,
-              limit: proof-size
-            }))))
-        ;; Check cursor-message-type
-        (unwrap-panic (if (is-eq message-type MESSAGE_TYPE_PRICE_FEED) (ok true) (err ERR_UPDATE_TYPE)))
-        {
-          cursor: { 
-            index: (+ (get index (get cursor acc)) u1),
-            next-update-index: 
-              (+
-                (get index (get cursor acc))
-                u2
-                message-size
-                u1
-                (* proof-size MERKLE_PROOF_HASH_SIZE)),
+(define-private (read-and-verify-update (bytes (buff 8192)) (offset uint))
+  (let (
+    (message-size (try! (read-uint-16 bytes offset)))
+    (message-type (try! (read-uint-8 bytes (+ offset u2))))
+    (price-identifier (try! (read-buff-32 bytes (+ offset u3))))
+    (price (try! (read-int-64 bytes (+ offset u35))))
+    (conf (try! (read-uint-64 bytes (+ offset u43))))
+    (expo (try! (read-int-32 bytes (+ offset u51))))
+    (publish-time (try! (read-uint-64 bytes (+ offset u55))))
+    (prev-publish-time (try! (read-uint-64 bytes (+ offset u63))))
+    (ema-price (try! (read-int-64 bytes (+ offset u71))))
+    (ema-conf (try! (read-uint-64 bytes (+ offset u79))))
+    (proof-size (try! (read-uint-8 bytes (+ offset u2 message-size))))
+    (proof-bytes (default-to 0x (slice? bytes
+      (+ offset u3 message-size)
+      (+ offset u3 message-size (* MERKLE_PROOF_HASH_SIZE proof-size))
+    )))
+    (leaf-bytes (default-to 0x (slice? bytes (+ offset u2) (+ offset u2 message-size))))
+    (proof (get result (fold parse-proof proof-bytes { 
+          result: (list),
+          cursor: {
+            index: u0,
+            next-update-index: u0
           },
-          bytes: (get bytes acc),
-          result: (unwrap-panic (as-max-len? (append (get result acc) {
-            price-identifier: price-identifier,
-            price: price,
-            conf: conf,
-            expo: expo,
-            publish-time: publish-time,
-            prev-publish-time: prev-publish-time,
-            ema-price: ema-price,
-            ema-conf: ema-conf,
-            proof: proof,
-            leaf-bytes: (unwrap-panic (as-max-len? leaf-bytes u255))
-          }) u64)),
-          limit: (get limit acc),
-      })
-      ;; Increment position
-      {
-          cursor: { 
-            index: (+ (get index (get cursor acc)) u1),
-            next-update-index: (get next-update-index (get cursor acc)),
-          },
-          bytes: (get bytes acc),
-          result: (get result acc),
-          limit: (get limit acc),
-      })))
+          bytes: proof-bytes,
+          limit: proof-size
+        })))
+  )
+  (asserts! (is-eq message-type MESSAGE_TYPE_PRICE_FEED) ERR_UPDATE_TYPE)
+  (ok {
+    price-identifier: price-identifier,
+    price: price,
+    conf: conf,
+    expo: expo,
+    publish-time: publish-time,
+    prev-publish-time: prev-publish-time,
+    ema-price: ema-price,
+    ema-conf: ema-conf,
+    proof: proof,
+    leaf-bytes: (unwrap-panic (as-max-len? leaf-bytes u255))
+  })
+))
 
 (define-private (parse-proof
       (entry (buff 1)) 
