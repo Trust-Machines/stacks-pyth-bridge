@@ -16,6 +16,7 @@
 (define-constant UPDATE_TYPE_WORMHOLE_MERKLE u0)
 (define-constant MESSAGE_TYPE_PRICE_FEED u0)
 (define-constant MERKLE_PROOF_HASH_SIZE u20)
+(define-constant MAXIMUM_UPDATES u6)
 
 ;; Unable to price feed magic bytes
 (define-constant ERR_MAGIC_BYTES (err u2001))
@@ -39,6 +40,8 @@
 (define-constant ERR_UNAUTHORIZED_PRICE_UPDATE (err u2401))
 ;; VAA buffer has unused, extra leading bytes (overlay)
 (define-constant ERR_OVERLAY_PRESENT (err u2402))
+;; Number of updates exceeded maximum.
+(define-constant ERR_MAXIMUM_UPDATES (err u2403))
 
 ;;;; Public functions
 (define-public (decode-and-verify-price-feeds (pnau-bytes (buff 8192)) (wormhole-core-address <wormhole-core-trait>))
@@ -114,6 +117,7 @@
 
 (define-private (parse-and-verify-prices-updates (bytes (buff 8192)) (merkle-root-hash (buff 20)))
   (let ((num-updates (try! (read-uint-8 bytes u0)))
+        (max-updates-check (asserts! (<= num-updates MAXIMUM_UPDATES) ERR_MAXIMUM_UPDATES))
         (updates (try! (parse-price-info-and-proof bytes)))
         (merkle-proof-checks-success (get result (fold check-merkle-proof updates {
           result: true,
@@ -125,10 +129,19 @@
       num-updates: num-updates,
       updates: (len updates)
     })
-    ;; (asserts! (is-eq num-updates (len updates)) ERR_INCORRECT_AUWV_PAYLOAD)
-    ;; Overlay check; 1 is added because 1 byte is used to store "cursor-num-updates"
-    ;; (asserts! (is-eq (+ (fold sum-message-length updates u0) u1) (len bytes)) ERR_OVERLAY_PRESENT)
-    (ok updates)))
+    ;; pyth bundles 6 when the price feeds requested are > 3 and <= 6
+    ;; for < 3, it bundles requested number of updates.
+    ;; so check overlay during these cases
+    (if (or (<= num-updates u3) (is-eq num-updates u6))
+      (begin 
+        (asserts! (is-eq num-updates (len updates)) ERR_INCORRECT_AUWV_PAYLOAD)
+        ;; Overlay check; 1 is added because 1 byte is used to store "cursor-num-updates"
+        (asserts! (is-eq (+ (fold sum-message-length updates u0) u1) (len bytes)) ERR_OVERLAY_PRESENT)
+        (ok updates)
+      )
+
+      (ok updates)
+    )))
 
 (define-read-only (message-length (update {
     price-identifier: (buff 32),

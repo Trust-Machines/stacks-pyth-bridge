@@ -219,9 +219,9 @@
             (asserts! (is-eq contract-caller deployer) ERR_NOT_DEPLOYER)
             (get vaa (try! (parse-vaa guardian-set-vaa)))
           )))
-        (cursor-guardians-data (try! (parse-and-verify-guardians-set (get payload vaa))))
-        (set-id (get new-index cursor-guardians-data))
-        (eth-addresses (get guardians-eth-addresses cursor-guardians-data))
+        (guardians-data (try! (parse-and-verify-guardians-set (get payload vaa))))
+        (set-id (get new-index guardians-data))
+        (eth-addresses (get guardians-eth-addresses guardians-data))
         (consolidated-public-keys (fold check-and-consolidate-public-keys 
           uncompressed-public-keys 
           { cursor: u0, eth-addresses: eth-addresses, result: (list) }))
