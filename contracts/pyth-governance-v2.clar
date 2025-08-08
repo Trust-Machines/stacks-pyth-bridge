@@ -442,19 +442,23 @@
         result: (list 255 { emitter-chain: uint, emitter-address: (buff 32) }), 
         limit: uint
       }))
-  (if (is-eq (len (get result acc)) (get limit acc))
-    acc
-    (if (is-eq (get index (get cursor acc)) (get next-update-index (get cursor acc)))
+  (let (
+      (cursor (get cursor acc))
+      (offset (get index cursor))
+      (next-update-index (get next-update-index cursor))
+    )
+    (if (is-eq (len (get result acc)) (get limit acc))
+      acc
+    (if (is-eq offset next-update-index)
       ;; Parse update
       (let (
-            (offset (get index (get cursor acc)))
             (bytes (get bytes acc))
             (emitter-chain (unwrap-panic (read-uint-16 bytes offset)))
             (emitter-address (unwrap-panic (read-buff-32 bytes (+ offset u2)))))
         {
           cursor: { 
-            index: (+ (get index (get cursor acc)) u1),
-            next-update-index: (+ (get index (get cursor acc)) SIZE_OF_EMITTER_DATA),
+            index: (+ offset u1),
+            next-update-index: (+ offset SIZE_OF_EMITTER_DATA),
           },
           bytes: bytes,
           result: (unwrap-panic (as-max-len? (append (get result acc) { 
@@ -466,13 +470,15 @@
       ;; Increment position
       {
           cursor: { 
-            index: (+ (get index (get cursor acc)) u1),
-            next-update-index: (get next-update-index (get cursor acc)),
+            index: (+ offset u1),
+            next-update-index: next-update-index,
           },
           bytes: (get bytes acc),
           result: (get result acc),
           limit: (get limit acc)
-      })))
+      }))
+      
+))
 
 (define-private (read-buff (bytes (buff 8192)) (pos uint) (length uint))
   (ok (unwrap! (slice? bytes pos (+ pos length)) (err u1))))
