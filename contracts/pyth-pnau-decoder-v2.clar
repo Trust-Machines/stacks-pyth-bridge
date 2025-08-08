@@ -54,8 +54,7 @@
 ;;;; Private functions
 ;; #[filter(pnau-bytes, wormhole-core-address)]
 (define-private (decode-pnau-price-update (pnau-bytes (buff 8192)) (wormhole-core-address <wormhole-core-trait>))
-  (let ((pnau-header (try! (parse-pnau-header pnau-bytes)))
-        (offset (get pos pnau-header))
+  (let ((offset (try! (parse-pnau-header pnau-bytes)))
         (pnau-vaa-size (try! (read-uint-16 pnau-bytes offset)))
         (pnau-vaa (try! (read-buff-8192-max pnau-bytes (+ offset u2) (some pnau-vaa-size))))
         (vaa (try! (contract-call? wormhole-core-address parse-and-verify-vaa pnau-vaa)))
@@ -94,16 +93,7 @@
     (asserts! (>= version-minor PYTHNET_MINOR_VERSION) ERR_VERSION_MIN)
     ;; Check proof type
     (asserts! (is-eq proof-type UPDATE_TYPE_WORMHOLE_MERKLE) ERR_PROOF_TYPE)
-    (ok {
-      value: {
-        magic: magic,
-        version-major: version-major,
-        version-minor: version-minor,
-        header-trailing-size: header-trailing-size,
-        proof-type: proof-type
-      },
-      pos: (+ header-trailing-size u8)
-    })))
+    (ok (+ header-trailing-size u8))))
 
 (define-private (parse-and-verify-prices-updates (bytes (buff 8192)) (merkle-root-hash (buff 20)))
   (let ((num-updates (try! (read-uint-8 bytes u0)))
