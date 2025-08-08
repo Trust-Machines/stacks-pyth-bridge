@@ -377,10 +377,7 @@
     ;; Update Sequence
     (var-set last-sequence-processed sequence)
     (ok { 
-      action: action, 
-      target-chain-id: target-chain-id, 
-      module: module,
-      cursor: target-chain-id,
+      action: action,
       body: body
     })))
 
