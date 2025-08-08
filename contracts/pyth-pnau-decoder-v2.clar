@@ -129,14 +129,15 @@
       num-updates: num-updates,
       updates: (len updates)
     })
+    ;; Overlay check; 1 is added because 1 byte is used to store "cursor-num-updates"
+    (asserts! (is-eq (+ (fold sum-message-length updates u0) u1) (len bytes)) ERR_OVERLAY_PRESENT)
     ;; pyth bundles 6 when the price feeds requested are > 3 and <= 6
     ;; for < 3, it bundles requested number of updates.
     ;; so check overlay during these cases
     (if (or (<= num-updates u3) (is-eq num-updates u6))
       (begin 
         (asserts! (is-eq num-updates (len updates)) ERR_INCORRECT_AUWV_PAYLOAD)
-        ;; Overlay check; 1 is added because 1 byte is used to store "cursor-num-updates"
-        (asserts! (is-eq (+ (fold sum-message-length updates u0) u1) (len bytes)) ERR_OVERLAY_PRESENT)
+      
         (ok updates)
       )
 
