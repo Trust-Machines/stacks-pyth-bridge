@@ -59,8 +59,8 @@
         (pnau-vaa-size (try! (read-uint-16 pnau-bytes offset)))
         (pnau-vaa (try! (read-buff-8192-max pnau-bytes (+ offset u2) (some pnau-vaa-size))))
         (vaa (try! (contract-call? wormhole-core-address parse-and-verify-vaa pnau-vaa)))
-        (cursor-merkle-root-data (try! (parse-merkle-root-data-from-vaa-payload (get payload vaa))))
-        (decoded-prices-updates (try! (parse-and-verify-prices-updates (slice pnau-bytes (+ offset u2 pnau-vaa-size) none) (get merkle-root-hash (get value cursor-merkle-root-data)))))
+        (merkle-root-hash (try! (parse-merkle-root-data-from-vaa-payload (get payload vaa))))
+        (decoded-prices-updates (try! (parse-and-verify-prices-updates (slice pnau-bytes (+ offset u2 pnau-vaa-size) none) merkle-root-hash)))
         (prices-updates (map cast-decoded-price decoded-prices-updates))
         (authorized-prices-data-sources (contract-call? .pyth-governance-v2 get-authorized-prices-data-sources)))
     ;; Ensure that update was published by an data source authorized by governance
@@ -80,15 +80,7 @@
     (asserts! (is-eq payload-type AUWV_MAGIC) ERR_MAGIC_BYTES)
     ;; Check update type
     (asserts! (is-eq wh-update-type UPDATE_TYPE_WORMHOLE_MERKLE) ERR_PROOF_TYPE)
-    (ok {
-      value: {
-        merkle-root-slot: merkle-root-slot,
-        merkle-root-ring-size: merkle-root-ring-size,
-        merkle-root-hash: merkle-root-hash,
-        payload-type: payload-type
-      },
-      next: merkle-root-hash
-    })))
+    (ok merkle-root-hash)))
 
 (define-private (parse-pnau-header (pf-bytes (buff 8192)))
   (let ((magic (unwrap! (read-buff-4 pf-bytes u0) ERR_MAGIC_BYTES))
