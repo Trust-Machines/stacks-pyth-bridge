@@ -202,7 +202,6 @@
       (asserts! (is-eq (get version (get vaa message)) u1) ERR_VAA_CHECKS_VERSION_UNSUPPORTED)
       ;; Ensure that the count of valid signatures is >= 13
       (asserts! (>= (len (get result signatures-from-active-guardians)) (get-quorum (len active-guardians))) ERR_VAA_CHECKS_THRESHOLD_SIGNATURE)
-      ;; Good to go!
       (ok (get vaa message)))))
 
 ;; @desc Update the active set of guardians 
@@ -233,7 +232,7 @@
     (asserts! (is-eq (get emitter-address vaa) GSU-EMITTING-ADDRESS) ERR_GSU_CHECK_EMITTER)
     ;; Check emitting address
     (asserts! (is-eq (get emitter-chain vaa) GSU-EMITTING-CHAIN) ERR_GSU_CHECK_EMITTER)
-    ;; ensure guardian set has atleast one member
+    ;; ensure guardian set has at least one member
     (asserts! (>= (len result) u1) ERR_EMPTY_GUARDIAN_SET)
     ;; Update storage
     (map-set guardian-sets set-id result)
@@ -375,7 +374,6 @@
       (asserts! (> new-index (var-get active-guardian-set-id)) ERR_GSU_CHECK_INDEX)
     )
     
-    ;; Good to go!
     (ok {
         guardians-eth-addresses: eth-addresses,
         module: module,

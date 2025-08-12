@@ -30,7 +30,7 @@
 (define-constant ERR_PROOF_TYPE (err u2005))
 ;; Unable to parse update type
 (define-constant ERR_UPDATE_TYPE (err u2006))
-;; Merkle root mismatch
+;; Incorrect AUWV message
 (define-constant ERR_INVALID_AUWV (err u2007))
 ;; Merkle root mismatch
 (define-constant ERR_MERKLE_ROOT_MISMATCH (err u2008))
