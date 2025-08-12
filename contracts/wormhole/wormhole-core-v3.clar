@@ -288,8 +288,8 @@
         (guardian-id (get guardian-id entry))
       ) 
       (if (is-eq 0x signature) { recovered-compressed-public-key: 0x, guardian-id: guardian-id }
-          (let ((recovered-compressed-public-key (unwrap-panic (secp256k1-recover? message-hash (get signature entry)))))
-            { recovered-compressed-public-key: recovered-compressed-public-key, guardian-id: (get guardian-id entry) }
+          (let ((recovered-compressed-public-key (unwrap-panic (secp256k1-recover? message-hash signature))))
+            { recovered-compressed-public-key: recovered-compressed-public-key, guardian-id: guardian-id }
           )
       )
     )
