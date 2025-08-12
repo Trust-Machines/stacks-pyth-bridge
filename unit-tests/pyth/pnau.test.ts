@@ -861,3 +861,141 @@ describe("pyth-pnau-decoder-v2::decode-and-verify-price-feeds failures", () => {
     );
   });
 });
+
+describe("pyth-pnau-decoder-v2::PNAU offset calculation tests", () => {
+  const accounts = simnet.getAccounts();
+  const deployer = accounts.get("deployer")!;
+  const sender = accounts.get("wallet_1")!;
+  const guardianSet = wormhole.generateGuardianSetKeychain(19);
+  let executionPlan = Cl.tuple({
+    "pyth-storage-contract": Cl.contractPrincipal(
+      simnet.deployer,
+      pythStorageContractName,
+    ),
+    "pyth-decoder-contract": Cl.contractPrincipal(
+      simnet.deployer,
+      pythDecoderPnauContractName,
+    ),
+    "wormhole-core-contract": Cl.contractPrincipal(
+      simnet.deployer,
+      wormholeCoreContractName,
+    ),
+  });
+
+  // Available price identifiers with different values
+  const priceIdentifiers = [
+    pyth.BtcPriceIdentifier,
+    pyth.StxPriceIdentifier,
+    pyth.BatPriceIdentifier,
+    pyth.DaiPriceIdentifier,
+    pyth.TbtcPriceIdentifier,
+    pyth.UsdcPriceIdentifier,
+  ];
+
+  // Setup guardian set and governance
+  beforeEach(async () => {
+    wormhole.applyGuardianSetUpdate(
+      guardianSet,
+      1,
+      deployer,
+      wormholeCoreContractName,
+    );
+
+    pyth.applyGovernanceDataSourceUpdate(
+      pyth.DefaultGovernanceDataSourceUpdate,
+      pyth.InitialGovernanceDataSource,
+      guardianSet,
+      sender,
+      pythGovernanceContractName,
+      wormholeCoreContractName,
+      2n,
+    );
+
+    pyth.applyPricesDataSourceUpdate(
+      pyth.DefaultPricesDataSources,
+      pyth.DefaultGovernanceDataSource,
+      guardianSet,
+      sender,
+      pythGovernanceContractName,
+      wormholeCoreContractName,
+      3n,
+    );
+  });
+
+  // Generic test function
+  function testPriceFeeds(feedCount: number) {
+    const selectedPriceIds = priceIdentifiers.slice(0, feedCount);
+    
+    // Create batch with different prices for each feed to ensure unique outputs
+    const priceUpdates = selectedPriceIds.map((id, index) => [
+      id,
+      { price: BigInt(1000 + index * 100), publishTime: BigInt(Date.now() + index) }
+    ]);
+    
+    let pricesUpdates = pyth.buildPriceUpdateBatch(priceUpdates);
+    let pricesUpdatesVaaPayload = pyth.buildAuwvVaaPayload(pricesUpdates);
+    let payload = pyth.serializeAuwvVaaPayloadToBuffer(pricesUpdatesVaaPayload);
+    
+    let vaaBody = wormhole.buildValidVaaBodySpecs({
+      payload,
+      emitter: pyth.DefaultPricesDataSources[0],
+    });
+    
+    let vaaHeader = wormhole.buildValidVaaHeader(guardianSet, vaaBody, {
+      version: 1,
+      guardianSetId: 1,
+    });
+    
+    let vaa = wormhole.serializeVaaToBuffer(vaaHeader, vaaBody);
+    let pnauHeader = pyth.buildPnauHeader();
+    let pnau = pyth.serializePnauToBuffer(pnauHeader, {
+      vaa,
+      pricesUpdates,
+      pricesUpdatesToSubmit: selectedPriceIds,
+    });
+
+    let res = simnet.callPublicFn(
+      pythOracleContractName,
+      "verify-and-update-price-feeds",
+      [Cl.buffer(pnau), executionPlan],
+      sender,
+    );
+
+    expect(res.result).toHaveClarityType(ClarityType.ResponseOk);
+        
+    const resultList = res.result.value as any;
+    const outputs = resultList.list || [];
+      
+    // Check array length matches input feeds
+    expect(outputs.length, `${feedCount} different outputs should of been calculated, not ${outputs.length}`).toBe(feedCount);
+    
+    // Check all outputs are different by comparing price values
+    const prices = outputs.map((output: any) => output.data.price.value.toString());
+    const uniquePrices = new Set(prices);
+    expect(uniquePrices.size).toBe(feedCount);
+  }
+
+  it("should correctly parse 1 price feed", () => {
+    testPriceFeeds(1);
+  });
+
+  it("should correctly parse 2 price feeds", () => {
+    testPriceFeeds(2);
+  });
+
+  it("should correctly parse 3 price feeds", () => {
+    testPriceFeeds(3);
+  });
+
+  it("should correctly parse 4 price feeds", () => {
+    testPriceFeeds(4);
+  });
+
+  it("should correctly parse 5 price feeds", () => {
+    testPriceFeeds(5);
+  });
+
+  it("should correctly parse 6 price feeds", () => {
+    testPriceFeeds(6);
+  });
+});

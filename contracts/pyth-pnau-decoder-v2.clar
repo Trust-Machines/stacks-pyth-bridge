@@ -104,58 +104,34 @@
 (define-private (parse-and-verify-prices-updates (bytes (buff 8192)) (merkle-root-hash (buff 20)))
   (let ((num-updates (try! (read-uint-8 bytes u0)))
         (max-updates-check (asserts! (<= num-updates MAXIMUM_UPDATES) ERR_MAXIMUM_UPDATES))
-        (updates (try! (parse-price-info-and-proof bytes)))
+        (update-data (try! (parse-price-info-and-proof bytes)))
+        (updates (get entries update-data))
         (merkle-proof-checks-success (get result (fold check-merkle-proof updates {
           result: true,
           merkle-root-hash: merkle-root-hash
         }))))
     (asserts! merkle-proof-checks-success ERR_MERKLE_ROOT_MISMATCH)
     ;; Overlay check; 1 is added because 1 byte is used to store "cursor-num-updates"
-    (asserts! (is-eq (+ (fold sum-message-length updates u0) u1) (len bytes)) ERR_OVERLAY_PRESENT)
+    (asserts! (is-eq (get offset update-data) (len bytes)) ERR_OVERLAY_PRESENT)
     (asserts! (is-eq num-updates (len updates)) ERR_INCORRECT_AUWV_PAYLOAD)
     (ok updates)))
-
-(define-read-only (message-length (update {
-    price-identifier: (buff 32),
-    price: int,
-    conf: uint,
-    expo: int,
-    publish-time: uint,
-    prev-publish-time: uint,
-    ema-price: int,
-    ema-conf: uint,
-    proof: (list 128 (buff 20)),
-    leaf-bytes: (buff 255)
-  }))
-  (+ u3 (len (get leaf-bytes update)) (* (len (get proof update)) MERKLE_PROOF_HASH_SIZE))
-)
-
-(define-read-only (sum-message-length (update {
-    price-identifier: (buff 32),
-    price: int,
-    conf: uint,
-    expo: int,
-    publish-time: uint,
-    prev-publish-time: uint,
-    ema-price: int,
-    ema-conf: uint,
-    proof: (list 128 (buff 20)),
-    leaf-bytes: (buff 255)
-  }) (a uint))
-  (+ (message-length update) a)
-)
 
 (define-private (parse-price-info-and-proof (bytes (buff 8192)))
   (let (
     (offset u1)
     (update1 (try! (read-and-verify-update bytes offset)))
-    (update2 (unwrap! (read-and-verify-update bytes (+ (message-length update1) offset)) (ok (list update1))))
-    (update3 (unwrap! (read-and-verify-update bytes (+ (message-length update1) (message-length update2) offset)) (ok (list update1 update2))))
-    (update4 (unwrap! (read-and-verify-update bytes (+ (message-length update1) (message-length update2) (message-length update3) offset)) (ok (list update1 update2 update3))))
-    (update5 (unwrap! (read-and-verify-update bytes (+ (message-length update1) (message-length update2) (message-length update3) (message-length update4) offset)) (ok (list update1 update2 update3 update4))))
-    (update6 (unwrap! (read-and-verify-update bytes (+ (message-length update1) (message-length update2) (message-length update3) (message-length update4) (message-length update5) offset)) (ok (list update1 update2 update3 update4 update5))))
+    (offset-1 (+ offset (get update-size update1)))
+    (update2 (unwrap! (read-and-verify-update bytes offset-1) (ok { offset: offset-1, entries: (list update1)})))
+    (offset-2 (+ offset-1 (get update-size update2)))
+    (update3 (unwrap! (read-and-verify-update bytes offset-2) (ok { offset: offset-2, entries: (list update1 update2)})))
+    (offset-3 (+ offset-2 (get update-size update3)))
+    (update4 (unwrap! (read-and-verify-update bytes offset-3) (ok { offset: offset-3, entries: (list update1 update2 update3)})))
+    (offset-4 (+ offset-3 (get update-size update4)))
+    (update5 (unwrap! (read-and-verify-update bytes offset-4) (ok { offset: offset-4, entries: (list update1 update2 update3 update4)})))
+    (offset-5 (+ offset-4 (get update-size update5)))
+    (update6 (unwrap! (read-and-verify-update bytes offset-5) (ok { offset: offset-5, entries: (list update1 update2 update3 update4 update5)})))
   )
-    (ok (list update1 update2 update3 update4 update5 update6))
+    (ok { offset: (+ offset-5 (get update-size update6)), entries: (list update1 update2 update3 update4 update5 update6)})
   )
 )
 
@@ -171,7 +147,8 @@
           ema-price: int,
           ema-conf: uint,
           proof: (list 128 (buff 20)),
-          leaf-bytes: (buff 255)
+          leaf-bytes: (buff 255),
+          update-size: uint
         })
       (acc 
         { 
@@ -200,9 +177,10 @@
     (ema-price (try! (read-int-64 bytes (+ offset u71))))
     (ema-conf (try! (read-uint-64 bytes (+ offset u79))))
     (proof-size (try! (read-uint-8 bytes (+ offset u2 message-size))))
+    (proof-length (* MERKLE_PROOF_HASH_SIZE proof-size))
     (proof-bytes (default-to 0x (slice? bytes
       (+ offset u3 message-size)
-      (+ offset u3 message-size (* MERKLE_PROOF_HASH_SIZE proof-size))
+      (+ offset u3 message-size proof-length)
     )))
     (leaf-bytes (default-to 0x (slice? bytes (+ offset u2) (+ offset u2 message-size))))
     (proof (get result (fold parse-proof proof-bytes { 
@@ -226,7 +204,8 @@
     ema-price: ema-price,
     ema-conf: ema-conf,
     proof: proof,
-    leaf-bytes: (unwrap-panic (as-max-len? leaf-bytes u255))
+    leaf-bytes: (unwrap-panic (as-max-len? leaf-bytes u255)),
+    update-size: (+ u3 message-size proof-length)
   })
 ))
 
@@ -277,7 +256,8 @@
           ema-price: int,
           ema-conf: uint,
           proof: (list 128 (buff 20)),
-          leaf-bytes: (buff 255)
+          leaf-bytes: (buff 255),
+          update-size: uint
         }))
   {
     price-identifier: (get price-identifier entry),

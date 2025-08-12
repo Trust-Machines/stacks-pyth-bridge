@@ -149,14 +149,6 @@ describe("pyth-oracle-v3::decode-and-verify-price-feeds mainnet VAAs Multi price
         sender,
       );
       expect(res.result).toHaveClarityType(ClarityType.ResponseOk);
-      // expect(res.result.value.list).toHaveLength(idx);
-      res.events.forEach(event => {
-        if (event.data.value && event.data.value.data) {
-          const item = event.data.value.data;
-          if (item.action && item.action.data === "test"){
-            console.log(item["num-updates"].value, item.updates.value)
-          }
-        }
-      });
+      expect(res.result.value.list).toHaveLength(idx);
     })
 });
