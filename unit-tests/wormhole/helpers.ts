@@ -292,16 +292,11 @@ export namespace wormhole {
       );
     }
     let value = Cl.tuple({
-      "consistency-level": Cl.uint(body.consistencyLevel),
       version: Cl.uint(header.version),
       "guardian-set-id": Cl.uint(header.guardianSetId),
-      "signatures-len": Cl.uint(header.signatures.length),
-      signatures: Cl.list(guardiansSignatures),
       "emitter-chain": Cl.uint(body.emitterChain),
       "emitter-address": Cl.buffer(body.emitterAddress),
       sequence: Cl.uint(body.sequence),
-      timestamp: Cl.uint(body.timestamp),
-      nonce: Cl.uint(body.nonce),
       payload: Cl.buffer(body.payload),
     });
     return [value, guardiansPublicKeys];

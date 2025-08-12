@@ -158,12 +158,13 @@
             (default-to 0x (slice? vaa-bytes u1194 u1260))) u0 signatures-len))
         ))
         (vaa-body-hash (keccak256 (keccak256 (unwrap! (slice? vaa-bytes signatures-offset vaa-bytes-len) ERR_VAA_HASHING_BODY))))
-        (timestamp (unwrap! (read-uint-32 vaa-bytes signatures-offset) ERR_VAA_PARSING_TIMESTAMP))
-        (nonce (unwrap! (read-uint-32 vaa-bytes (+ signatures-offset u4)) ERR_VAA_PARSING_NONCE))
+        ;; following values are ignored as they are not used anywhere
+        ;; (timestamp (unwrap! (read-uint-32 vaa-bytes signatures-offset) ERR_VAA_PARSING_TIMESTAMP))
+        ;; (nonce (unwrap! (read-uint-32 vaa-bytes (+ signatures-offset u4)) ERR_VAA_PARSING_NONCE))
+        ;; (consistency-level (unwrap! (read-uint-8 vaa-bytes (+ signatures-offset u50)) ERR_VAA_PARSING_CONSISTENCY_LEVEL))
         (emitter-chain (unwrap! (read-uint-16 vaa-bytes (+ signatures-offset u8)) ERR_VAA_PARSING_EMITTER_CHAIN))
         (emitter-address (unwrap! (read-buff-32 vaa-bytes (+ signatures-offset u10)) ERR_VAA_PARSING_EMITTER_ADDRESS))
         (sequence (unwrap! (read-uint-64 vaa-bytes (+ signatures-offset u42)) ERR_VAA_PARSING_SEQUENCE))
-        (consistency-level (unwrap! (read-uint-8 vaa-bytes (+ signatures-offset u50)) ERR_VAA_PARSING_CONSISTENCY_LEVEL))
         (payload (unwrap! (slice? vaa-bytes (+ signatures-offset u51) vaa-bytes-len) ERR_VAA_PARSING_PAYLOAD))
         (vaa-body-hash-list (unwrap-panic (slice? (list vaa-body-hash vaa-body-hash vaa-body-hash vaa-body-hash vaa-body-hash 
           vaa-body-hash vaa-body-hash vaa-body-hash vaa-body-hash vaa-body-hash vaa-body-hash 
@@ -174,14 +175,9 @@
         vaa: {
           version: version, 
           guardian-set-id: guardian-set-id,
-          signatures-len: signatures-len,
-          signatures: signatures,
-          timestamp: timestamp,
-          nonce: nonce,
           emitter-chain: emitter-chain,
           emitter-address: emitter-address,
           sequence: sequence,
-          consistency-level: consistency-level,
           payload: payload,
         },
         recovered-public-keys: public-keys-results,

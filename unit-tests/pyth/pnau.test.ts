@@ -81,6 +81,7 @@ describe("pyth-pnau-decoder-v2::decode-and-verify-price-feeds success", () => {
       body,
       guardianSet,
     );
+    
     const res = simnet.callReadOnlyFn(
       wormholeCoreContractName,
       `parse-and-verify-vaa`,
