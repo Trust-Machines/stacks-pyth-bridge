@@ -91,6 +91,8 @@
 (define-constant GUARDIAN_ETH_ADDRESS_SIZE u20)
 ;; 24 hours in seconds
 (define-constant TWENTY_FOUR_HOURS u86400)
+;; signature data size
+(define-constant SIGNATURE_DATA_SIZE u66)
 ;;;; Data vars
 
 ;; Guardian Set Update uncompressed public keys invalid
@@ -132,7 +134,7 @@
         (version (unwrap! (read-uint-8 vaa-bytes u0) ERR_VAA_PARSING_VERSION))
         (guardian-set-id (unwrap! (read-uint-32 vaa-bytes u1) ERR_VAA_PARSING_GUARDIAN_SET))
         (signatures-len (unwrap! (read-uint-8 vaa-bytes u5) ERR_VAA_PARSING_SIGNATURES_LEN))
-        (singnatures-offset (+ u6 (* signatures-len u66)))
+        (signatures-offset (+ u6 (* signatures-len SIGNATURE_DATA_SIZE)))
         (signatures (map read-one-signature 
           (unwrap-panic (slice? (list 
             (default-to 0x (slice? vaa-bytes u6 u72))
@@ -155,17 +157,17 @@
             (default-to 0x (slice? vaa-bytes u1128 u1194))
             (default-to 0x (slice? vaa-bytes u1194 u1260))) u0 signatures-len))
         ))
-        (vaa-body-hash (keccak256 (keccak256 (unwrap! (slice? vaa-bytes singnatures-offset vaa-bytes-len) ERR_VAA_HASHING_BODY))))
-        (timestamp (unwrap! (read-uint-32 vaa-bytes singnatures-offset) ERR_VAA_PARSING_TIMESTAMP))
-        (nonce (unwrap! (read-uint-32 vaa-bytes (+ singnatures-offset u4)) ERR_VAA_PARSING_NONCE))
-        (emitter-chain (unwrap! (read-uint-16 vaa-bytes (+ singnatures-offset u8)) ERR_VAA_PARSING_EMITTER_CHAIN))
-        (emitter-address (unwrap! (read-buff-32 vaa-bytes (+ singnatures-offset u10)) ERR_VAA_PARSING_EMITTER_ADDRESS))
-        (sequence (unwrap! (read-uint-64 vaa-bytes (+ singnatures-offset u42)) ERR_VAA_PARSING_SEQUENCE))
-        (consistency-level (unwrap! (read-uint-8 vaa-bytes (+ singnatures-offset u50)) ERR_VAA_PARSING_CONSISTENCY_LEVEL))
-        (payload (unwrap! (slice? vaa-bytes (+ singnatures-offset u51) vaa-bytes-len) ERR_VAA_PARSING_PAYLOAD))
+        (vaa-body-hash (keccak256 (keccak256 (unwrap! (slice? vaa-bytes signatures-offset vaa-bytes-len) ERR_VAA_HASHING_BODY))))
+        (timestamp (unwrap! (read-uint-32 vaa-bytes signatures-offset) ERR_VAA_PARSING_TIMESTAMP))
+        (nonce (unwrap! (read-uint-32 vaa-bytes (+ signatures-offset u4)) ERR_VAA_PARSING_NONCE))
+        (emitter-chain (unwrap! (read-uint-16 vaa-bytes (+ signatures-offset u8)) ERR_VAA_PARSING_EMITTER_CHAIN))
+        (emitter-address (unwrap! (read-buff-32 vaa-bytes (+ signatures-offset u10)) ERR_VAA_PARSING_EMITTER_ADDRESS))
+        (sequence (unwrap! (read-uint-64 vaa-bytes (+ signatures-offset u42)) ERR_VAA_PARSING_SEQUENCE))
+        (consistency-level (unwrap! (read-uint-8 vaa-bytes (+ signatures-offset u50)) ERR_VAA_PARSING_CONSISTENCY_LEVEL))
+        (payload (unwrap! (slice? vaa-bytes (+ signatures-offset u51) vaa-bytes-len) ERR_VAA_PARSING_PAYLOAD))
         (vaa-body-hash-list (unwrap-panic (slice? (list vaa-body-hash vaa-body-hash vaa-body-hash vaa-body-hash vaa-body-hash 
           vaa-body-hash vaa-body-hash vaa-body-hash vaa-body-hash vaa-body-hash vaa-body-hash 
-          vaa-body-hash vaa-body-hash vaa-body-hash vaa-body-hash vaa-body-hash vaa-body-hash vaa-body-hash vaa-body-hash) u0 (len signatures))))
+          vaa-body-hash vaa-body-hash vaa-body-hash vaa-body-hash vaa-body-hash vaa-body-hash vaa-body-hash vaa-body-hash) u0 signatures-len)))
         (public-keys-results (filter empty-key (map recover-public-key signatures vaa-body-hash-list)))
       )
     (ok { 
