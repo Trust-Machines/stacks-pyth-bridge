@@ -364,7 +364,7 @@
         (module (unwrap! (read-buff-1 ptgm-bytes u4) ERR_INVALID_PTGM))
         (action (unwrap! (read-buff-1 ptgm-bytes u5) ERR_INVALID_PTGM))
         (target-chain-id (unwrap! (read-buff-2 ptgm-bytes u6) ERR_INVALID_PTGM))
-        (body (unwrap! (read-buff-8192-max ptgm-bytes u8 none) ERR_INVALID_PTGM))
+        (body (unwrap! (slice? ptgm-bytes u8 (len ptgm-bytes)) ERR_INVALID_PTGM))
       )
     ;; Check magic bytes
     (asserts! (is-eq magic PTGM_MAGIC) ERR_INVALID_PTGM)
@@ -494,11 +494,6 @@
 
 (define-private (read-buff-32 (bytes (buff 8192)) (pos uint))
   (ok (unwrap! (as-max-len? (unwrap! (slice? bytes pos (+ pos u32)) (err u1)) u32) (err u1))))
-
-(define-private (read-buff-8192-max (bytes (buff 8192)) (pos uint) (size (optional uint)))
-  (let ((min pos)
-        (max (match size value (+ value pos) (len bytes))))
-    (ok (unwrap! (as-max-len? (unwrap! (slice? bytes min max) (err u1)) u8192) (err u1)))))
 
 (define-private (read-uint-8 (bytes (buff 8192)) (pos uint))
     (let ((cursor-bytes (try! (read-buff bytes pos u1))))

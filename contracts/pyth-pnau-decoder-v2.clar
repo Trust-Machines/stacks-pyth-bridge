@@ -42,6 +42,8 @@
 (define-constant ERR_OVERLAY_PRESENT (err u2402))
 ;; Number of updates exceeded maximum.
 (define-constant ERR_MAXIMUM_UPDATES (err u2403))
+;; Invalid PNAU buffer, shorter than required
+(define-constant ERR_INVALID_PNAU_BYTES (err u2404))
 
 ;;;; Public functions
 (define-public (decode-and-verify-price-feeds (pnau-bytes (buff 8192)) (wormhole-core-address <wormhole-core-trait>))
@@ -56,10 +58,11 @@
 (define-private (decode-pnau-price-update (pnau-bytes (buff 8192)) (wormhole-core-address <wormhole-core-trait>))
   (let ((offset (try! (parse-pnau-header pnau-bytes)))
         (pnau-vaa-size (try! (read-uint-16 pnau-bytes offset)))
-        (pnau-vaa (try! (read-buff-8192-max pnau-bytes (+ offset u2) (some pnau-vaa-size))))
+        (pnau-vaa (try! (read-buff pnau-bytes (+ offset u2) pnau-vaa-size)))
         (vaa (try! (contract-call? wormhole-core-address parse-and-verify-vaa pnau-vaa)))
         (merkle-root-hash (try! (parse-merkle-root-data-from-vaa-payload (get payload vaa))))
-        (decoded-prices-updates (try! (parse-and-verify-prices-updates (slice pnau-bytes (+ offset u2 pnau-vaa-size) none) merkle-root-hash)))
+        (encoded-price-updates (unwrap! (slice? pnau-bytes (+ offset u2 pnau-vaa-size) (len pnau-bytes)) ERR_INVALID_PNAU_BYTES))
+        (decoded-prices-updates (try! (parse-and-verify-prices-updates encoded-price-updates merkle-root-hash)))
         (prices-updates (map cast-decoded-price decoded-prices-updates))
         (authorized-prices-data-sources (contract-call? .pyth-governance-v2 get-authorized-prices-data-sources)))
     ;; Ensure that update was published by an data source authorized by governance
@@ -299,11 +302,6 @@
 (define-private (read-buff-32 (bytes (buff 8192)) (pos uint))
   (ok (unwrap! (as-max-len? (unwrap! (slice? bytes pos (+ pos u32)) (err u1)) u32) (err u1))))
 
-(define-private (read-buff-8192-max (bytes (buff 8192)) (pos uint) (size (optional uint)))
-  (let ((min pos)
-        (max (match size value (+ value pos) (len bytes))))
-    (ok (unwrap! (as-max-len? (unwrap! (slice? bytes min max) (err u1)) u8192) (err u1)))))
-
 (define-private (read-uint-8 (bytes (buff 8192)) (pos uint))
     (let ((cursor-bytes (try! (read-buff bytes pos u1))))
         (ok (buff-to-uint-be (unwrap-panic (as-max-len? cursor-bytes u1))))))
@@ -319,9 +317,6 @@
 (define-private (read-uint-64 (bytes (buff 8192)) (pos uint))
     (let ((cursor-bytes (try! (read-buff bytes pos u8))))
         (ok (buff-to-uint-be (unwrap-panic (as-max-len? cursor-bytes u8))))))
-
-(define-private (slice (bytes (buff 8192)) (pos uint) (size (optional uint)))
-    (match (slice? bytes pos (match size value (+ pos value) (len bytes))) b b 0x))
 
 (define-private (read-int-32 (bytes (buff 8192)) (pos uint))
     (let ((cursor-bytes (try! (read-buff bytes pos u4))))

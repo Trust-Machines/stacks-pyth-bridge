@@ -319,7 +319,7 @@
 (define-private (read-one-signature (input (buff 8192)))
   {
     guardian-id: (unwrap-panic (read-uint-8 input u0)),
-    signature: (unwrap-panic (read-buff-65 input u1))
+    signature: (unwrap-panic (as-max-len? (unwrap-panic (slice? input u1 u66)) u65))
   } 
 )
 
@@ -354,7 +354,7 @@
       (chain (unwrap! (read-uint-16 bytes u33) ERR_GSU_PARSING_CHAIN))
       (new-index (unwrap! (read-uint-32 bytes u35) ERR_GSU_PARSING_INDEX))
       (guardians-count (unwrap! (read-uint-8 bytes u39) ERR_GSU_PARSING_GUARDIAN_LEN))
-      (guardians-bytes (unwrap! (read-buff-8192-max bytes u40 (some (* guardians-count GUARDIAN_ETH_ADDRESS_SIZE))) ERR_GSU_PARSING_GUARDIANS_BYTES))
+      (guardians-bytes (unwrap! (read-buff bytes u40 (* guardians-count GUARDIAN_ETH_ADDRESS_SIZE)) ERR_GSU_PARSING_GUARDIANS_BYTES))
       (guardians-cues (get result (fold is-guardian-cue guardians-bytes { cursor: u0, result: (list) })))
       (eth-addresses (get result (fold parse-guardian guardians-cues { bytes: guardians-bytes, result: (list) }))))
     (asserts! (is-eq (+ u40 (* guardians-count GUARDIAN_ETH_ADDRESS_SIZE)) (len bytes)) ERR_GSU_CHECK_OVERLAY)
@@ -450,14 +450,6 @@
 
 (define-private (read-buff-32 (bytes (buff 8192)) (pos uint))
   (ok (unwrap! (as-max-len? (unwrap! (slice? bytes pos (+ pos u32)) (err u1)) u32) (err u1))))
-
-(define-private (read-buff-65 (bytes (buff 8192)) (pos uint))
-  (ok (unwrap! (as-max-len? (unwrap! (slice? bytes pos (+ pos u65)) (err u1)) u65) (err u1))))
-
-(define-private (read-buff-8192-max (bytes (buff 8192)) (pos uint) (size (optional uint)))
-  (let ((min pos)
-        (max (match size value (+ value pos) (len bytes))))
-    (ok (unwrap! (as-max-len? (unwrap! (slice? bytes min max) (err u1)) u8192) (err u1)))))
 
 (define-private (read-uint-8 (bytes (buff 8192)) (pos uint))
     (let ((cursor-bytes (try! (read-buff bytes pos u1))))
