@@ -72,6 +72,9 @@
 (define-private (parse-merkle-root-data-from-vaa-payload (payload-vaa-bytes (buff 8192)))
   (let ((payload-type (unwrap! (read-buff-4 payload-vaa-bytes u0) ERR_INVALID_AUWV))
         (wh-update-type (unwrap! (read-uint-8 payload-vaa-bytes u4) ERR_INVALID_AUWV))
+        ;; slot and ring size are not used
+        ;; (merkle-root-slot (unwrap! (read-uint-64 payload-vaa-bytes u5) ERR_INVALID_AUWV))
+        ;; (merkle-root-ring-size (unwrap! (read-uint-32 payload-vaa-bytes u13) ERR_INVALID_AUWV))
         (merkle-root-hash (unwrap! (read-buff-20 payload-vaa-bytes u17) ERR_INVALID_AUWV)))
     ;; Check payload type
     (asserts! (is-eq payload-type AUWV_MAGIC) ERR_MAGIC_BYTES)
