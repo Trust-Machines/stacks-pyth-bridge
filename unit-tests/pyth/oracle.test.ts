@@ -1,15 +1,15 @@
 import { Cl, ClarityType } from "@stacks/transactions";
 import { beforeEach, describe, expect, it } from "vitest";
 import { ParsedTransactionResult } from "@hirosystems/clarinet-sdk";
-import { pnauMainnetVaas } from "./fixtures";
+import { pnauMainnetVaas, priceFeeds } from "./fixtures";
 import { wormhole } from "../wormhole/helpers";
 
-const pythOracleContractName = "pyth-oracle-v3";
-const pythDecoderPnauContractName = "pyth-pnau-decoder-v2";
-const pythStorageContractName = "pyth-storage-v3";
-const wormholeCoreContractName = "wormhole-core-v3";
+const pythOracleContractName = "pyth-oracle-v4";
+const pythDecoderPnauContractName = "pyth-pnau-decoder-v3";
+const pythStorageContractName = "pyth-storage-v4";
+const wormholeCoreContractName = "wormhole-core-v4";
 
-describe("pyth-oracle-v3::decode-and-verify-price-feeds mainnet VAAs", () => {
+describe("pyth-oracle-v4::decode-and-verify-price-feeds mainnet VAAs", () => {
   const accounts = simnet.getAccounts();
   const deployer = accounts.get("deployer")!;
   const sender = accounts.get("wallet_1")!;
@@ -96,4 +96,59 @@ describe("pyth-oracle-v3::decode-and-verify-price-feeds mainnet VAAs", () => {
       }),
     );
   });
+});
+
+describe("pyth-oracle-v4::decode-and-verify-price-feeds mainnet VAAs Multi price updates", () => {
+  const accounts = simnet.getAccounts();
+  const deployer = accounts.get("deployer")!;
+  const sender = accounts.get("wallet_1")!;
+
+
+  // Before starting the test suite, we have to setup the guardian set.
+  beforeEach(async () => {
+    let block = wormhole.applyMainnetGuardianSetUpdates(
+      deployer,
+      wormholeCoreContractName,
+    );
+
+    expect(block!).toHaveLength(1);
+    block!.forEach((b: ParsedTransactionResult) => {
+      expect(b.result).toHaveClarityType(ClarityType.ResponseOk);
+    });
+
+    block = wormhole.applyNextMainnetGuardianSetUpdates(sender, wormholeCoreContractName)
+    expect(block!).toHaveLength(1);
+    block!.forEach((b: ParsedTransactionResult) => {
+      expect(b.result).toHaveClarityType(ClarityType.ResponseOk);
+    });
+  });
+
+  it.each([1, 2, 3, 4, 5, 6])(
+    "Should handle price feeds: %i",
+    async (idx) => {
+      const pnauBytes = Cl.bufferFromHex(priceFeeds[idx - 1]);
+      let executionPlan = Cl.tuple({
+        "pyth-storage-contract": Cl.contractPrincipal(
+          simnet.deployer,
+          pythStorageContractName,
+        ),
+        "pyth-decoder-contract": Cl.contractPrincipal(
+          simnet.deployer,
+          pythDecoderPnauContractName,
+        ),
+        "wormhole-core-contract": Cl.contractPrincipal(
+          simnet.deployer,
+          wormholeCoreContractName,
+        ),
+      });
+
+      let res = simnet.callPublicFn(
+        pythOracleContractName,
+        "verify-and-update-price-feeds",
+        [pnauBytes, executionPlan],
+        sender,
+      );
+      expect(res.result).toHaveClarityType(ClarityType.ResponseOk);
+      expect(res.result.value.list).toHaveLength(idx);
+    })
 });

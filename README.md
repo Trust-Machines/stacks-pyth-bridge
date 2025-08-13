@@ -45,12 +45,12 @@ $ npm test
 
 | network | address                                                                                                                                                                    |
 | ------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| testnet | [ST20M5GABDT6WYJHXBT5CDH4501V1Q65242SPRMXH.pyth-oracle-v3](https://explorer.hiro.so/txid/0xbed29798b725b34b639aadb34411b2863aeeab8024bf2952d9ff9aede49656a4?chain=testnet) |
-| mainnet | [SP3R4F6C1J3JQWWCVZ3S7FRRYPMYG6ZW6RZK31FXY.pyth-oracle-v3](https://explorer.hiro.so/txid/0x745a0e07ef9487ebb2190da515bda60f1531299553420750b33b3ba4a97729e1?chain=mainnet) |
+| testnet | [ST20M5GABDT6WYJHXBT5CDH4501V1Q65242SPRMXH.pyth-oracle-v4](https://explorer.hiro.so/txid/0xbed29798b725b34b639aadb34411b2863aeeab8024bf2952d9ff9aede49656a4?chain=testnet) |
+| mainnet | [SP3R4F6C1J3JQWWCVZ3S7FRRYPMYG6ZW6RZK31FXY.pyth-oracle-v4](https://explorer.hiro.so/txid/0x745a0e07ef9487ebb2190da515bda60f1531299553420750b33b3ba4a97729e1?chain=mainnet) |
 
 ### Onchain
 
-The `pyth-oracle-v3` contract is exposing the following method:
+The `pyth-oracle-v4` contract is exposing the following method:
 
 ```clarity
 (define-public (read-price-feed
@@ -62,10 +62,10 @@ That can be consumed with the following invocation:
 
 ```clarity
 (contract-call?
-    'SP3R4F6C1J3JQWWCVZ3S7FRRYPMYG6ZW6RZK31FXY.pyth-oracle-v3                ;; Address of the helper contract
+    'SP3R4F6C1J3JQWWCVZ3S7FRRYPMYG6ZW6RZK31FXY.pyth-oracle-v4                ;; Address of the helper contract
     read-price-feed
     0xe62df6c8b4a85fe1a67db44dc12de5db330f7ac66b72dc658afedf0f4a415b43      ;; BTC-USD price identifier
-    'SP3R4F6C1J3JQWWCVZ3S7FRRYPMYG6ZW6RZK31FXY.pyth-storage-v3)
+    'SP3R4F6C1J3JQWWCVZ3S7FRRYPMYG6ZW6RZK31FXY.pyth-storage-v4)
 ```
 
 The authenticity of the price feeds is verified during their ingestion, making the cost of queries as light as possible.
@@ -123,13 +123,13 @@ This VAA can be encoded as a Clarity buffer, and submitted to the Pyth contract 
 
 ```clarity
 (contract-call?
-    'SP3R4F6C1J3JQWWCVZ3S7FRRYPMYG6ZW6RZK31FXY.pyth-oracle-v3   ;; Address of the helper contract
+    'SP3R4F6C1J3JQWWCVZ3S7FRRYPMYG6ZW6RZK31FXY.pyth-oracle-v4   ;; Address of the helper contract
     verify-and-update-price
     0x504e41550100000003b8...a7b10321ad7c2404a910               ;; BTC-USD price update
     {
-      pyth-storage-contract: 'SP3R4F6C1J3JQWWCVZ3S7FRRYPMYG6ZW6RZK31FXY.pyth-storage-v3,
-      pyth-decoder-contract: 'SP3R4F6C1J3JQWWCVZ3S7FRRYPMYG6ZW6RZK31FXY.pyth-pnau-decoder-v2,
-      wormhole-core-contract: 'SP3R4F6C1J3JQWWCVZ3S7FRRYPMYG6ZW6RZK31FXY.wormhole-core-v3
+      pyth-storage-contract: 'SP3R4F6C1J3JQWWCVZ3S7FRRYPMYG6ZW6RZK31FXY.pyth-storage-v4,
+      pyth-decoder-contract: 'SP3R4F6C1J3JQWWCVZ3S7FRRYPMYG6ZW6RZK31FXY.pyth-pnau-decoder-v3,
+      wormhole-core-contract: 'SP3R4F6C1J3JQWWCVZ3S7FRRYPMYG6ZW6RZK31FXY.wormhole-core-v4
     })
 ```
 
@@ -157,4 +157,4 @@ All of the implementation details can be found in [Pyth documentation](https://d
 
 - Ported the codebase to Clarity V3
 - bump up nodejs dependencies
-- introduced a utility function `set-price-testnet` in the `pyth-storage-v3` contract to set the price data for a specific feed without the need to produce a valid attestation. This function will only work on testnet.
+- introduced a utility function `set-price-testnet` in the `pyth-storage-v4` contract to set the price data for a specific feed without the need to produce a valid attestation. This function will only work on testnet.

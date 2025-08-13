@@ -10,6 +10,7 @@
     "test": "vitest run",
     "test:watch": "chokidar \"tests/**/*.ts\" \"contracts/**/*.clar\" -c \"npm run test:coverage\"",
     "test:coverage": "vitest run -- --coverage",
+    "test:coverage:costs": "vitest run -- --coverage --costs",
     "format": "prettier ./unit-tests --write"
   },
   "author": "",

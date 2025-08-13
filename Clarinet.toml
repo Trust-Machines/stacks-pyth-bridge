@@ -5,47 +5,38 @@ authors = []
 telemetry = false
 cache_dir = './.cache'
 
-[[project.requirements]]
-contract_id = 'SP2J933XB2CP2JQ1A4FGN8JA968BBG3NK3EKZ7Q9F.hk-cursor-v2'
-
-[[project.requirements]]
-contract_id = 'SP2J933XB2CP2JQ1A4FGN8JA968BBG3NK3EKZ7Q9F.hk-ecc-v1'
-
-[[project.requirements]]
-contract_id = 'SP2J933XB2CP2JQ1A4FGN8JA968BBG3NK3EKZ7Q9F.hk-merkle-tree-keccak160-v1'
-
-[contracts.pyth-governance-v2]
-path = 'contracts/pyth-governance-v2.clar'
+[contracts.pyth-governance-v3]
+path = 'contracts/pyth-governance-v3.clar'
 clarity_version = 3
 epoch = 3.0
 
-[contracts.pyth-oracle-v3]
-path = 'contracts/pyth-oracle-v3.clar'
+[contracts.pyth-oracle-v4]
+path = 'contracts/pyth-oracle-v4.clar'
 clarity_version = 3
 epoch = 3.0
 
-[contracts.pyth-storage-v3]
-path = 'contracts/pyth-storage-v3.clar'
+[contracts.pyth-storage-v4]
+path = 'contracts/pyth-storage-v4.clar'
 clarity_version = 3
 epoch = 3.0
 
-[contracts.pyth-pnau-decoder-v2]
-path = 'contracts/pyth-pnau-decoder-v2.clar'
+[contracts.pyth-pnau-decoder-v3]
+path = 'contracts/pyth-pnau-decoder-v3.clar'
 clarity_version = 3
 epoch = 3.0
 
-[contracts.pyth-traits-v1]
-path = 'contracts/pyth-traits-v1.clar'
+[contracts.pyth-traits-v2]
+path = 'contracts/pyth-traits-v2.clar'
 clarity_version = 3
 epoch = 3.0
 
-[contracts.wormhole-core-v3]
-path = 'contracts/wormhole/wormhole-core-v3.clar'
+[contracts.wormhole-core-v4]
+path = 'contracts/wormhole/wormhole-core-v4.clar'
 clarity_version = 3
 epoch = 3.0
 
-[contracts.wormhole-traits-v1]
-path = 'contracts/wormhole/wormhole-traits-v1.clar'
+[contracts.wormhole-traits-v2]
+path = 'contracts/wormhole/wormhole-traits-v2.clar'
 clarity_version = 3
 epoch = 3.0
 
