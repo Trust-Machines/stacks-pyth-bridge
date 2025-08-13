@@ -1,5 +1,5 @@
 ;; Title: pyth-pnau-decoder
-;; Version: v2
+;; Version: v3
 ;; Check for latest version: https://github.com/Trust-Machines/stacks-pyth-bridge#latest-version
 ;; Report an issue: https://github.com/Trust-Machines/stacks-pyth-bridge/issues
 
@@ -48,7 +48,7 @@
 ;;;; Public functions
 (define-public (decode-and-verify-price-feeds (pnau-bytes (buff 8192)) (wormhole-core-address <wormhole-core-trait>))
 	;; Check execution flow
-	(let ((execution-check (try! (contract-call? .pyth-governance-v2 check-execution-flow contract-caller none)))
+	(let ((execution-check (try! (contract-call? .pyth-governance-v3 check-execution-flow contract-caller none)))
 			(offset (try! (parse-pnau-header pnau-bytes)))
 			(pnau-vaa-size (try! (read-uint-16 pnau-bytes offset)))
 			(pnau-vaa (try! (read-buff pnau-bytes (+ offset u2) pnau-vaa-size)))
@@ -57,7 +57,7 @@
 			(encoded-price-updates (unwrap! (slice? pnau-bytes (+ offset u2 pnau-vaa-size) (len pnau-bytes)) ERR_INVALID_PNAU_BYTES))
 			(decoded-prices-updates (try! (parse-and-verify-prices-updates encoded-price-updates merkle-root-hash)))
 			(prices-updates (map cast-decoded-price decoded-prices-updates))
-			(authorized-prices-data-sources (contract-call? .pyth-governance-v2 get-authorized-prices-data-sources)))
+			(authorized-prices-data-sources (contract-call? .pyth-governance-v3 get-authorized-prices-data-sources)))
 		;; Ensure that update was published by an data source authorized by governance
 		(unwrap! (index-of? authorized-prices-data-sources { emitter-chain: (get emitter-chain vaa), emitter-address: (get emitter-address vaa) }) ERR_UNAUTHORIZED_PRICE_UPDATE)
 		(ok prices-updates)))

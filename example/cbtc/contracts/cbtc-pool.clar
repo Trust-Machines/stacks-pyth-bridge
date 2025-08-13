@@ -42,8 +42,8 @@
             stx-price-feed
             {
               pyth-storage-contract: 'ST2T5JKWWP3FYYX4YRK8GK5BG2YCNGEAEY1JKX06E.pyth-storage-v3,
-              pyth-decoder-contract: 'ST2T5JKWWP3FYYX4YRK8GK5BG2YCNGEAEY1JKX06E.pyth-pnau-decoder-v2,
-              wormhole-core-contract: 'ST2T5JKWWP3FYYX4YRK8GK5BG2YCNGEAEY1JKX06E.wormhole-core-v3
+              pyth-decoder-contract: 'ST2T5JKWWP3FYYX4YRK8GK5BG2YCNGEAEY1JKX06E.pyth-pnau-decoder-v3,
+              wormhole-core-contract: 'ST2T5JKWWP3FYYX4YRK8GK5BG2YCNGEAEY1JKX06E.wormhole-core-v4
             }) 
           (err u0)))
         (price (unwrap! (element-at? updated-prices-ids u0) (err u404))))
@@ -55,8 +55,8 @@
             btc-price-feed
             {
               pyth-storage-contract: 'ST2T5JKWWP3FYYX4YRK8GK5BG2YCNGEAEY1JKX06E.pyth-storage-v3,
-              pyth-decoder-contract: 'ST2T5JKWWP3FYYX4YRK8GK5BG2YCNGEAEY1JKX06E.pyth-pnau-decoder-v2,
-              wormhole-core-contract: 'ST2T5JKWWP3FYYX4YRK8GK5BG2YCNGEAEY1JKX06E.wormhole-core-v3
+              pyth-decoder-contract: 'ST2T5JKWWP3FYYX4YRK8GK5BG2YCNGEAEY1JKX06E.pyth-pnau-decoder-v3,
+              wormhole-core-contract: 'ST2T5JKWWP3FYYX4YRK8GK5BG2YCNGEAEY1JKX06E.wormhole-core-v4
             }) 
           (err u0)))
         (price (unwrap! (element-at? updated-prices-ids u0) (err u404))))

@@ -4,12 +4,12 @@ import { wormhole } from "../wormhole/helpers";
 import { pyth } from "./helpers";
 
 const pythOracleContractName = "pyth-oracle-v3";
-const pythDecoderPnauContractName = "pyth-pnau-decoder-v2";
-const pythGovernanceContractName = "pyth-governance-v2";
+const pythDecoderPnauContractName = "pyth-pnau-decoder-v3";
+const pythGovernanceContractName = "pyth-governance-v3";
 const pythStorageContractName = "pyth-storage-v3";
-const wormholeCoreContractName = "wormhole-core-v3";
+const wormholeCoreContractName = "wormhole-core-v4";
 
-describe("pyth-pnau-decoder-v2::decode-and-verify-price-feeds success", () => {
+describe("pyth-pnau-decoder-v3::decode-and-verify-price-feeds success", () => {
   const accounts = simnet.getAccounts();
   const deployer = accounts.get("deployer")!;
   const sender = accounts.get("wallet_1")!;
@@ -135,7 +135,7 @@ describe("pyth-pnau-decoder-v2::decode-and-verify-price-feeds success", () => {
   });
 });
 
-describe("pyth-pnau-decoder-v2::decode-and-verify-price-feeds failures", () => {
+describe("pyth-pnau-decoder-v3::decode-and-verify-price-feeds failures", () => {
   const accounts = simnet.getAccounts();
   const deployer = accounts.get("deployer")!;
   const sender = accounts.get("wallet_1")!;
@@ -862,7 +862,7 @@ describe("pyth-pnau-decoder-v2::decode-and-verify-price-feeds failures", () => {
   });
 });
 
-describe("pyth-pnau-decoder-v2::PNAU offset calculation tests", () => {
+describe("pyth-pnau-decoder-v3::PNAU offset calculation tests", () => {
   const accounts = simnet.getAccounts();
   const deployer = accounts.get("deployer")!;
   const sender = accounts.get("wallet_1")!;

@@ -5,9 +5,9 @@ import { pnauMainnetVaas, priceFeeds } from "./fixtures";
 import { wormhole } from "../wormhole/helpers";
 
 const pythOracleContractName = "pyth-oracle-v3";
-const pythDecoderPnauContractName = "pyth-pnau-decoder-v2";
+const pythDecoderPnauContractName = "pyth-pnau-decoder-v3";
 const pythStorageContractName = "pyth-storage-v3";
-const wormholeCoreContractName = "wormhole-core-v3";
+const wormholeCoreContractName = "wormhole-core-v4";
 
 describe("pyth-oracle-v3::decode-and-verify-price-feeds mainnet VAAs", () => {
   const accounts = simnet.getAccounts();
