@@ -1,9 +1,9 @@
 ;; Title: pyth-storage
-;; Version: v3
+;; Version: v4
 ;; Check for latest version: https://github.com/Trust-Machines/stacks-pyth-bridge#latest-version
 ;; Report an issue: https://github.com/Trust-Machines/stacks-pyth-bridge/issues
 
-(impl-trait .pyth-traits-v1.storage-trait)
+(impl-trait .pyth-traits-v2.storage-trait)
 
 (define-constant ERR_NEWER_PRICE_AVAILABLE (err u5001))
 (define-constant ERR_STALE_PRICE (err u5002))

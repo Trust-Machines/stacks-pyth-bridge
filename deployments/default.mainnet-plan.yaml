@@ -9,17 +9,17 @@ plan:
     - id: 0
       transactions:
         - contract-publish:
-            contract-name: wormhole-traits-v1
+            contract-name: wormhole-traits-v2
             expected-sender: SP3R4F6C1J3JQWWCVZ3S7FRRYPMYG6ZW6RZK31FXY
             cost: 7070
-            path: contracts/wormhole/wormhole-traits-v1.clar
+            path: contracts/wormhole/wormhole-traits-v2.clar
             anchor-block-only: true
             clarity-version: 3
         - contract-publish:
-            contract-name: pyth-traits-v1
+            contract-name: pyth-traits-v2
             expected-sender: SP3R4F6C1J3JQWWCVZ3S7FRRYPMYG6ZW6RZK31FXY
             cost: 20710
-            path: contracts/pyth-traits-v1.clar
+            path: contracts/pyth-traits-v2.clar
             anchor-block-only: true
             clarity-version: 3
         - contract-publish:
@@ -30,10 +30,10 @@ plan:
             anchor-block-only: true
             clarity-version: 3
         - contract-publish:
-            contract-name: pyth-oracle-v3
+            contract-name: pyth-oracle-v4
             expected-sender: SP3R4F6C1J3JQWWCVZ3S7FRRYPMYG6ZW6RZK31FXY
             cost: 35980
-            path: contracts/pyth-oracle-v3.clar
+            path: contracts/pyth-oracle-v4.clar
             anchor-block-only: true
             clarity-version: 3
         - contract-publish:
@@ -44,10 +44,10 @@ plan:
             anchor-block-only: true
             clarity-version: 3
         - contract-publish:
-            contract-name: pyth-storage-v3
+            contract-name: pyth-storage-v4
             expected-sender: SP3R4F6C1J3JQWWCVZ3S7FRRYPMYG6ZW6RZK31FXY
             cost: 46140
-            path: contracts/pyth-storage-v3.clar
+            path: contracts/pyth-storage-v4.clar
             anchor-block-only: true
             clarity-version: 3
         - contract-publish:

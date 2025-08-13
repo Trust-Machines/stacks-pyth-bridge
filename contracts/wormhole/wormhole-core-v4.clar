@@ -6,7 +6,7 @@
 ;;;; Traits
 
 ;; Implements trait specified in wormhole-core-trait contract
-(impl-trait .wormhole-traits-v1.core-trait)
+(impl-trait .wormhole-traits-v2.core-trait)
 
 ;;;; Constants
 

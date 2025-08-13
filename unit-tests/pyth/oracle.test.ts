@@ -4,12 +4,12 @@ import { ParsedTransactionResult } from "@hirosystems/clarinet-sdk";
 import { pnauMainnetVaas, priceFeeds } from "./fixtures";
 import { wormhole } from "../wormhole/helpers";
 
-const pythOracleContractName = "pyth-oracle-v3";
+const pythOracleContractName = "pyth-oracle-v4";
 const pythDecoderPnauContractName = "pyth-pnau-decoder-v3";
-const pythStorageContractName = "pyth-storage-v3";
+const pythStorageContractName = "pyth-storage-v4";
 const wormholeCoreContractName = "wormhole-core-v4";
 
-describe("pyth-oracle-v3::decode-and-verify-price-feeds mainnet VAAs", () => {
+describe("pyth-oracle-v4::decode-and-verify-price-feeds mainnet VAAs", () => {
   const accounts = simnet.getAccounts();
   const deployer = accounts.get("deployer")!;
   const sender = accounts.get("wallet_1")!;
@@ -98,7 +98,7 @@ describe("pyth-oracle-v3::decode-and-verify-price-feeds mainnet VAAs", () => {
   });
 });
 
-describe("pyth-oracle-v3::decode-and-verify-price-feeds mainnet VAAs Multi price updates", () => {
+describe("pyth-oracle-v4::decode-and-verify-price-feeds mainnet VAAs Multi price updates", () => {
   const accounts = simnet.getAccounts();
   const deployer = accounts.get("deployer")!;
   const sender = accounts.get("wallet_1")!;

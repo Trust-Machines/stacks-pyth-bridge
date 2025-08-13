@@ -6,8 +6,8 @@ import { hexToBytes } from "@noble/hashes/utils";
 import { ParsedTransactionResult } from "@hirosystems/clarinet-sdk";
 import { ptgmTestnetVaas } from "./fixtures";
 
-const pythOracleContractName = "pyth-oracle-v3";
-const pythStorageContractName = "pyth-storage-v3";
+const pythOracleContractName = "pyth-oracle-v4";
+const pythStorageContractName = "pyth-storage-v4";
 const pythDecoderPnauContractName = "pyth-pnau-decoder-v3";
 const pythGovernanceContractName = "pyth-governance-v3";
 const wormholeCoreContractName = "wormhole-core-v4";
@@ -498,7 +498,7 @@ describe("pyth-governance-v3::update-pyth-storage-contract", () => {
   const guardianSet = wormhole.generateGuardianSetKeychain(19);
   let updateStoreContract = {
     address: "ST2CY5V39NHDPWSXMW9QDT3HC3GD6Q6XX4CFRK9AG",
-    contractName: "pyth-storage-v3",
+    contractName: "pyth-storage-v4",
   };
   let ptgmVaaPayload = pyth.buildPtgmVaaPayload({ updateStoreContract });
 

@@ -50,14 +50,14 @@ plan:
     - id: 0
       transactions:
         - emulated-contract-publish:
-            contract-name: wormhole-traits-v1
+            contract-name: wormhole-traits-v2
             emulated-sender: ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM
-            path: contracts/wormhole/wormhole-traits-v1.clar
+            path: contracts/wormhole/wormhole-traits-v2.clar
             clarity-version: 3
         - emulated-contract-publish:
-            contract-name: pyth-traits-v1
+            contract-name: pyth-traits-v2
             emulated-sender: ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM
-            path: contracts/pyth-traits-v1.clar
+            path: contracts/pyth-traits-v2.clar
             clarity-version: 3
         - emulated-contract-publish:
             contract-name: pyth-governance-v3
@@ -65,9 +65,9 @@ plan:
             path: contracts/pyth-governance-v3.clar
             clarity-version: 3
         - emulated-contract-publish:
-            contract-name: pyth-oracle-v3
+            contract-name: pyth-oracle-v4
             emulated-sender: ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM
-            path: contracts/pyth-oracle-v3.clar
+            path: contracts/pyth-oracle-v4.clar
             clarity-version: 3
         - emulated-contract-publish:
             contract-name: pyth-pnau-decoder-v3
@@ -75,9 +75,9 @@ plan:
             path: contracts/pyth-pnau-decoder-v3.clar
             clarity-version: 3
         - emulated-contract-publish:
-            contract-name: pyth-storage-v3
+            contract-name: pyth-storage-v4
             emulated-sender: ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM
-            path: contracts/pyth-storage-v3.clar
+            path: contracts/pyth-storage-v4.clar
             clarity-version: 3
         - emulated-contract-publish:
             contract-name: wormhole-core-v4

@@ -9,7 +9,7 @@ plan:
     - id: 0
       transactions:
         - contract-call:
-            contract-id: SP2T5JKWWP3FYYX4YRK8GK5BG2YCNGEAEY2P2PKN0.pyth-oracle-v3
+            contract-id: SP2T5JKWWP3FYYX4YRK8GK5BG2YCNGEAEY2P2PKN0.pyth-oracle-v4
             expected-sender: SP2T5JKWWP3FYYX4YRK8GK5BG2YCNGEAEY2P2PKN0
             method: verify-and-update-price-feeds
             parameters:

@@ -10,13 +10,13 @@ path = 'contracts/pyth-governance-v3.clar'
 clarity_version = 3
 epoch = 3.0
 
-[contracts.pyth-oracle-v3]
-path = 'contracts/pyth-oracle-v3.clar'
+[contracts.pyth-oracle-v4]
+path = 'contracts/pyth-oracle-v4.clar'
 clarity_version = 3
 epoch = 3.0
 
-[contracts.pyth-storage-v3]
-path = 'contracts/pyth-storage-v3.clar'
+[contracts.pyth-storage-v4]
+path = 'contracts/pyth-storage-v4.clar'
 clarity_version = 3
 epoch = 3.0
 
@@ -25,8 +25,8 @@ path = 'contracts/pyth-pnau-decoder-v3.clar'
 clarity_version = 3
 epoch = 3.0
 
-[contracts.pyth-traits-v1]
-path = 'contracts/pyth-traits-v1.clar'
+[contracts.pyth-traits-v2]
+path = 'contracts/pyth-traits-v2.clar'
 clarity_version = 3
 epoch = 3.0
 
@@ -35,8 +35,8 @@ path = 'contracts/wormhole/wormhole-core-v4.clar'
 clarity_version = 3
 epoch = 3.0
 
-[contracts.wormhole-traits-v1]
-path = 'contracts/wormhole/wormhole-traits-v1.clar'
+[contracts.wormhole-traits-v2]
+path = 'contracts/wormhole/wormhole-traits-v2.clar'
 clarity_version = 3
 epoch = 3.0
 

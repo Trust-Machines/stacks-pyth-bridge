@@ -4,8 +4,8 @@
 ;; Report an issue: https://github.com/Trust-Machines/stacks-pyth-bridge/issues
 
 ;;;; Traits
-(impl-trait .pyth-traits-v1.decoder-trait)
-(use-trait wormhole-core-trait .wormhole-traits-v1.core-trait)
+(impl-trait .pyth-traits-v2.decoder-trait)
+(use-trait wormhole-core-trait .wormhole-traits-v2.core-trait)
 
 ;;;; Constants
 

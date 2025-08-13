@@ -3,10 +3,10 @@ import { beforeEach, describe, expect, it } from "vitest";
 import { wormhole } from "../wormhole/helpers";
 import { pyth } from "./helpers";
 
-const pythOracleContractName = "pyth-oracle-v3";
+const pythOracleContractName = "pyth-oracle-v4";
 const pythDecoderPnauContractName = "pyth-pnau-decoder-v3";
 const pythGovernanceContractName = "pyth-governance-v3";
-const pythStorageContractName = "pyth-storage-v3";
+const pythStorageContractName = "pyth-storage-v4";
 const wormholeCoreContractName = "wormhole-core-v4";
 
 describe("pyth-pnau-decoder-v3::decode-and-verify-price-feeds success", () => {

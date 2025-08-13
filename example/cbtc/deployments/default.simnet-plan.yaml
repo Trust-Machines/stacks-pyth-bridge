@@ -65,14 +65,14 @@ plan:
             path: ".cache/requirements/ST2T5JKWWP3FYYX4YRK8GK5BG2YCNGEAEY1JKX06E.hk-merkle-tree-keccak160-v1.clar"
             clarity-version: 3
         - emulated-contract-publish:
-            contract-name: wormhole-traits-v1
+            contract-name: wormhole-traits-v2
             emulated-sender: ST2T5JKWWP3FYYX4YRK8GK5BG2YCNGEAEY1JKX06E
-            path: ".cache/requirements/ST2T5JKWWP3FYYX4YRK8GK5BG2YCNGEAEY1JKX06E.wormhole-traits-v1.clar"
+            path: ".cache/requirements/ST2T5JKWWP3FYYX4YRK8GK5BG2YCNGEAEY1JKX06E.wormhole-traits-v2.clar"
             clarity-version: 3
         - emulated-contract-publish:
-            contract-name: pyth-traits-v1
+            contract-name: pyth-traits-v2
             emulated-sender: ST2T5JKWWP3FYYX4YRK8GK5BG2YCNGEAEY1JKX06E
-            path: ".cache/requirements/ST2T5JKWWP3FYYX4YRK8GK5BG2YCNGEAEY1JKX06E.pyth-traits-v1.clar"
+            path: ".cache/requirements/ST2T5JKWWP3FYYX4YRK8GK5BG2YCNGEAEY1JKX06E.pyth-traits-v2.clar"
             clarity-version: 3
         - emulated-contract-publish:
             contract-name: pyth-governance-v3
@@ -80,9 +80,9 @@ plan:
             path: ".cache/requirements/ST2T5JKWWP3FYYX4YRK8GK5BG2YCNGEAEY1JKX06E.pyth-governance-v3.clar"
             clarity-version: 3
         - emulated-contract-publish:
-            contract-name: pyth-oracle-v3
+            contract-name: pyth-oracle-v4
             emulated-sender: ST2T5JKWWP3FYYX4YRK8GK5BG2YCNGEAEY1JKX06E
-            path: ".cache/requirements/ST2T5JKWWP3FYYX4YRK8GK5BG2YCNGEAEY1JKX06E.pyth-oracle-v3.clar"
+            path: ".cache/requirements/ST2T5JKWWP3FYYX4YRK8GK5BG2YCNGEAEY1JKX06E.pyth-oracle-v4.clar"
             clarity-version: 3
         - emulated-contract-publish:
             contract-name: pyth-pnau-decoder-v3

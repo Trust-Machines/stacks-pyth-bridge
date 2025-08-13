@@ -1,11 +1,11 @@
 ;; Title: pyth-oracle
-;; Version: v3
+;; Version: v4
 ;; Check for latest version: https://github.com/Trust-Machines/stacks-pyth-bridge#latest-version
 ;; Report an issue: https://github.com/Trust-Machines/stacks-pyth-bridge/issues
 
-(use-trait pyth-storage-trait .pyth-traits-v1.storage-trait)
-(use-trait pyth-decoder-trait .pyth-traits-v1.decoder-trait)
-(use-trait wormhole-core-trait .wormhole-traits-v1.core-trait)
+(use-trait pyth-storage-trait .pyth-traits-v2.storage-trait)
+(use-trait pyth-decoder-trait .pyth-traits-v2.decoder-trait)
+(use-trait wormhole-core-trait .wormhole-traits-v2.core-trait)
 
 ;; Balance insufficient for handling fee
 (define-constant ERR_BALANCE_INSUFFICIENT (err u3001))

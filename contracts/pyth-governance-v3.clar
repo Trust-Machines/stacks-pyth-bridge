@@ -3,10 +3,10 @@
 ;; Check for latest version: https://github.com/Trust-Machines/stacks-pyth-bridge#latest-version
 ;; Report an issue: https://github.com/Trust-Machines/stacks-pyth-bridge/issues
 
-(use-trait pyth-proxy-trait .pyth-traits-v1.proxy-trait)
-(use-trait pyth-decoder-trait .pyth-traits-v1.decoder-trait)
-(use-trait pyth-storage-trait .pyth-traits-v1.storage-trait)
-(use-trait wormhole-core-trait .wormhole-traits-v1.core-trait)
+(use-trait pyth-proxy-trait .pyth-traits-v2.proxy-trait)
+(use-trait pyth-decoder-trait .pyth-traits-v2.decoder-trait)
+(use-trait pyth-storage-trait .pyth-traits-v2.storage-trait)
+(use-trait wormhole-core-trait .wormhole-traits-v2.core-trait)
 
 (define-constant PTGM_MAGIC 0x5054474d) ;; 'PTGM': Pyth Governance Message
 
@@ -81,9 +81,9 @@
 	pyth-storage-contract: principal,
 	wormhole-core-contract: principal
 } { 
-		pyth-oracle-contract: .pyth-oracle-v3,
+		pyth-oracle-contract: .pyth-oracle-v4,
 		pyth-decoder-contract: .pyth-pnau-decoder-v3, 
-		pyth-storage-contract: .pyth-storage-v3,
+		pyth-storage-contract: .pyth-storage-v4,
 		wormhole-core-contract: .wormhole-core-v4
 })
 
