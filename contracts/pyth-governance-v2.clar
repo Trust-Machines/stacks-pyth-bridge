@@ -496,16 +496,13 @@
   (ok (unwrap! (as-max-len? (unwrap! (slice? bytes pos (+ pos u32)) (err u1)) u32) (err u1))))
 
 (define-private (read-uint-8 (bytes (buff 8192)) (pos uint))
-    (let ((cursor-bytes (try! (read-buff bytes pos u1))))
-        (ok (buff-to-uint-be (unwrap-panic (as-max-len? cursor-bytes u1))))))
+    (ok (buff-to-uint-be (unwrap-panic (as-max-len? (try! (read-buff bytes pos u1)) u1)))))
 
 (define-private (read-uint-16 (bytes (buff 8192)) (pos uint))
-    (let ((cursor-bytes (try! (read-buff bytes pos u2))))
-        (ok (buff-to-uint-be (unwrap-panic (as-max-len? cursor-bytes u2))))))
+    (ok (buff-to-uint-be (unwrap-panic (as-max-len? (try! (read-buff bytes pos u2)) u2)))))
 
 (define-private (read-uint-64 (bytes (buff 8192)) (pos uint))
-    (let ((cursor-bytes (try! (read-buff bytes pos u8))))
-        (ok (buff-to-uint-be (unwrap-panic (as-max-len? cursor-bytes u8))))))
+    (ok (buff-to-uint-be (unwrap-panic (as-max-len? (try! (read-buff bytes pos u8)) u8)))))
 
 (define-private (slice (bytes (buff 8192)) (pos uint) (size (optional uint)))
     (match (slice? bytes pos (match size value (+ pos value) (len bytes))) b b 0x))

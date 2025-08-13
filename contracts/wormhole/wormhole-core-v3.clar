@@ -130,57 +130,57 @@
 ;;
 ;; @param vaa-bytes: 
 (define-read-only (parse-vaa (vaa-bytes (buff 8192)))
-  (let ((vaa-bytes-len (len vaa-bytes))
-        (version (unwrap! (read-uint-8 vaa-bytes u0) ERR_VAA_PARSING_VERSION))
-        (guardian-set-id (unwrap! (read-uint-32 vaa-bytes u1) ERR_VAA_PARSING_GUARDIAN_SET))
-        (signatures-len (unwrap! (read-uint-8 vaa-bytes u5) ERR_VAA_PARSING_SIGNATURES_LEN))
-        (signatures-offset (+ u6 (* signatures-len SIGNATURE_DATA_SIZE)))
-        (signatures (map read-one-signature 
-          (unwrap-panic (slice? (list 
-            (default-to 0x (slice? vaa-bytes u6 u72))
-            (default-to 0x (slice? vaa-bytes u72 u138))
-            (default-to 0x (slice? vaa-bytes u138 u204))
-            (default-to 0x (slice? vaa-bytes u204 u270))
-            (default-to 0x (slice? vaa-bytes u270 u336))
-            (default-to 0x (slice? vaa-bytes u336 u402))
-            (default-to 0x (slice? vaa-bytes u402 u468))
-            (default-to 0x (slice? vaa-bytes u468 u534))
-            (default-to 0x (slice? vaa-bytes u534 u600))
-            (default-to 0x (slice? vaa-bytes u600 u666))
-            (default-to 0x (slice? vaa-bytes u666 u732))
-            (default-to 0x (slice? vaa-bytes u732 u798))
-            (default-to 0x (slice? vaa-bytes u798 u864))
-            (default-to 0x (slice? vaa-bytes u864 u930))
-            (default-to 0x (slice? vaa-bytes u930 u996))
-            (default-to 0x (slice? vaa-bytes u996 u1062))
-            (default-to 0x (slice? vaa-bytes u1062 u1128))
-            (default-to 0x (slice? vaa-bytes u1128 u1194))
-            (default-to 0x (slice? vaa-bytes u1194 u1260))) u0 signatures-len))
-        ))
-        (vaa-body-hash (keccak256 (keccak256 (unwrap! (slice? vaa-bytes signatures-offset vaa-bytes-len) ERR_VAA_HASHING_BODY))))
-        ;; following values are ignored as they are not used anywhere
-        ;; (timestamp (unwrap! (read-uint-32 vaa-bytes signatures-offset) ERR_VAA_PARSING_TIMESTAMP))
-        ;; (nonce (unwrap! (read-uint-32 vaa-bytes (+ signatures-offset u4)) ERR_VAA_PARSING_NONCE))
-        ;; (consistency-level (unwrap! (read-uint-8 vaa-bytes (+ signatures-offset u50)) ERR_VAA_PARSING_CONSISTENCY_LEVEL))
-        (emitter-chain (unwrap! (read-uint-16 vaa-bytes (+ signatures-offset u8)) ERR_VAA_PARSING_EMITTER_CHAIN))
-        (emitter-address (unwrap! (read-buff-32 vaa-bytes (+ signatures-offset u10)) ERR_VAA_PARSING_EMITTER_ADDRESS))
-        (sequence (unwrap! (read-uint-64 vaa-bytes (+ signatures-offset u42)) ERR_VAA_PARSING_SEQUENCE))
-        (payload (unwrap! (slice? vaa-bytes (+ signatures-offset u51) vaa-bytes-len) ERR_VAA_PARSING_PAYLOAD))
-        (vaa-body-hash-list (unwrap-panic (slice? (list vaa-body-hash vaa-body-hash vaa-body-hash vaa-body-hash vaa-body-hash 
-          vaa-body-hash vaa-body-hash vaa-body-hash vaa-body-hash vaa-body-hash vaa-body-hash 
-          vaa-body-hash vaa-body-hash vaa-body-hash vaa-body-hash vaa-body-hash vaa-body-hash vaa-body-hash vaa-body-hash) u0 signatures-len)))
-        (public-keys-results (filter empty-key (map recover-public-key signatures vaa-body-hash-list)))
-      )
+  (let (
+    (vaa-bytes-len (len vaa-bytes))
+    (version (unwrap! (read-uint-8 vaa-bytes u0) ERR_VAA_PARSING_VERSION))
+    (guardian-set-id (unwrap! (read-uint-32 vaa-bytes u1) ERR_VAA_PARSING_GUARDIAN_SET))
+    (signatures-len (unwrap! (read-uint-8 vaa-bytes u5) ERR_VAA_PARSING_SIGNATURES_LEN))
+    (signatures-offset (+ u6 (* signatures-len SIGNATURE_DATA_SIZE)))
+    (signatures (map read-one-signature 
+      (unwrap-panic (slice? (list 
+        (default-to 0x (slice? vaa-bytes u6 u72))
+        (default-to 0x (slice? vaa-bytes u72 u138))
+        (default-to 0x (slice? vaa-bytes u138 u204))
+        (default-to 0x (slice? vaa-bytes u204 u270))
+        (default-to 0x (slice? vaa-bytes u270 u336))
+        (default-to 0x (slice? vaa-bytes u336 u402))
+        (default-to 0x (slice? vaa-bytes u402 u468))
+        (default-to 0x (slice? vaa-bytes u468 u534))
+        (default-to 0x (slice? vaa-bytes u534 u600))
+        (default-to 0x (slice? vaa-bytes u600 u666))
+        (default-to 0x (slice? vaa-bytes u666 u732))
+        (default-to 0x (slice? vaa-bytes u732 u798))
+        (default-to 0x (slice? vaa-bytes u798 u864))
+        (default-to 0x (slice? vaa-bytes u864 u930))
+        (default-to 0x (slice? vaa-bytes u930 u996))
+        (default-to 0x (slice? vaa-bytes u996 u1062))
+        (default-to 0x (slice? vaa-bytes u1062 u1128))
+        (default-to 0x (slice? vaa-bytes u1128 u1194))
+        (default-to 0x (slice? vaa-bytes u1194 u1260))) u0 signatures-len))
+    ))
+    (vaa-body-hash (keccak256 (keccak256 (unwrap! (slice? vaa-bytes signatures-offset vaa-bytes-len) ERR_VAA_HASHING_BODY))))
+    ;; following values are ignored as they are not used anywhere
+    ;; (timestamp (unwrap! (read-uint-32 vaa-bytes signatures-offset) ERR_VAA_PARSING_TIMESTAMP))
+    ;; (nonce (unwrap! (read-uint-32 vaa-bytes (+ signatures-offset u4)) ERR_VAA_PARSING_NONCE))
+    ;; (consistency-level (unwrap! (read-uint-8 vaa-bytes (+ signatures-offset u50)) ERR_VAA_PARSING_CONSISTENCY_LEVEL))
+    (emitter-chain (unwrap! (read-uint-16 vaa-bytes (+ signatures-offset u8)) ERR_VAA_PARSING_EMITTER_CHAIN))
+    (emitter-address (unwrap! (read-buff-32 vaa-bytes (+ signatures-offset u10)) ERR_VAA_PARSING_EMITTER_ADDRESS))
+    (sequence (unwrap! (read-uint-64 vaa-bytes (+ signatures-offset u42)) ERR_VAA_PARSING_SEQUENCE))
+    (payload (unwrap! (slice? vaa-bytes (+ signatures-offset u51) vaa-bytes-len) ERR_VAA_PARSING_PAYLOAD))
+    (vaa-body-hash-list (unwrap-panic (slice? (list vaa-body-hash vaa-body-hash vaa-body-hash vaa-body-hash vaa-body-hash 
+      vaa-body-hash vaa-body-hash vaa-body-hash vaa-body-hash vaa-body-hash vaa-body-hash 
+      vaa-body-hash vaa-body-hash vaa-body-hash vaa-body-hash vaa-body-hash vaa-body-hash vaa-body-hash vaa-body-hash) u0 signatures-len)))
+    (public-keys-results (filter empty-key (map recover-public-key signatures vaa-body-hash-list))))
     (ok { 
-        vaa: {
-          version: version, 
-          guardian-set-id: guardian-set-id,
-          emitter-chain: emitter-chain,
-          emitter-address: emitter-address,
-          sequence: sequence,
-          payload: payload,
-        },
-        recovered-public-keys: public-keys-results,
+      vaa: {
+        version: version, 
+        guardian-set-id: guardian-set-id,
+        emitter-chain: emitter-chain,
+        emitter-address: emitter-address,
+        sequence: sequence,
+        payload: payload,
+      },
+      recovered-public-keys: public-keys-results,
     })))
 
 ;; @desc Parse and check the validity of a Verified Action Approval (VAA)
@@ -188,7 +188,8 @@
 (define-read-only (parse-and-verify-vaa (vaa-bytes (buff 8192)))
     (let (
         (message (try! (parse-vaa vaa-bytes)))
-        (guardian-set-id (get guardian-set-id (get vaa message)))
+        (vaa-message (get vaa message))
+        (guardian-set-id (get guardian-set-id vaa-message))
       )
       ;; Ensure that the guardian-set-id is the active one or unexpired previous one
       (asserts! (try! (is-valid-guardian-set guardian-set-id)) ERR_VAA_CHECKS_GUARDIAN_SET_CONSISTENCY)
@@ -199,10 +200,10 @@
                 result: (list)
             })))
       ;; Ensure that version is supported (v1 only)
-      (asserts! (is-eq (get version (get vaa message)) u1) ERR_VAA_CHECKS_VERSION_UNSUPPORTED)
+      (asserts! (is-eq (get version vaa-message) u1) ERR_VAA_CHECKS_VERSION_UNSUPPORTED)
       ;; Ensure that the count of valid signatures is >= 13
       (asserts! (>= (len (get result signatures-from-active-guardians)) (get-quorum (len active-guardians))) ERR_VAA_CHECKS_THRESHOLD_SIGNATURE)
-      (ok (get vaa message)))))
+      (ok vaa-message))))
 
 ;; @desc Update the active set of guardians 
 ;; @param guardian-set-vaa: VAA embedding the Guardian Set Update information
@@ -347,24 +348,23 @@
 
 ;; @desc Parse and verify payload's VAA  
 (define-private (parse-and-verify-guardians-set (bytes (buff 8192)))
-  (let 
-      ((module (unwrap! (read-buff-32 bytes u0) ERR_GSU_PARSING_MODULE))
+  (let (
+      (module (unwrap! (read-buff-32 bytes u0) ERR_GSU_PARSING_MODULE))
       (action (unwrap! (read-uint-8 bytes u32) ERR_GSU_PARSING_ACTION))
       (chain (unwrap! (read-uint-16 bytes u33) ERR_GSU_PARSING_CHAIN))
       (new-index (unwrap! (read-uint-32 bytes u35) ERR_GSU_PARSING_INDEX))
       (guardians-count (unwrap! (read-uint-8 bytes u39) ERR_GSU_PARSING_GUARDIAN_LEN))
-      (guardians-bytes (unwrap! (read-buff bytes u40 (* guardians-count GUARDIAN_ETH_ADDRESS_SIZE)) ERR_GSU_PARSING_GUARDIANS_BYTES))
+      (guardians-byte-size (* guardians-count GUARDIAN_ETH_ADDRESS_SIZE))
+      (guardians-bytes (unwrap! (read-buff bytes u40 guardians-byte-size) ERR_GSU_PARSING_GUARDIANS_BYTES))
       (guardians-cues (get result (fold is-guardian-cue guardians-bytes { cursor: u0, result: (list) })))
       (eth-addresses (get result (fold parse-guardian guardians-cues { bytes: guardians-bytes, result: (list) }))))
-    (asserts! (is-eq (+ u40 (* guardians-count GUARDIAN_ETH_ADDRESS_SIZE)) (len bytes)) ERR_GSU_CHECK_OVERLAY)
+    (asserts! (is-eq (+ u40 guardians-byte-size) (len bytes)) ERR_GSU_CHECK_OVERLAY)
     ;; Ensure there are no duplicated addresses
     (asserts! (is-eq (len eth-addresses) guardians-count) ERR_DUPLICATED_GUARDIAN_ADDRESSES)
     ;; Ensure that this message was emitted from authorized module
-    (asserts! (is-eq module CORE_STRING_MODULE) 
-      ERR_GSU_CHECK_MODULE)
+    (asserts! (is-eq module CORE_STRING_MODULE) ERR_GSU_CHECK_MODULE)
     ;; Ensure that this message is matching the adequate action
-    (asserts! (is-eq action ACTION_GUARDIAN_SET_UPDATE) 
-      ERR_GSU_CHECK_ACTION)
+    (asserts! (is-eq action ACTION_GUARDIAN_SET_UPDATE) ERR_GSU_CHECK_ACTION)
     ;; Ensure that this message is matching the expected chain
     (asserts! (or (is-eq chain (buff-to-uint-be EXPECTED_CHAIN_ID)) (is-eq chain CORE_CHAIN_ID) ) ERR_GSU_CHECK_CHAIN)
     (if (var-get guardian-set-initialized)
@@ -450,17 +450,13 @@
   (ok (unwrap! (as-max-len? (unwrap! (slice? bytes pos (+ pos u32)) (err u1)) u32) (err u1))))
 
 (define-private (read-uint-8 (bytes (buff 8192)) (pos uint))
-    (let ((cursor-bytes (try! (read-buff bytes pos u1))))
-        (ok (buff-to-uint-be (unwrap-panic (as-max-len? cursor-bytes u1))))))
+    (ok (buff-to-uint-be (unwrap-panic (as-max-len? (try! (read-buff bytes pos u1)) u1)))))
 
 (define-private (read-uint-16 (bytes (buff 8192)) (pos uint))
-    (let ((cursor-bytes (try! (read-buff bytes pos u2))))
-        (ok (buff-to-uint-be (unwrap-panic (as-max-len? cursor-bytes u2))))))
+    (ok (buff-to-uint-be (unwrap-panic (as-max-len? (try! (read-buff bytes pos u2)) u2)))))
 
 (define-private (read-uint-32 (bytes (buff 8192)) (pos uint))
-    (let ((cursor-bytes (try! (read-buff bytes pos u4))))
-        (ok (buff-to-uint-be (unwrap-panic (as-max-len? cursor-bytes u4))))))
+    (ok (buff-to-uint-be (unwrap-panic (as-max-len? (try! (read-buff bytes pos u4)) u4)))))
 
 (define-private (read-uint-64 (bytes (buff 8192)) (pos uint))
-    (let ((cursor-bytes (try! (read-buff bytes pos u8))))
-        (ok (buff-to-uint-be (unwrap-panic (as-max-len? cursor-bytes u8))))))
+    (ok (buff-to-uint-be (unwrap-panic (as-max-len? (try! (read-buff bytes pos u8)) u8)))))

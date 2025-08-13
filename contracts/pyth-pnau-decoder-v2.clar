@@ -47,24 +47,19 @@
 
 ;;;; Public functions
 (define-public (decode-and-verify-price-feeds (pnau-bytes (buff 8192)) (wormhole-core-address <wormhole-core-trait>))
-  (begin
-    ;; Check execution flow
-    (try! (contract-call? .pyth-governance-v2 check-execution-flow contract-caller none))
-    ;; Proceed to update
-    (decode-pnau-price-update pnau-bytes wormhole-core-address)))
-
-;;;; Private functions
-;; #[filter(pnau-bytes, wormhole-core-address)]
-(define-private (decode-pnau-price-update (pnau-bytes (buff 8192)) (wormhole-core-address <wormhole-core-trait>))
-  (let ((offset (try! (parse-pnau-header pnau-bytes)))
-        (pnau-vaa-size (try! (read-uint-16 pnau-bytes offset)))
-        (pnau-vaa (try! (read-buff pnau-bytes (+ offset u2) pnau-vaa-size)))
-        (vaa (try! (contract-call? wormhole-core-address parse-and-verify-vaa pnau-vaa)))
-        (merkle-root-hash (try! (parse-merkle-root-data-from-vaa-payload (get payload vaa))))
-        (encoded-price-updates (unwrap! (slice? pnau-bytes (+ offset u2 pnau-vaa-size) (len pnau-bytes)) ERR_INVALID_PNAU_BYTES))
-        (decoded-prices-updates (try! (parse-and-verify-prices-updates encoded-price-updates merkle-root-hash)))
-        (prices-updates (map cast-decoded-price decoded-prices-updates))
-        (authorized-prices-data-sources (contract-call? .pyth-governance-v2 get-authorized-prices-data-sources)))
+  (let (
+      ;; Check execution flow
+      (execution-check (try! (contract-call? .pyth-governance-v2 check-execution-flow contract-caller none)))
+      (offset (try! (parse-pnau-header pnau-bytes)))
+      (pnau-vaa-size (try! (read-uint-16 pnau-bytes offset)))
+      (pnau-vaa (try! (read-buff pnau-bytes (+ offset u2) pnau-vaa-size)))
+      (vaa (try! (contract-call? wormhole-core-address parse-and-verify-vaa pnau-vaa)))
+      (merkle-root-hash (try! (parse-merkle-root-data-from-vaa-payload (get payload vaa))))
+      (encoded-price-updates (unwrap! (slice? pnau-bytes (+ offset u2 pnau-vaa-size) (len pnau-bytes)) ERR_INVALID_PNAU_BYTES))
+      (decoded-prices-updates (try! (parse-and-verify-prices-updates encoded-price-updates merkle-root-hash)))
+      (prices-updates (map cast-decoded-price decoded-prices-updates))
+      (authorized-prices-data-sources (contract-call? .pyth-governance-v2 get-authorized-prices-data-sources))
+    )
     ;; Ensure that update was published by an data source authorized by governance
     (unwrap! (index-of? 
         authorized-prices-data-sources 
@@ -72,6 +67,7 @@
       ERR_UNAUTHORIZED_PRICE_UPDATE)
     (ok prices-updates)))
 
+;;;; Private functions
 (define-private (parse-merkle-root-data-from-vaa-payload (payload-vaa-bytes (buff 8192)))
   (let ((payload-type (unwrap! (read-buff-4 payload-vaa-bytes u0) ERR_INVALID_AUWV))
         (wh-update-type (unwrap! (read-uint-8 payload-vaa-bytes u4) ERR_INVALID_AUWV))
@@ -157,11 +153,7 @@
         }))
     { 
       merkle-root-hash: (get merkle-root-hash acc),
-      result: (and (get result acc)
-        (check-proof 
-          (get merkle-root-hash acc) 
-          (get leaf-bytes entry) 
-          (get proof entry)))
+      result: (and (get result acc) (check-proof (get merkle-root-hash acc) (get leaf-bytes entry) (get proof entry)))
     })
 
 (define-private (read-and-verify-update (bytes (buff 8192)) (offset uint))
@@ -220,30 +212,40 @@
         result: (list 128 (buff 20)), 
         limit: uint
       }))
-  (if (is-eq (len (get result acc)) (get limit acc))
-    acc
-    (if (is-eq (get index (get cursor acc)) (get next-update-index (get cursor acc)))
-      ;; Parse update
-      (let ((hash (unwrap-panic (read-buff-20 (get bytes acc) (get index (get cursor acc))))))
-        {
-          cursor: { 
-            index: (+ (get index (get cursor acc)) u1),
-            next-update-index: (+ (get index (get cursor acc)) MERKLE_PROOF_HASH_SIZE),
-          },
-          bytes: (get bytes acc),
-          result: (unwrap-panic (as-max-len? (append (get result acc) hash) u128)),
-          limit: (get limit acc),
-        })
-      ;; Increment position
-      {
-          cursor: { 
-            index: (+ (get index (get cursor acc)) u1),
-            next-update-index: (get next-update-index (get cursor acc)),
-          },
-          bytes: (get bytes acc),
-          result: (get result acc),
-          limit: (get limit acc)
-      })))
+  (let (
+      (result (get result acc))
+      (limit (get limit acc))
+    )  
+    (if (is-eq (len result) limit)
+      acc
+      (let (
+          (cursor (get cursor acc))
+          (index (get index cursor))
+          (next-update-index (get next-update-index cursor))
+          (bytes (get bytes acc))
+      )
+        (if (is-eq index next-update-index)
+          ;; Parse update
+          {
+            cursor: { 
+              index: (+ index u1),
+              next-update-index: (+ index MERKLE_PROOF_HASH_SIZE),
+            },
+            bytes: bytes,
+            result: (unwrap-panic (as-max-len? (append result (unwrap-panic (read-buff-20 bytes index))) u128)),
+            limit: limit,
+          }
+          ;; Increment position
+          {
+            cursor: { 
+              index: (+ index u1),
+              next-update-index: next-update-index,
+            },
+            bytes: bytes,
+            result: result,
+            limit: limit
+          }
+        )))))
 
 (define-private (cast-decoded-price (entry 
         {
@@ -283,33 +285,25 @@
   (ok (unwrap! (as-max-len? (unwrap! (slice? bytes pos (+ pos u32)) (err u1)) u32) (err u1))))
 
 (define-private (read-uint-8 (bytes (buff 8192)) (pos uint))
-    (let ((cursor-bytes (try! (read-buff bytes pos u1))))
-        (ok (buff-to-uint-be (unwrap-panic (as-max-len? cursor-bytes u1))))))
+    (ok (buff-to-uint-be (unwrap-panic (as-max-len? (try! (read-buff bytes pos u1)) u1)))))
 
 (define-private (read-uint-16 (bytes (buff 8192)) (pos uint))
-    (let ((cursor-bytes (try! (read-buff bytes pos u2))))
-        (ok (buff-to-uint-be (unwrap-panic (as-max-len? cursor-bytes u2))))))
+    (ok (buff-to-uint-be (unwrap-panic (as-max-len? (try! (read-buff bytes pos u2)) u2)))))
 
 (define-private (read-uint-32 (bytes (buff 8192)) (pos uint))
-    (let ((cursor-bytes (try! (read-buff bytes pos u4))))
-        (ok (buff-to-uint-be (unwrap-panic (as-max-len? cursor-bytes u4))))))
+    (ok (buff-to-uint-be (unwrap-panic (as-max-len? (try! (read-buff bytes pos u4)) u4)))))
 
 (define-private (read-uint-64 (bytes (buff 8192)) (pos uint))
-    (let ((cursor-bytes (try! (read-buff bytes pos u8))))
-        (ok (buff-to-uint-be (unwrap-panic (as-max-len? cursor-bytes u8))))))
+    (ok (buff-to-uint-be (unwrap-panic (as-max-len? (try! (read-buff bytes pos u8)) u8)))))
 
 (define-private (read-int-32 (bytes (buff 8192)) (pos uint))
-    (let ((cursor-bytes (try! (read-buff bytes pos u4))))
-        (ok (bit-shift-right (bit-shift-left (buff-to-int-be (unwrap-panic (as-max-len? cursor-bytes u4))) u96) u96))))
+    (ok (bit-shift-right (bit-shift-left (buff-to-int-be (unwrap-panic (as-max-len? (try! (read-buff bytes pos u4)) u4))) u96) u96)))
 
 (define-private (read-int-64 (bytes (buff 8192)) (pos uint))
-    (let ((cursor-bytes (try! (read-buff bytes pos u8))))
-        (ok (bit-shift-right (bit-shift-left (buff-to-int-be (unwrap-panic (as-max-len? cursor-bytes u8))) u64) u64))))
+    (ok (bit-shift-right (bit-shift-left (buff-to-int-be (unwrap-panic (as-max-len? (try! (read-buff bytes pos u8)) u8))) u64) u64)))
 
 (define-private (check-proof (root-hash (buff 20)) (leaf (buff 255)) (path (list 255 (buff 20))))
-    (let ((hashed-leaf (hash-leaf leaf))
-          (computed-root-hash (fold hash-path path hashed-leaf)))
-        (is-eq root-hash computed-root-hash)))
+    (is-eq root-hash (fold hash-path path (hash-leaf leaf))))
 
 (define-private (hash-leaf (bytes (buff 255)))
     (keccak160 (concat 0x00 bytes)))
