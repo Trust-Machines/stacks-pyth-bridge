@@ -99,7 +99,6 @@
 			(updates (get entries update-data))
 			(merkle-proof-checks-success (get result (fold check-merkle-proof updates { result: true, merkle-root-hash: merkle-root-hash }))))
 		(asserts! merkle-proof-checks-success ERR_MERKLE_ROOT_MISMATCH)
-		;; Overlay check; 1 is added because 1 byte is used to store "cursor-num-updates"
 		(asserts! (is-eq (get offset update-data) (len bytes)) ERR_OVERLAY_PRESENT)
 		(asserts! (is-eq num-updates (len updates)) ERR_INCORRECT_AUWV_PAYLOAD)
 		(ok updates)))
