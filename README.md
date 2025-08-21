@@ -45,7 +45,7 @@ $ npm test
 
 | network | address                                                                                                                                                                    |
 | ------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| testnet | [ST20M5GABDT6WYJHXBT5CDH4501V1Q65242SPRMXH.pyth-oracle-v4](https://explorer.hiro.so/txid/0xbed29798b725b34b639aadb34411b2863aeeab8024bf2952d9ff9aede49656a4?chain=testnet) |
+| testnet | [STR738QQX1PVTM6WTDF833Z18T8R0ZB791TCNEFM.pyth-oracle-v4](https://explorer.hiro.so/txid/0xad97c930302676abcf7182d912f6dd9c9869d4b7ac187a777e0cd98a0c8f9010?chain=testnet) |
 | mainnet | [SP1CGXWEAMG6P6FT04W66NVGJ7PQWMDAC19R7PJ0Y.pyth-oracle-v4](https://explorer.hiro.so/txid/0xb336ce568c1195923d4aaa044d42633238da218cf5cc742a919c54040a353d55?chain=mainnet) |
 
 ### Onchain
