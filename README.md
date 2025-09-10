@@ -43,10 +43,25 @@ $ npm test
 
 ### Latest Deployments
 
-| network | address                                                                                                                                                                    |
-| ------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| testnet | [STR738QQX1PVTM6WTDF833Z18T8R0ZB791TCNEFM.pyth-oracle-v4](https://explorer.hiro.so/txid/0xad97c930302676abcf7182d912f6dd9c9869d4b7ac187a777e0cd98a0c8f9010?chain=testnet) |
-| mainnet | [SP1CGXWEAMG6P6FT04W66NVGJ7PQWMDAC19R7PJ0Y.pyth-oracle-v4](https://explorer.hiro.so/txid/0xb336ce568c1195923d4aaa044d42633238da218cf5cc742a919c54040a353d55?chain=mainnet) |
+#### Mainnet
+
+- [SP1CGXWEAMG6P6FT04W66NVGJ7PQWMDAC19R7PJ0Y.wormhole-core-v4](https://explorer.hiro.so/txid/SP1CGXWEAMG6P6FT04W66NVGJ7PQWMDAC19R7PJ0Y.wormhole-core-v4?chain=mainnet)
+- [SP1CGXWEAMG6P6FT04W66NVGJ7PQWMDAC19R7PJ0Y.wormhole-traits-v2](https://explorer.hiro.so/txid/SP1CGXWEAMG6P6FT04W66NVGJ7PQWMDAC19R7PJ0Y.wormhole-traits-v2?chain=mainnet)
+- [SP1CGXWEAMG6P6FT04W66NVGJ7PQWMDAC19R7PJ0Y.pyth-governance-v3](https://explorer.hiro.so/txid/SP1CGXWEAMG6P6FT04W66NVGJ7PQWMDAC19R7PJ0Y.pyth-governance-v3?chain=mainnet)
+- [SP1CGXWEAMG6P6FT04W66NVGJ7PQWMDAC19R7PJ0Y.pyth-oracle-v4](https://explorer.hiro.so/txid/SP1CGXWEAMG6P6FT04W66NVGJ7PQWMDAC19R7PJ0Y.pyth-oracle-v4?chain=mainnet)
+- [SP1CGXWEAMG6P6FT04W66NVGJ7PQWMDAC19R7PJ0Y.pyth-pnau-decoder-v3](https://explorer.hiro.so/txid/SP1CGXWEAMG6P6FT04W66NVGJ7PQWMDAC19R7PJ0Y.pyth-pnau-decoder-v3?chain=mainnet)
+- [SP1CGXWEAMG6P6FT04W66NVGJ7PQWMDAC19R7PJ0Y.pyth-storage-v4](https://explorer.hiro.so/txid/SP1CGXWEAMG6P6FT04W66NVGJ7PQWMDAC19R7PJ0Y.pyth-storage-v4?chain=mainnet)
+- [SP1CGXWEAMG6P6FT04W66NVGJ7PQWMDAC19R7PJ0Y.pyth-traits-v2](https://explorer.hiro.so/txid/SP1CGXWEAMG6P6FT04W66NVGJ7PQWMDAC19R7PJ0Y.pyth-traits-v2?chain=mainnet)
+
+#### Testnet
+
+- [STR738QQX1PVTM6WTDF833Z18T8R0ZB791TCNEFM.wormhole-core-v4](https://explorer.hiro.so/txid/STR738QQX1PVTM6WTDF833Z18T8R0ZB791TCNEFM.wormhole-core-v4?chain=testnet)
+- [STR738QQX1PVTM6WTDF833Z18T8R0ZB791TCNEFM.wormhole-traits-v2](https://explorer.hiro.so/txid/STR738QQX1PVTM6WTDF833Z18T8R0ZB791TCNEFM.wormhole-traits-v2?chain=testnet)
+- [STR738QQX1PVTM6WTDF833Z18T8R0ZB791TCNEFM.pyth-governance-v3](https://explorer.hiro.so/txid/STR738QQX1PVTM6WTDF833Z18T8R0ZB791TCNEFM.pyth-governance-v3?chain=testnet)
+- [STR738QQX1PVTM6WTDF833Z18T8R0ZB791TCNEFM.pyth-oracle-v4](https://explorer.hiro.so/txid/STR738QQX1PVTM6WTDF833Z18T8R0ZB791TCNEFM.pyth-oracle-v4?chain=testnet)
+- [STR738QQX1PVTM6WTDF833Z18T8R0ZB791TCNEFM.pyth-pnau-decoder-v3](https://explorer.hiro.so/txid/STR738QQX1PVTM6WTDF833Z18T8R0ZB791TCNEFM.pyth-pnau-decoder-v3?chain=testnet)
+- [STR738QQX1PVTM6WTDF833Z18T8R0ZB791TCNEFM.pyth-storage-v4](https://explorer.hiro.so/txid/STR738QQX1PVTM6WTDF833Z18T8R0ZB791TCNEFM.pyth-storage-v4?chain=testnet)
+- [STR738QQX1PVTM6WTDF833Z18T8R0ZB791TCNEFM.pyth-traits-v2](https://explorer.hiro.so/txid/STR738QQX1PVTM6WTDF833Z18T8R0ZB791TCNEFM.pyth-traits-v2?chain=testnet)
 
 ### Onchain
 
